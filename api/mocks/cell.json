@@ -1,0 +1,9 @@
+{
+  "geohash": "te7ud2",
+  "epoch": 1762360200,
+  "pm25_x10": 423,
+  "pm10_x10": 610,
+  "devices_used": 3,
+  "devices_flagged": 1,
+  "station": { "name": "Andheri East - MPCB (mock)", "pm25_x10": 440 }
+}
