@@ -23,7 +23,9 @@ docs/        SPEC.md, AI-USAGE.md, DEBRIEFS.md, prompts/
 **Reused (before the event):**
 - Hardware: both sensor devices (ESP32 DevKit + DHT22, ESP32-S3; Sharp GP2Y1014AU0F dust sensors with voltage dividers) were assembled and tested before hacking started. No firmware or software was carried over.
 
-**Libraries and starter kits:** _to be listed as they are added._
+**Libraries and starter kits:**
+- [Foundry](https://getfoundry.sh) + forge-std 1.17.0 (contracts, tests)
+- Arduino-ESP32 core 3.3.12, Adafruit DHT sensor library 1.4.7 (firmware)
 
 **New (written during the event):** everything else in this repo.
 
