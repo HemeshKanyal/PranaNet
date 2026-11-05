@@ -47,6 +47,23 @@ signature = EIP-191 personal_sign(message) with the device key
 
 Integers ×10, no floats on-chain. `chainId` and the contract address stop cross-chain replay; the nonce must strictly increase. Device 2 sends temp/hum as 0.
 
+### Exact encoding (implemented in `contracts/src/Readings.sol`, firmware must match)
+
+| # | Field | Solidity type | Bytes | Notes |
+|---|---|---|---|---|
+| 1 | `device` | `address` | 20 | device key address |
+| 2 | `epoch` | `uint256` | 32 | unix seconds |
+| 3 | `pm25_x10` | `uint256` | 32 | |
+| 4 | `pm10_x10` | `uint256` | 32 | |
+| 5 | `temp_x10` | `int256` | 32 | two's complement (can be negative) |
+| 6 | `hum_x10` | `uint256` | 32 | |
+| 7 | `nonce` | `uint256` | 32 | per device, starts at 1, strictly increasing |
+| 8 | `chainId` | `uint256` | 32 | Sepolia = 11155111 |
+| 9 | `readingsContract` | `address` | 20 | deployed Readings address |
+
+Total **264 bytes**, no padding between fields (`abi.encodePacked`), integers big-endian.
+The device signs `keccak256("\x19Ethereum Signed Message:\n32" ‖ message)` and sends a 65-byte signature `r ‖ s ‖ v` (v = 27/28 or 0/1, low-s required). The contract rebuilds fields 8 and 9 from `block.chainid` and `address(this)`, so the relayer cannot change them.
+
 ## Contracts (Sepolia)
 
 | Function | Behaviour |
