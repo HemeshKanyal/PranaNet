@@ -1,0 +1,11 @@
+{
+  "ok": {
+    "ok": true,
+    "ens": "colaba-01.prananet.eth",
+    "tx": "0xc9fa3f76bf180ae2bf8a081868174167e01b4a3e4d1e2d57c7f0bef72087f893"
+  },
+  "max_devices": {
+    "ok": false,
+    "error": "max_devices"
+  }
+}

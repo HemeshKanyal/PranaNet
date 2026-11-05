@@ -1,0 +1,112 @@
+[
+  {
+    "device": "0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be",
+    "ens": "andheri-01.prananet.eth",
+    "geohash": "te7ud2",
+    "status": "active",
+    "stake_wei": "10000000000000000",
+    "baseline_mv": 212,
+    "last_reading": {
+      "device": "0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be",
+      "ens": "andheri-01.prananet.eth",
+      "geohash": "te7ud2",
+      "epoch": 1762360200,
+      "pm25_x10": 480,
+      "pm10_x10": 737,
+      "temp_x10": 286,
+      "hum_x10": 606,
+      "nonce": 200,
+      "signature": "0xc0f38839494623502cd05c2ed4e25f539971869d1fedb6f9751567f657b1f7836a85037938b4e1155949dd5c79b7d8ab479639993ad0d77319b4f549dda372c41b",
+      "simulated": false
+    },
+    "simulated": false
+  },
+  {
+    "device": "0x8b3192f5ef7c4f9a1b2e4d6c8a0b2d4f6e8a0c12",
+    "ens": "andheri-02.prananet.eth",
+    "geohash": "te7ud3",
+    "status": "active",
+    "stake_wei": "10000000000000000",
+    "baseline_mv": 187,
+    "last_reading": {
+      "device": "0x8b3192f5ef7c4f9a1b2e4d6c8a0b2d4f6e8a0c12",
+      "ens": "andheri-02.prananet.eth",
+      "geohash": "te7ud3",
+      "epoch": 1762360200,
+      "pm25_x10": 513,
+      "pm10_x10": 775,
+      "temp_x10": 0,
+      "hum_x10": 0,
+      "nonce": 200,
+      "signature": "0x46aea5c33fa6545efa5d33cb9ac49113790d4233736436dd52ada2fe51f31417a7b0ff2bdc01325b887d3fc7ca0c34b5d49b71080fbbbc5bed297711932904101b",
+      "simulated": false
+    },
+    "simulated": false
+  },
+  {
+    "device": "0x1c4e9a7b5d3f2e8c6a4b2d0f8e6c4a2b0d8f6e41",
+    "ens": "sim-andheri-03.prananet.eth",
+    "geohash": "te7ud8",
+    "status": "active",
+    "stake_wei": "10000000000000000",
+    "baseline_mv": 200,
+    "last_reading": {
+      "device": "0x1c4e9a7b5d3f2e8c6a4b2d0f8e6c4a2b0d8f6e41",
+      "ens": "sim-andheri-03.prananet.eth",
+      "geohash": "te7ud8",
+      "epoch": 1762360200,
+      "pm25_x10": 457,
+      "pm10_x10": 647,
+      "temp_x10": 285,
+      "hum_x10": 604,
+      "nonce": 200,
+      "signature": "0x9f2ea67b6d5b79aad6240b3e86ac8f29d0fc75196121e3f9479677982dacf6971984cd9bec5b732038eda311d722aebce8f7f2c5f48447c4b1db62eab738d6721c",
+      "simulated": true
+    },
+    "simulated": true
+  },
+  {
+    "device": "0x9d2f4b6a8c0e2d4f6a8b0c2e4d6f8a0b2c4e6d73",
+    "ens": "sim-andheri-04.prananet.eth",
+    "geohash": "te7ud9",
+    "status": "flagged",
+    "stake_wei": "10000000000000000",
+    "baseline_mv": 205,
+    "last_reading": {
+      "device": "0x9d2f4b6a8c0e2d4f6a8b0c2e4d6f8a0b2c4e6d73",
+      "ens": "sim-andheri-04.prananet.eth",
+      "geohash": "te7ud9",
+      "epoch": 1762360200,
+      "pm25_x10": 2494,
+      "pm10_x10": 3727,
+      "temp_x10": 288,
+      "hum_x10": 598,
+      "nonce": 200,
+      "signature": "0x439085e6f1c3f1510d80b0499cbeb1ffbeaeaceaa43549609691e4a38792b2ef399f72251c8073169803b59ce65f2c1f5726a712fd856158f8d722713bef262f1b",
+      "simulated": true
+    },
+    "simulated": true
+  },
+  {
+    "device": "0x2a6c8e0b4d6f8a2c4e6b8d0f2a4c6e8b0d2f4a95",
+    "ens": "sim-bandra-01.prananet.eth",
+    "geohash": "te7u9x",
+    "status": "slashed",
+    "stake_wei": "0",
+    "baseline_mv": 195,
+    "last_reading": {
+      "device": "0x2a6c8e0b4d6f8a2c4e6b8d0f2a4c6e8b0d2f4a95",
+      "ens": "sim-bandra-01.prananet.eth",
+      "geohash": "te7u9x",
+      "epoch": 1762360200,
+      "pm25_x10": 2414,
+      "pm10_x10": 3418,
+      "temp_x10": 285,
+      "hum_x10": 598,
+      "nonce": 200,
+      "signature": "0xd9c1e9800892ce858f74357fe4364d855bc092b2f15d3d705c948ecd38ea429253fac0754438c74a67086559e88b0b132447d6b2aa7541107d415e128c15a1a41c",
+      "simulated": true
+    },
+    "simulated": true
+  }
+]
