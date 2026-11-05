@@ -1,0 +1,25 @@
+{
+  "name": "verifier",
+  "version": "1.0.0",
+  "description": "PranaNet verifier: simulated neighbour devices, OpenAQ station check, cross-check and flagging",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "test": "node --import tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "Siddhartha",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "ngeohash": "^0.6.4"
+  },
+  "devDependencies": {
+    "@types/ngeohash": "^0.6.8",
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}
