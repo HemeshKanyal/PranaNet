@@ -10,6 +10,10 @@ import {IDeviceNamer} from "./interfaces/IDeviceNamer.sol";
 contract Registry {
     uint256 public constant MAX_DEVICES_PER_HUMAN = 3;
     uint256 public constant GEOHASH_LENGTH = 6;
+    /// @notice Consecutive flags that slash a device.
+    uint8 public constant SLASH_THRESHOLD = 3;
+    uint8 public constant REASON_NEIGHBOUR_OUTLIER = 1;
+    uint8 public constant REASON_STATION_OUTLIER = 2;
 
     struct Device {
         address owner;
@@ -31,6 +35,12 @@ contract Registry {
 
     mapping(address => Device) private _devices;
     mapping(uint256 => uint256) public devicesPerNullifier;
+    /// @notice Accounts allowed to flag devices (the cross-check verifier).
+    mapping(address => bool) public isVerifier;
+    /// @notice Flags since the device's last clean epoch.
+    mapping(address => uint8) public consecutiveFlags;
+    /// @notice Last epoch flagged or cleared per device; flags must move forward in time.
+    mapping(address => uint256) public lastCheckedEpoch;
 
     event DeviceRegistered(
         address indexed device, address indexed owner, uint256 indexed nullifierHash, string label, string geohash
@@ -40,10 +50,18 @@ contract Registry {
     event BackendSet(address indexed account, bool allowed);
     event ControllerSet(address indexed account, bool allowed);
     event NamerSet(address indexed namer);
+    event VerifierSet(address indexed account, bool allowed);
+    event DeviceFlagged(address indexed device, uint256 indexed epoch, uint8 reason, uint8 consecutiveFlags);
+    event FlagsCleared(address indexed device, uint256 indexed epoch);
+    event DeviceSlashed(address indexed device, uint256 indexed epoch);
 
     error NotAdmin();
     error NotBackend();
     error NotController();
+    error NotVerifier();
+    error InvalidReason(uint8 reason);
+    error EpochNotAfterLastCheck(uint256 epoch, uint256 lastCheckedEpoch);
+    error DeviceNotActive(address device);
     error ZeroAddress();
     error AlreadyRegistered(address device);
     error NotRegistered(address device);
@@ -85,6 +103,11 @@ contract Registry {
     function setNamer(IDeviceNamer namer_) external onlyAdmin {
         namer = namer_;
         emit NamerSet(address(namer_));
+    }
+
+    function setVerifier(address account, bool allowed) external onlyAdmin {
+        isVerifier[account] = allowed;
+        emit VerifierSet(account, allowed);
     }
 
     // ---------------------------------------------------------- registration
@@ -135,14 +158,41 @@ contract Registry {
         if (!isController[msg.sender]) revert NotController();
         Device storage d = _devices[device];
         if (d.owner == address(0)) revert NotRegistered(device);
-        if (d.active == active) return;
-        d.active = active;
-        emit DeviceStatusChanged(device, active);
+        _setActive(device, d, active);
+    }
 
-        IDeviceNamer n = namer;
-        if (!active && address(n) != address(0) && d.ensNode != bytes32(0)) {
-            d.ensNode = bytes32(0);
-            n.revokeDevice(device);
+    // ------------------------------------------------------------ flagging
+
+    /// @notice Verifier flags a device's epoch as an outlier. `reason`: 1 = neighbour outlier,
+    ///         2 = station outlier. The third consecutive flag slashes the device: it is
+    ///         deactivated and its ENS subname revoked. (Stake transfer is added with Stake, M4.)
+    function flag(address device, uint256 epoch, uint8 reason) external {
+        if (!isVerifier[msg.sender]) revert NotVerifier();
+        if (reason != REASON_NEIGHBOUR_OUTLIER && reason != REASON_STATION_OUTLIER) revert InvalidReason(reason);
+        Device storage d = _devices[device];
+        if (d.owner == address(0)) revert NotRegistered(device);
+        if (!d.active) revert DeviceNotActive(device);
+        _advanceEpoch(device, epoch);
+
+        uint8 count = consecutiveFlags[device] + 1;
+        consecutiveFlags[device] = count;
+        emit DeviceFlagged(device, epoch, reason, count);
+
+        if (count >= SLASH_THRESHOLD) {
+            consecutiveFlags[device] = 0;
+            emit DeviceSlashed(device, epoch);
+            _setActive(device, d, false);
+        }
+    }
+
+    /// @notice Verifier marks a clean (cross-checked, unflagged) epoch, breaking the flag streak.
+    function clearFlags(address device, uint256 epoch) external {
+        if (!isVerifier[msg.sender]) revert NotVerifier();
+        if (_devices[device].owner == address(0)) revert NotRegistered(device);
+        _advanceEpoch(device, epoch);
+        if (consecutiveFlags[device] != 0) {
+            consecutiveFlags[device] = 0;
+            emit FlagsCleared(device, epoch);
         }
     }
 
@@ -167,6 +217,24 @@ contract Registry {
     }
 
     // ------------------------------------------------------------ internal
+
+    function _advanceEpoch(address device, uint256 epoch) private {
+        uint256 last = lastCheckedEpoch[device];
+        if (epoch <= last) revert EpochNotAfterLastCheck(epoch, last);
+        lastCheckedEpoch[device] = epoch;
+    }
+
+    function _setActive(address device, Device storage d, bool active) private {
+        if (d.active == active) return;
+        d.active = active;
+        emit DeviceStatusChanged(device, active);
+
+        IDeviceNamer n = namer;
+        if (!active && address(n) != address(0) && d.ensNode != bytes32(0)) {
+            d.ensNode = bytes32(0);
+            n.revokeDevice(device);
+        }
+    }
 
     /// @dev Geohash base32 alphabet: 0-9 and b-z without a, i, l, o.
     function _isGeohash(bytes memory g) private pure returns (bool) {
