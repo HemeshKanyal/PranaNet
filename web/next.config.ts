@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // lib/relayer.ts reads mocks/*.json from disk; make sure Vercel bundles them.
+  outputFileTracingIncludes: {
+    "/**": ["./mocks/**/*.json"],
+  },
 };
 
 export default nextConfig;
