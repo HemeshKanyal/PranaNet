@@ -99,7 +99,11 @@ for (const det of details) {
   if (src.spike === "slash") slashes.push({ device: det.device, ens: det.ens, tx: `0x${hex(64)}` });
 }
 
-const devices = details.map(({ readings, ...rest }) => rest);
+const devices = details.map((d) => {
+  const rest = { ...d };
+  delete rest.readings;
+  return rest;
+});
 
 // A short replay script for WS /live: the next minute of readings, then flag/slash events.
 const live = [];
