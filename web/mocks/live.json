@@ -1,0 +1,107 @@
+[
+  {
+    "type": "reading",
+    "data": {
+      "device": "0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be",
+      "ens": "andheri-01.prananet.eth",
+      "geohash": "te7ud2",
+      "epoch": 1762360260,
+      "pm25_x10": 487,
+      "pm10_x10": 737,
+      "temp_x10": 286,
+      "hum_x10": 606,
+      "nonce": 201,
+      "signature": "0x2d4569523bbbca1f40e3015e48fca5db7a65013cadc50b371095e76abebfd733e909da171b094b24d027ecac1d4a80d3d9b9979968363acdd92c970c02fc8f6b1c",
+      "simulated": false
+    }
+  },
+  {
+    "type": "reading",
+    "data": {
+      "device": "0x8b3192f5ef7c4f9a1b2e4d6c8a0b2d4f6e8a0c12",
+      "ens": "andheri-02.prananet.eth",
+      "geohash": "te7ud3",
+      "epoch": 1762360260,
+      "pm25_x10": 520,
+      "pm10_x10": 775,
+      "temp_x10": 0,
+      "hum_x10": 0,
+      "nonce": 201,
+      "signature": "0x532f7223cd38021e3948c2417cb583ee14bde64f6eea6f765ed8bf3473dfe27d9b47a91f2cbfd9071878bdc619ad5f753066edcebd1db354263dfb4ca29ca8811c",
+      "simulated": false
+    }
+  },
+  {
+    "type": "reading",
+    "data": {
+      "device": "0x1c4e9a7b5d3f2e8c6a4b2d0f8e6c4a2b0d8f6e41",
+      "ens": "sim-andheri-03.prananet.eth",
+      "geohash": "te7ud8",
+      "epoch": 1762360260,
+      "pm25_x10": 464,
+      "pm10_x10": 647,
+      "temp_x10": 285,
+      "hum_x10": 604,
+      "nonce": 201,
+      "signature": "0xc6db618f453379e289527a8d6ca09f4c6f5f17b6902a3e83411fc50c8f049eeac20ea3e81fb93ccc67ae631f980ed8daf64967c5a525a957fe52d2736a5e4a011b",
+      "simulated": true
+    }
+  },
+  {
+    "type": "reading",
+    "data": {
+      "device": "0x9d2f4b6a8c0e2d4f6a8b0c2e4d6f8a0b2c4e6d73",
+      "ens": "sim-andheri-04.prananet.eth",
+      "geohash": "te7ud9",
+      "epoch": 1762360260,
+      "pm25_x10": 2501,
+      "pm10_x10": 3727,
+      "temp_x10": 288,
+      "hum_x10": 598,
+      "nonce": 201,
+      "signature": "0x5896be5312861f2eab8eae5df8c58b957ffcdb38c268856339c14995ff980a9c515ab0ed5f6722897803fd1f9040eb589eeaa02a92fb09e8edc79012166e597e1b",
+      "simulated": true
+    }
+  },
+  {
+    "type": "flag",
+    "data": {
+      "device": "0x2a6c8e0b4d6f8a2c4e6b8d0f2a4c6e8b0d2f4a95",
+      "ens": "sim-bandra-01.prananet.eth",
+      "epoch": 1762360080,
+      "reason": "neighbour_outlier",
+      "value_x10": 2438,
+      "median_x10": 494
+    }
+  },
+  {
+    "type": "flag",
+    "data": {
+      "device": "0x2a6c8e0b4d6f8a2c4e6b8d0f2a4c6e8b0d2f4a95",
+      "ens": "sim-bandra-01.prananet.eth",
+      "epoch": 1762360140,
+      "reason": "neighbour_outlier",
+      "value_x10": 2438,
+      "median_x10": 486
+    }
+  },
+  {
+    "type": "flag",
+    "data": {
+      "device": "0x2a6c8e0b4d6f8a2c4e6b8d0f2a4c6e8b0d2f4a95",
+      "ens": "sim-bandra-01.prananet.eth",
+      "epoch": 1762360200,
+      "reason": "neighbour_outlier",
+      "value_x10": 2414,
+      "median_x10": 480
+    }
+  },
+  {
+    "type": "slash",
+    "data": {
+      "device": "0x2a6c8e0b4d6f8a2c4e6b8d0f2a4c6e8b0d2f4a95",
+      "ens": "sim-bandra-01.prananet.eth",
+      "tx": "0x09e0797667d40ae453fb718d6c22acfa2d82a9b1a0b73d9f664be2a9cbb1c260"
+    }
+  }
+]
