@@ -723,6 +723,19 @@
   },
   {
     "type": "event",
+    "name": "NameRevokeFailed",
+    "inputs": [
+      {
+        "name": "device",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "NamerSet",
     "inputs": [
       {

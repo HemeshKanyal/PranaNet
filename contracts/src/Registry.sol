@@ -55,6 +55,7 @@ contract Registry {
     event BackendSet(address indexed account, bool allowed);
     event ControllerSet(address indexed account, bool allowed);
     event NamerSet(address indexed namer);
+    event NameRevokeFailed(address indexed device);
     event VerifierSet(address indexed account, bool allowed);
     event StakeManagerSet(address indexed stakeManager);
     event DeviceFlagged(address indexed device, uint256 indexed epoch, uint8 reason, uint8 consecutiveFlags);
@@ -246,7 +247,10 @@ contract Registry {
         IDeviceNamer n = namer;
         if (!active && address(n) != address(0) && d.ensNode != bytes32(0)) {
             d.ensNode = bytes32(0);
-            n.revokeDevice(device);
+            // Never let an ENS failure block deactivation or a slash.
+            try n.revokeDevice(device) {} catch {
+                emit NameRevokeFailed(device);
+            }
         }
     }
 

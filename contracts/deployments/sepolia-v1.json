@@ -1,0 +1,20 @@
+{
+  "Readings": "0x0107bC2Bb71166bC08E0d7f9a7Ef9839E140ef4e",
+  "Registry": "0x99c68cFB7E9cD6D095162DEfe8f18c6219A499b5",
+  "RewardPool": "0x68cfEcd8c613A5E5DBcFeF6041dE8ad182F07d02",
+  "Stake": "0x005bc4AF27eE94E8ae5425F097645d3b2457fe19",
+  "admin": "0x83a8aF16bB2bB6eDAb19100d81e901d3Bdb87B7d",
+  "backend": "0x3a1F21F1c6f05eFA35BB7178274b41C8873CCa67",
+  "chainId": 11155111,
+  "deployBlock": 12075670,
+  "minStakeWei": 1000000000000000,
+  "rewardPerEpochWei": 10000000000000,
+  "verifier": "0x1AD82847bb608184465cE3E0de36AF767ddE6d20",
+  "ens": {
+    "parent": "prananet.eth",
+    "resolver": "0x5d05e294e7bee7CC8c86d05732CEB2FCE8789dF3",
+    "userRegistry": "0xb6C4779845D6d0875DC6F7BCF7C656990D1A8b63",
+    "ethRegistry": "0xd4ebcbbdf463c9c45784603db0ddd499bc44a8b4",
+    "universalResolver": "0x24e1d8e068620b647ca097f961a61055f4f42d72"
+  }
+}

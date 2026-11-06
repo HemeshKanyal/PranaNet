@@ -16,5 +16,10 @@ if [ "${1:-}" != "--dry-run" ]; then
   args+=(--broadcast --gas-estimate-multiplier "${GAS_ESTIMATE_MULTIPLIER:-900}")
   [ -n "${ETHERSCAN_API_KEY:-}" ] && args+=(--verify --etherscan-api-key "$ETHERSCAN_API_KEY")
 fi
+net=deployments/sepolia.json
+ens=""; [ -f "$net" ] && ens=$(jq -c '.ens // empty' "$net")
 "$FORGE" "${args[@]}"
+if [ -n "$ens" ] && [ -f "$net" ]; then  # keep the ENS block from script/ens-setup.sh
+  tmp=$(mktemp); jq --argjson e "$ens" '.ens = $e' "$net" > "$tmp" && mv "$tmp" "$net" && chmod 644 "$net"
+fi
 ./export-abi.sh

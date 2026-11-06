@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 FORGE="${FORGE:-$HOME/.foundry/bin/forge}"
 "$FORGE" build --quiet
-for c in Registry Readings Stake RewardPool IDeviceNamer; do
+for c in Registry Readings Stake RewardPool IDeviceNamer DeviceNamer; do
   "$FORGE" inspect "$c" abi --json > "abi/$c.json"
 done
 ls -1 abi
