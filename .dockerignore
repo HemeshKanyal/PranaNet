@@ -6,10 +6,9 @@ node_modules
 !**/.env.example
 firmware
 web
-verifier
-api
 agent
 contracts/lib
 contracts/out
 contracts/cache
 .git
+**/data
