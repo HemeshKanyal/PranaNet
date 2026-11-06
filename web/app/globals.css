@@ -3,15 +3,17 @@
 /* PranaNet palette. "chain" (indigo) is reserved for anything verifiable on-chain or on
    Arkiv: signatures, contracts, tx links, ENS. Air quality uses the CPCB AQI colours (lib/aqi.ts). */
 @theme {
-  --color-bg: #f6f7f5;
-  --color-surface: #ffffff;
-  --color-ink: #13201b;
-  --color-muted: #5d6b65;
-  --color-line: #e2e6e3;
-  --color-chain: #4338ca;
-  --color-chain-soft: #eef0fd;
-  --color-brand: #0e5a43;
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  /* App pages share the story's dark "editorial folk" ground. "chain" (soft indigo) is still
+     reserved for anything verifiable on-chain or on Arkiv; air quality keeps the CPCB colours. */
+  --color-bg: #15110c;
+  --color-surface: #1f1912;
+  --color-ink: #f3e3be;
+  --color-muted: #bfa98a;
+  --color-line: #3a3026;
+  --color-chain: #a5b4fc;
+  --color-chain-soft: #1f1c33;
+  --color-brand: #f2a12e;
+  --font-sans: var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   /* Story palette (docs/STORY.md), taken from the folk-art scenes */
   --color-vermilion: #c8341e;
@@ -28,7 +30,7 @@
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 body {
@@ -46,12 +48,13 @@ body {
 /* Leaflet: keep its panes under our sticky header */
 .leaflet-container {
   font-family: var(--font-sans);
-  background: #e9ece8;
+  background: #1b1612;
 }
-/* Mute the basemap so the AQI markers carry the colour */
+/* Dark, muted basemap so the AQI markers carry the colour */
 .pn-tiles {
-  filter: grayscale(0.85) contrast(0.9) brightness(1.05);
+  filter: invert(1) hue-rotate(180deg) grayscale(0.75) brightness(0.8) contrast(0.95);
 }
+.leaflet-tooltip { color: #2a1a12; }
 .leaflet-pane,
 .leaflet-top,
 .leaflet-bottom {
@@ -63,7 +66,7 @@ body {
   justify-content: center;
   border-radius: 9999px;
   font: 600 11px/1 var(--font-sans);
-  box-shadow: 0 0 0 2px #fff, 0 1px 4px rgb(0 0 0 / 0.35);
+  box-shadow: 0 0 0 2px #15110c, 0 1px 4px rgb(0 0 0 / 0.5);
   transition: transform 0.15s;
 }
 .aqi-marker.selected {

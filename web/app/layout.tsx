@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { LiveProvider } from "@/components/LiveProvider";
@@ -9,7 +9,6 @@ import { getDevices, RELAYER_URL } from "@/lib/relayer";
 import { getFlags } from "@/lib/arkiv";
 import { mukta, rozha } from "@/lib/story/fonts";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -23,7 +22,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const [devices, flags] = await Promise.all([getDevices(), getFlags()]);
   return (
     <html lang="en" className={`${rozha.variable} ${mukta.variable}`}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistMono.variable} antialiased`}>
         <LiveProvider
           initialDevices={devices}
           initialFlags={flags}

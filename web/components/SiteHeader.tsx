@@ -15,6 +15,7 @@ const NAV = [
   { href: "/devices", label: "Devices" },
   { href: "/register", label: "Register" },
   { href: "/about", label: "How it works" },
+  { href: "/roadmap", label: "Roadmap", wide: true },
 ];
 
 /** Live AQI of the busiest area, as a pill in the header: the site's pulse on every page. */
@@ -62,7 +63,7 @@ export function SiteHeader() {
                 key={n.href}
                 href={n.href}
                 aria-current={on ? "page" : undefined}
-                className={`relative shrink-0 whitespace-nowrap py-2 transition-colors ${on ? "text-saffron" : "text-cream/75 hover:text-cream"}`}
+                className={`relative shrink-0 whitespace-nowrap py-2 transition-colors ${"wide" in n ? "md:hidden xl:block" : ""} ${on ? "text-saffron" : "text-cream/75 hover:text-cream"}`}
               >
                 {n.label}
                 {/* folk diamond under the current page */}
@@ -108,7 +109,7 @@ export function SiteHeader() {
           <span>Raw data on Arkiv</span>
           <span>Operators verified with World ID</span>
           <span>Names on ENS</span>
-          {CONTRACTS_ARE_MOCK && <span className="rounded bg-amber-100 px-1.5 py-0.5 font-medium text-amber-800">mock addresses</span>}
+          {CONTRACTS_ARE_MOCK && <span className="rounded bg-amber-400/15 px-1.5 py-0.5 font-medium text-amber-300">mock addresses</span>}
         </div>
       </div>
     </header>

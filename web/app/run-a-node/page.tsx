@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FIRMWARE, REPO } from "@/lib/story/evidence";
+import { PageBanner } from "@/components/PageBanner";
 
 export const metadata: Metadata = { title: "Run a node · PranaNet" };
 
@@ -40,7 +41,7 @@ const STEPS: { t: string; b: React.ReactNode }[] = [
 ];
 
 function Wiring() {
-  const box = "fill-white stroke-ink";
+  const box = "fill-surface stroke-ink";
   const wire = (c: string) => ({ fill: "none", stroke: c, strokeWidth: 2.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const });
   return (
     <svg viewBox="0 0 640 330" className="w-full" role="img" aria-label="Wiring diagram: Sharp GP2Y1014AU0F and DHT22 to an ESP32 DevKit">
@@ -66,27 +67,27 @@ function Wiring() {
       <path d="M170 240 H300 V100 H430" {...wire("#c8341e")} />
       <path d="M170 90 H205" {...wire("#c8341e")} />
       <rect x="205" y="82" width="40" height="16" rx="3" className="fill-amber-100 stroke-ink" />
-      <text x="225" y="94" textAnchor="middle" className="fill-ink text-[10px]">150 Ω</text>
+      <text x="225" y="94" textAnchor="middle" className="fill-kohl text-[10px]">150 Ω</text>
       <path d="M245 90 H300" {...wire("#c8341e")} />
       <path d="M190 90 V60 H260" {...wire("#c8341e")} />
       <text x="262" y="50" className="fill-ink text-[10px]">220 µF to GND</text>
       {/* grounds */}
-      <path d="M170 120 H280 V140 H430 M170 180 H280 V140" {...wire("#2a1a12")} />
+      <path d="M170 120 H280 V140 H430 M170 180 H280 V140" {...wire("#bfa98a")} />
       {/* LED control */}
-      <path d="M170 150 H260 V180 H430" {...wire("#4338ca")} />
+      <path d="M170 150 H260 V180 H430" {...wire("#a5b4fc")} />
       {/* Vo through 10k/22k divider */}
-      <path d="M170 210 H330" {...wire("#0e5a43")} />
+      <path d="M170 210 H330" {...wire("#8fb15a")} />
       <rect x="330" y="202" width="40" height="16" rx="3" className="fill-amber-100 stroke-ink" />
-      <text x="350" y="214" textAnchor="middle" className="fill-ink text-[10px]">10 kΩ</text>
-      <path d="M370 210 H400 V220 H430" {...wire("#0e5a43")} />
-      <path d="M400 220 V250" {...wire("#0e5a43")} />
+      <text x="350" y="214" textAnchor="middle" className="fill-kohl text-[10px]">10 kΩ</text>
+      <path d="M370 210 H400 V220 H430" {...wire("#8fb15a")} />
+      <path d="M400 220 V250" {...wire("#8fb15a")} />
       <rect x="380" y="250" width="40" height="16" rx="3" className="fill-amber-100 stroke-ink" />
-      <text x="400" y="262" textAnchor="middle" className="fill-ink text-[10px]">22 kΩ</text>
+      <text x="400" y="262" textAnchor="middle" className="fill-kohl text-[10px]">22 kΩ</text>
       <text x="400" y="282" textAnchor="middle" className="fill-ink text-[10px]">to GND</text>
       {/* DHT22 */}
-      <rect x="230" y="290" width="110" height="30" rx="6" className="fill-white stroke-ink" strokeDasharray="5 4" />
+      <rect x="230" y="290" width="110" height="30" rx="6" className="fill-surface stroke-ink" strokeDasharray="5 4" />
       <text x="285" y="310" textAnchor="middle" className="fill-ink text-[12px]">DHT22 (optional)</text>
-      <path d="M340 300 H380 V255 H430 M340 312 H410 V280 H430" {...wire("#6b6a2a")} />
+      <path d="M340 300 H380 V255 H430 M340 312 H410 V280 H430" {...wire("#d9c27a")} />
     </svg>
   );
 }
@@ -94,12 +95,10 @@ function Wiring() {
 export default function RunANodePage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
-      <p className="text-sm font-semibold uppercase tracking-wider text-brand">A democracy of honest nodes</p>
-      <h1 className="mt-1 text-3xl font-bold tracking-tight">Run a node</h1>
-      <p className="mt-2 max-w-2xl text-muted">
+      <PageBanner kicker="A democracy of honest nodes" title="Run a node" art="hooded-watcher-pointing-forward">
         About ₹1,000 of parts, an hour of wiring, and your air joins a network nobody can quietly rewrite. Your node signs every reading
         on the device; neighbours and the official station check it; honest work earns.
-      </p>
+      </PageBanner>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <div className="card p-5">
@@ -130,7 +129,7 @@ export default function RunANodePage() {
         <ol className="mt-3 grid gap-3 sm:grid-cols-2">
           {STEPS.map((s, i) => (
             <li key={s.t} className="card flex gap-3 p-4">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-sm font-bold text-white">{i + 1}</span>
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-sm font-bold text-ground">{i + 1}</span>
               <div>
                 <h3 className="font-semibold">{s.t}</h3>
                 <p className="mt-1 text-sm text-muted">{s.b}</p>
@@ -141,7 +140,7 @@ export default function RunANodePage() {
       </section>
 
       <div className="mt-8 flex flex-wrap gap-3 text-sm">
-        <Link href="/register" className="rounded-lg bg-ink px-4 py-2 font-medium text-white">Register a node</Link>
+        <Link href="/register" className="rounded-lg bg-ink px-4 py-2 font-medium text-ground">Register a node</Link>
         <Link href="/live" className="rounded-lg border border-line px-4 py-2 font-medium">See the live map</Link>
         <a href={REPO} target="_blank" rel="noreferrer" className="rounded-lg border border-line px-4 py-2 font-medium">GitHub</a>
       </div>

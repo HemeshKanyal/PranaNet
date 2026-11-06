@@ -24,22 +24,22 @@ function Row({ e }: { e: LiveEvent }) {
   if (e.type === "flag") {
     const f = e.data;
     return (
-      <li className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-amber-50 px-2 py-2">
+      <li className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-amber-400/10 px-2 py-2">
         <span className="h-2 w-2 rounded-full bg-amber-500" aria-hidden />
-        <span className="font-medium text-amber-900">Flagged {f.ens.replace(".prananet.eth", "")}</span>
-        <span className="text-amber-900/80">
+        <span className="font-medium text-amber-300">Flagged {f.ens.replace(".prananet.eth", "")}</span>
+        <span className="text-amber-300/80">
           {x10(f.value_x10)} vs neighbour median {x10(f.median_x10)} µg/m³ · {f.reason.replace("_", " ")}
         </span>
-        <span className="ml-auto text-[11px] text-amber-900/70">Registry.flag() · {time(f.epoch)}</span>
+        <span className="ml-auto text-[11px] text-amber-300/70">Registry.flag() · {time(f.epoch)}</span>
       </li>
     );
   }
   const s = e.data;
   return (
-    <li className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-red-50 px-2 py-2">
+    <li className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-red-500/10 px-2 py-2">
       <span className="h-2 w-2 rounded-full bg-red-600" aria-hidden />
-      <span className="font-medium text-red-900">Slashed {s.ens}</span>
-      <span className="text-red-900/80">3 consecutive flags · stake moved to reward pool · ENS revoked</span>
+      <span className="font-medium text-red-300">Slashed {s.ens}</span>
+      <span className="text-red-300/80">3 consecutive flags · stake moved to reward pool · ENS revoked</span>
       <a href={txUrl(s.tx)} target="_blank" rel="noreferrer" className="ml-auto font-mono text-[11px] text-chain hover:underline">
         tx {s.tx.slice(0, 10)}… ↗
       </a>

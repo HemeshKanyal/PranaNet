@@ -1,3 +1,4 @@
+import { PageBanner } from "@/components/PageBanner";
 import { RegisterForm } from "@/components/RegisterForm";
 
 const ONCHAIN = [
@@ -10,10 +11,9 @@ const ONCHAIN = [
 export default function RegisterPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="text-2xl font-semibold tracking-tight">Register a device</h1>
-      <p className="mt-1 max-w-2xl text-sm text-muted">
+      <PageBanner kicker="Join the network" title="Register a device" art="vintage-folk-art-aq-sensor">
         Put a PranaNet sensor on your balcony and its readings join the map, backed by your stake and checked by your neighbours.
-      </p>
+      </PageBanner>
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
         <RegisterForm />
         <aside className="card h-fit overflow-hidden">
@@ -23,7 +23,7 @@ export default function RegisterPage() {
           <ol className="space-y-3 p-4 text-sm">
             {ONCHAIN.map(([t, d], i) => (
               <li key={t} className="flex gap-3">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-chain text-[11px] font-semibold text-white">{i + 1}</span>
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-chain text-[11px] font-semibold text-ground">{i + 1}</span>
                 <div>
                   <div className="font-medium">{t}</div>
                   <div className="text-muted">{d}</div>

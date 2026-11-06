@@ -6,8 +6,8 @@ import { WHO_PM25 } from "@/lib/aqi";
 import type { Flag, Reading } from "@/lib/types";
 
 const SERIES = [
-  { key: "pm25_x10", label: "PM2.5", color: "#0891b2" },
-  { key: "pm10_x10", label: "PM10", color: "#c2410c" },
+  { key: "pm25_x10", label: "PM2.5", color: "#22d3ee" },
+  { key: "pm10_x10", label: "PM10", color: "#fb923c" },
 ] as const;
 
 const fmtTime = (e: number) =>
@@ -100,16 +100,16 @@ export function LiveChart({ readings, flags = [], height = 260, compact = false 
       >
         {ticks.map((t) => (
           <g key={t}>
-            <line x1={pad.l} x2={width - pad.r} y1={y(t)} y2={y(t)} stroke="#e2e6e3" strokeWidth={1} />
-            <text x={pad.l - 6} y={y(t) + 3} textAnchor="end" fontSize={10} fill="#5d6b65">{t}</text>
+            <line x1={pad.l} x2={width - pad.r} y1={y(t)} y2={y(t)} stroke="#3a3026" strokeWidth={1} />
+            <text x={pad.l - 6} y={y(t) + 3} textAnchor="end" fontSize={10} fill="#bfa98a">{t}</text>
           </g>
         ))}
         {xTicks.map((r, i) => (
-          <text key={i} x={x(r.epoch)} y={height - 6} textAnchor={i === 0 ? "start" : i === xTicks.length - 1 ? "end" : "middle"} fontSize={10} fill="#5d6b65">
+          <text key={i} x={x(r.epoch)} y={height - 6} textAnchor={i === 0 ? "start" : i === xTicks.length - 1 ? "end" : "middle"} fontSize={10} fill="#bfa98a">
             {fmtTime(r.epoch)}
           </text>
         ))}
-        <line x1={pad.l} x2={width - pad.r} y1={y(WHO_PM25)} y2={y(WHO_PM25)} stroke="#5d6b65" strokeDasharray="3 4" strokeWidth={1} />
+        <line x1={pad.l} x2={width - pad.r} y1={y(WHO_PM25)} y2={y(WHO_PM25)} stroke="#bfa98a" strokeDasharray="3 4" strokeWidth={1} />
         {SERIES.map((s) => (
           <path key={s.key} d={path(s.key)} fill="none" stroke={s.color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
         ))}
@@ -119,13 +119,13 @@ export function LiveChart({ readings, flags = [], height = 260, compact = false 
         {/* direct labels at the line ends */}
         {!compact &&
           SERIES.map((s) => (
-            <text key={s.key} x={x(last.epoch) + 6} y={y(last[s.key] / 10) + 3} fontSize={10} fill="#13201b" fontWeight={600}>
+            <text key={s.key} x={x(last.epoch) + 6} y={y(last[s.key] / 10) + 3} fontSize={10} fill="#f3e3be" fontWeight={600}>
               {s.label}
             </text>
           ))}
         {h && (
           <g pointerEvents="none">
-            <line x1={x(h.epoch)} x2={x(h.epoch)} y1={pad.t} y2={height - pad.b} stroke="#13201b" strokeOpacity={0.3} />
+            <line x1={x(h.epoch)} x2={x(h.epoch)} y1={pad.t} y2={height - pad.b} stroke="#f3e3be" strokeOpacity={0.3} />
             {SERIES.map((s) => (
               <circle key={s.key} cx={x(h.epoch)} cy={y(h[s.key] / 10)} r={4} fill={s.color} stroke="#fff" strokeWidth={2} />
             ))}

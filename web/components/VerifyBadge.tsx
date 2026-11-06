@@ -28,7 +28,7 @@ export function VerifyBadge({ reading, compact = false }: { reading: Reading; co
     ? "border-line text-muted"
     : v.ok
       ? "border-chain/30 bg-chain-soft text-chain"
-      : "border-red-300 bg-red-50 text-red-700";
+      : "border-red-400/40 bg-red-500/10 text-red-300";
   return (
     <span title={title} className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2 py-0.5 text-[11px] font-medium ${cls}`}>
       <svg aria-hidden viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2">

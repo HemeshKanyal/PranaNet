@@ -89,7 +89,7 @@ function LocalitySearch({ areas, onPick, current }: { areas: Area[]; onPick: (l:
           Near me
         </button>
       </div>
-      {geoErr && <p className="mt-1 text-xs font-semibold text-red-700">{geoErr}</p>}
+      {geoErr && <p className="mt-1 text-xs font-semibold text-red-300">{geoErr}</p>}
       {areas.length > 0 && (
         <div className="mt-3 flex flex-wrap items-center gap-1.5">
           <span className="text-xs text-muted">Areas with nodes:</span>
@@ -99,7 +99,7 @@ function LocalitySearch({ areas, onPick, current }: { areas: Area[]; onPick: (l:
               type="button"
               onClick={() => onPick(a)}
               className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                current === a.name ? "border-ink bg-ink text-white" : "border-line bg-surface hover:border-ink/40"
+                current === a.name ? "border-ink bg-ink text-ground" : "border-line bg-surface hover:border-ink/40"
               }`}
             >
               {a.name} <span className="opacity-70">· {a.real} real{a.simulated ? ` · ${a.simulated} sim` : ""}</span>
@@ -161,7 +161,7 @@ function AreaCard({ place }: { place: Place }) {
           {st.used.length > 0 && <> ({real} real · {sim} simulated)</>}
         </span>
         {st.excluded.length > 0 && (
-          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-amber-900">{st.excluded.length} flagged/slashed excluded</span>
+          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-amber-300">{st.excluded.length} flagged/slashed excluded</span>
         )}
         {sample && (
           <Link href={`/records/${recordId(sample)}`} className="rounded-full hover:opacity-80" title="Open this reading and check it yourself">
@@ -234,7 +234,7 @@ function DevicePanel({ address, onClose }: { address: string; onClose: () => voi
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {r && <AqiChip value={aqi(r.pm25_x10, r.pm10_x10)} />}
-        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${d.status === "active" ? "bg-green-100 text-green-800" : d.status === "flagged" ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}>
+        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${d.status === "active" ? "bg-green-500/15 text-green-300" : d.status === "flagged" ? "bg-amber-400/15 text-amber-300" : "bg-red-500/15 text-red-300"}`}>
           {d.status}
         </span>
         {r && <VerifyBadge reading={r} />}
@@ -251,7 +251,7 @@ function DevicePanel({ address, onClose }: { address: string; onClose: () => voi
         <LiveChart readings={readings} flags={flags.filter((f) => f.device === d.device)} height={190} compact />
       </div>
       <div className="mt-3 flex gap-2 text-sm">
-        <Link href={`/devices/${d.ens}`} className="flex-1 rounded-lg bg-ink px-3 py-2 text-center font-medium text-white">Device page</Link>
+        <Link href={`/devices/${d.ens}`} className="flex-1 rounded-lg bg-ink px-3 py-2 text-center font-medium text-ground">Device page</Link>
         {r && <Link href={`/records/${recordId(r)}`} className="flex-1 rounded-lg border border-chain/40 px-3 py-2 text-center font-medium text-chain">Arkiv record</Link>}
       </div>
     </div>

@@ -13,6 +13,7 @@ export function EndingText() {
         <Link href="/run-a-node" className="btn-primary rounded-full px-6 py-3 shadow-lg">Run a node</Link>
         <Link href="/live" className="link-sweep text-cream">Live map</Link>
         <a href={REPO} target="_blank" rel="noreferrer" className="link-sweep text-cream">GitHub</a>
+        <Link href="/roadmap" className="link-sweep text-cream">Roadmap</Link>
         <a href={DOCS} target="_blank" rel="noreferrer" className="link-sweep text-cream">Docs</a>
       </div>
     </>

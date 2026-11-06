@@ -11,7 +11,7 @@ import { PACKED_FIELDS, packed, recordId } from "@/lib/verify";
 
 function Step({ n, title, ok, children }: { n: number; title: string; ok: boolean | null; children: React.ReactNode }) {
   const mark = ok == null ? "…" : ok ? "✓" : "✕";
-  const cls = ok == null ? "bg-line text-muted" : ok ? "bg-chain text-white" : "bg-red-600 text-white";
+  const cls = ok == null ? "bg-line text-muted" : ok ? "bg-chain text-ground" : "bg-red-600 text-ground";
   return (
     <li className="relative pl-10">
       <span className={`absolute left-0 top-0 flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold ${cls}`}>{mark}</span>
@@ -54,7 +54,7 @@ export function RecordView({ rec }: { rec: ArkivRecord }) {
         <h1 className="text-2xl font-semibold tracking-tight">Reading #{r.nonce}</h1>
         <AqiChip value={aqi(r.pm25_x10, r.pm10_x10)} />
         {v && (
-          <span className={`rounded-full px-3 py-1 text-sm font-semibold ${v.ok ? "bg-chain text-white" : "bg-red-600 text-white"}`}>
+          <span className={`rounded-full px-3 py-1 text-sm font-semibold ${v.ok ? "bg-chain text-ground" : "bg-red-600 text-ground"}`}>
             {v.ok ? "✓ Authentic: signed by the registered device" : "✕ Signature does not match this device"}
           </span>
         )}
@@ -81,7 +81,7 @@ export function RecordView({ rec }: { rec: ArkivRecord }) {
       <section className="card mt-6 overflow-hidden">
         <div className="flex flex-wrap items-center gap-2 border-b border-line bg-chain-soft/60 px-4 py-2">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-chain">Arkiv entity</h2>
-          {isMock && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-medium text-amber-800">mock until the Arkiv writer is live</span>}
+          {isMock && <span className="rounded bg-amber-400/15 px-1.5 py-0.5 text-[11px] font-medium text-amber-300">mock until the Arkiv writer is live</span>}
           {!isMock && (
             <a className="ml-auto text-xs text-chain hover:underline" href={arkivEntityUrl(rec.entityKey)} target="_blank" rel="noreferrer">
               Open in Arkiv explorer ↗
@@ -111,7 +111,7 @@ export function RecordView({ rec }: { rec: ArkivRecord }) {
           </div>
           <div className="sm:col-span-2">
             <dt className="mb-1 text-xs text-muted">Query that finds this record</dt>
-            <dd><code className="block overflow-x-auto rounded-lg bg-ink px-3 py-2 font-mono text-xs text-white">from(&quot;prananet.reading&quot;).where(device = {r.device} && nonce = {r.nonce}).ownedBy({rec.owner})</code></dd>
+            <dd><code className="block overflow-x-auto rounded-lg bg-ink px-3 py-2 font-mono text-xs text-ground">from(&quot;prananet.reading&quot;).where(device = {r.device} && nonce = {r.nonce}).ownedBy({rec.owner})</code></dd>
           </div>
         </dl>
       </section>
@@ -173,7 +173,7 @@ export function RecordView({ rec }: { rec: ArkivRecord }) {
           </Step>
           <Step n={6} title="Cross-checked against neighbours" ok={rec.flag ? false : true}>
             {rec.flag ? (
-              <p className="text-amber-900">
+              <p className="text-amber-300">
                 Flagged by the verifier: {x10(rec.flag.value_x10)} µg/m³
                 {rec.flag.median_x10 > 0 && <> against a neighbour median of {x10(rec.flag.median_x10)} µg/m³</>} ({rec.flag.reason.replace("_", " ")}).
                 The signature is genuine, but the value disagrees with its neighbours by more than 50% and 25 µg/m³.

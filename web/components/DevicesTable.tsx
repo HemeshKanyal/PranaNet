@@ -11,9 +11,9 @@ import { eth, short, time, x10 } from "@/lib/format";
 import type { DeviceStatus } from "@/lib/types";
 
 export const STATUS_STYLE: Record<DeviceStatus, string> = {
-  active: "bg-green-100 text-green-800",
-  flagged: "bg-amber-100 text-amber-800",
-  slashed: "bg-red-100 text-red-800",
+  active: "bg-green-500/15 text-green-300",
+  flagged: "bg-amber-400/15 text-amber-300",
+  slashed: "bg-red-500/15 text-red-300",
 };
 
 type Filter = "all" | DeviceStatus | "real" | "simulated";
@@ -50,7 +50,7 @@ export function DevicesTable() {
             key={f}
             type="button"
             onClick={() => setFilter(f)}
-            className={`rounded-full border px-3 py-1 text-xs capitalize ${filter === f ? "border-ink bg-ink text-white" : "border-line bg-surface hover:border-ink"}`}
+            className={`rounded-full border px-3 py-1 text-xs capitalize ${filter === f ? "border-ink bg-ink text-ground" : "border-line bg-surface hover:border-ink"}`}
           >
             {f} <span className="opacity-70">{counts[f]}</span>
           </button>
