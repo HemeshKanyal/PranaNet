@@ -30,6 +30,7 @@ Built at ETHGlobal Mumbai 2026 (Building from Scratch track). Full spec: [docs/S
 
 | What | Link |
 |---|---|
+| Website (story + live dashboard) | https://prananet-pi.vercel.app (story) · [/live](https://prananet-pi.vercel.app/live) |
 | Relayer (stable URL) | https://prananet-relayer.onrender.com (`/health`, `/devices`, `wss://…/live`) |
 | Verifier | https://prananet-verifier.onrender.com/cells/te7u6n |
 | Paid data API (x402) | https://prananet-api.onrender.com/api/aqi?geohash=te7u6n · discovery `/.well-known/x402` |
