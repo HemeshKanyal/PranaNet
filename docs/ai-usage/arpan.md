@@ -21,7 +21,12 @@ One line per task: date/time (IST) · files touched · what the AI did · what t
 | Fri 6 Nov | web/app/register, app/api/{register,rp-context}, components/{RegisterForm,WorldIdButton}.tsx, .env.example | 3-step register flow, IDKit 4 widget or simulated proof, rp_context signing route, register proxy | Same |
 | Fri 6 Nov | web/app/about | Pipeline explainer, flag rule, privacy, stack, honest limits | Same |
 | Fri 6 Nov | web/components/SensorMap.tsx, globals.css | Checked with headless Edge (scratchpad playwright-core): found CARTO tiles need an API key, switched to OSM; drove register + flag/slash replay end to end | Make sure it works |
+| Fri 6 Nov | web/lib/{relayer,arkiv,chain}.ts, app/records/**, components/{RecordView,RegisterForm}.tsx, .env.example, package.json | Read Hemesh's new relayer + Arkiv code on main: contracts not yet on Sepolia, relayer not hosted, World ID register still a 503 placeholder, Arkiv schema final. Sorted relayer readings oldest-first, wired real Arkiv reads (@arkiv-network/sdk 1.0.1, same schemas, `ownedBy` writer), mapped register_not_configured. Tested queries against public Rabdi RPC | Check Hemesh's commits, move ahead if it fits the plan, open the PR, don't deploy |
 
 ## Friction
 
-None with Arkiv yet (web/ is not reading Arkiv directly so far).
+| When | What happened | Workaround |
+|---|---|---|
+| Fri 6 Nov | Query `.limit(200)` fails: "limit 200 exceeds the node maximum of 100" | Use limit 100 (page with offset if more is needed) |
+| Fri 6 Nov | `$expiresAt` is a block number, not a timestamp | Convert with the query's `blockNumber` and the 2 s block time |
+| Fri 6 Nov | A helper that wraps `eq(...)` loses the literal column types, so `.where()` rejects it under a schema | Inline the expressions in each query |
