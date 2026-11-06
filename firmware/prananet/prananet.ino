@@ -9,7 +9,8 @@
 // (set with `cal <ug>`, kept in NVS; default CAL_AMBIENT_UG from secrets.h). Reported value =
 // CAL + (Vo - Vo_boot) x sensitivity, as both pm25_x10 and pm10_x10.
 //
-// Serial commands (115200, newline): help | addr | selftest | status | cal [ug]
+// Serial commands (115200, newline): help | addr | selftest | status | cal [ug] | newkey
+// (newkey: fresh device key + nonce 0, for re-registering a slashed board in the demo)
 
 #ifndef DEVICE
 #define DEVICE 2
@@ -111,6 +112,32 @@ static void printAddress() {
 
 // First boot: generate the key from the hardware RNG with the internal entropy source enabled
 // (RF and ADC are not running yet), store it in NVS. Later boots: load it.
+static void setAddressFromKey() {
+  if (!eth_derive(devPriv, devPub, devAddr)) {
+    Serial.println("FATAL: key derivation failed");
+    while (true) delay(1000);
+  }
+  devAddrHex[0] = '0';
+  devAddrHex[1] = 'x';
+  eth_hex(devAddr, 20, devAddrHex + 2);
+}
+
+// Demo reset (`newkey`): a fresh device identity so a slashed board can be re-registered under a
+// new label. Wi-Fi/RF is running here, so esp_fill_random draws from the hardware TRNG.
+static void newKey() {
+  uint8_t k[32];
+  do {
+    esp_fill_random(k, 32);
+  } while (!eth_priv_valid(k));
+  memcpy(devPriv, k, 32);
+  memset(k, 0, sizeof k);
+  prefs.putBytes("priv", devPriv, 32);
+  lastNonce = 0;
+  prefs.putULong64("nonce", 0);
+  setAddressFromKey();
+  Serial.printf("NEWKEY DEVICE %d address %s nonce=0 (old key erased; register this address)\n", DEVICE, devAddrHex);
+}
+
 static void loadOrCreateKey() {
   prefs.begin("prananet", false);
   bool have = prefs.getBytesLength("priv") == 32 && prefs.getBytes("priv", devPriv, 32) == 32 && eth_priv_valid(devPriv);
@@ -126,13 +153,7 @@ static void loadOrCreateKey() {
   }
   lastNonce = prefs.getULong64("nonce", 0);
   calUg = prefs.getFloat("cal", CAL_AMBIENT_UG);
-  if (!eth_derive(devPriv, devPub, devAddr)) {
-    Serial.println("FATAL: key derivation failed");
-    while (true) delay(1000);
-  }
-  devAddrHex[0] = '0';
-  devAddrHex[1] = 'x';
-  eth_hex(devAddr, 20, devAddrHex + 2);
+  setAddressFromKey();
 }
 
 // One Sharp sample: LED on (LOW), sample at 280 us, LED off, wait out the 10 ms period.
@@ -204,6 +225,7 @@ static void handleSerial() {
     if (line == "addr") printAddress();
     else if (line == "selftest") selftest();
     else if (line == "status") status();
+    else if (line == "newkey") newKey();
     else if (line == "cal") Serial.printf("cal=%.1fug/m3 (boot baseline %.0f mV stands for this)\n", calUg, baselineMv);
     else if (line.startsWith("cal ")) {
       float v = line.substring(4).toFloat();
@@ -213,7 +235,7 @@ static void handleSerial() {
         Serial.printf("cal set to %.1fug/m3 (saved)\n", calUg);
       } else Serial.println("cal: expected 0..999 ug/m3");
     }
-    else if (line.length()) Serial.println("commands: addr | selftest | status | cal [ug]");
+    else if (line.length()) Serial.println("commands: addr | selftest | status | cal [ug] | newkey");
     line = "";
   }
 }

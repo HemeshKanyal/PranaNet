@@ -13,7 +13,8 @@
     "verify-vector": "tsx scripts/verify-vector.ts",
     "fake-reading": "tsx scripts/fake-reading.ts",
     "register-dev": "tsx scripts/register-dev.ts",
-    "sign-reading": "tsx scripts/sign-reading.ts"
+    "sign-reading": "tsx scripts/sign-reading.ts",
+    "demo-reset": "DEPLOYMENT=sepolia tsx scripts/demo-reset.ts"
   },
   "engines": {
     "node": ">=22"
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@types/node": "24.19.2",
     "@types/ws": "8.18.1",
+    "playwright-core": "1.65.0",
     "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vitest": "5.0.5"
