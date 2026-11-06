@@ -7,7 +7,7 @@ export const SLASH_AFTER = 3;
 
 export class Verifier {
   readonly sim: Simulator;
-  readonly stations: Map<string, Station>;
+  stations: Map<string, Station>;
   epoch = 0;
   readings: Reading[] = [];
   flags: Flag[] = []; // all flags, newest last
@@ -21,10 +21,10 @@ export class Verifier {
   }
 
   /** Run one epoch: collect readings, cross-check, update streaks. */
-  runEpoch(epoch: number, external: Reading[] = []): Flag[] {
+  runEpoch(epoch: number, external: Reading[] = [], areaPm25X10?: number): Flag[] {
     this.epoch = epoch;
     // Slashed devices stay in readings (so cells count them as flagged) but are not judged again.
-    this.readings = [...this.sim.tick(epoch), ...external];
+    this.readings = [...this.sim.tick(epoch, areaPm25X10), ...external];
     const active = this.readings.filter((r) => !this.slashed.has(r.device));
     const flags = crossCheck(active, epoch, this.stations);
     const flagged = new Set(flags.map((f) => f.device));

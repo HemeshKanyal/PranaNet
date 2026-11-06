@@ -13,7 +13,8 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "ngeohash": "^0.6.4"
+    "ngeohash": "^0.6.4",
+    "viem": "2.57.13"
   },
   "devDependencies": {
     "@types/ngeohash": "^0.6.8",

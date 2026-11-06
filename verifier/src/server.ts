@@ -1,24 +1,48 @@
+// Verifier service on :8081. Every EPOCH_SECONDS (GRACE_SECONDS after a window closes) it judges
+// the window that just ended: real readings from the relayer + simulated neighbours, SPEC
+// cross-check, Registry.flag / clearFlags on Sepolia, simulated readings/flags back through the
+// relayer. Serves GET /cells/:geohash (TEAM.md "Verifier output") for the x402 API.
 import { createServer, type ServerResponse } from "node:http";
+import { RegistryClient } from "./chain.ts";
+import { config } from "./config.ts";
+import { epochToJudge, runVerifierEpoch } from "./loop.ts";
+import { RelayerClient } from "./relayer.ts";
 import { Simulator } from "./sim.ts";
-import { loadStations } from "./stations.ts";
+import { OpenAQStations, loadMockStations } from "./stations.ts";
 import { Verifier } from "./verifier.ts";
 
-const PORT = Number(process.env.PORT ?? 8081);
-const EPOCH_SECONDS = Number(process.env.EPOCH_SECONDS ?? 60);
 const GEOHASH_RE = /^[0-9b-hjkmnp-z]{6}$/;
+const log = (m: string) => console.log(`${new Date().toISOString().slice(11, 19)} ${m}`);
 
-const verifier = new Verifier(new Simulator(), loadStations());
+const live = config.openaqKey !== "mock" && config.openaqKey !== "";
+const openaq = live ? new OpenAQStations(config.openaqKey, config.openaqRadiusM) : null;
+const verifier = new Verifier(new Simulator(), openaq ? new Map() : loadMockStations());
+const relayer = config.relayerUrl !== "mock" && config.simToken ? new RelayerClient(config.relayerUrl, config.simToken) : undefined;
+const registry = config.verifierKey && config.registry ? new RegistryClient(config) : undefined;
 
-function tick() {
-  const epoch = Math.floor(Date.now() / 1000);
-  const flags = verifier.runEpoch(epoch);
-  for (const f of flags) {
-    // TODO: call Registry.flag(device, epoch, REASON_CODE[f.reason]) once the ABI is in contracts/out/
-    console.log(`[flag] ${f.ens} ${f.reason} value=${f.value_x10} median=${f.median_x10}`);
-  }
+async function refreshStations() {
+  if (!openaq) return;
+  await openaq.refresh(config.simCells);
+  verifier.stations = openaq.asMap();
 }
-tick();
-setInterval(tick, EPOCH_SECONDS * 1000);
+
+let lastJudged = 0;
+async function tick() {
+  const epoch = epochToJudge(Math.floor(Date.now() / 1000), config.epochSeconds, config.graceSeconds);
+  if (epoch <= lastJudged) return;
+  lastJudged = epoch;
+  const area = verifier.stations.get(config.simCells[0])?.pm25_x10;
+  const rep = await runVerifierEpoch(epoch, { verifier, relayer, registry, areaPm25X10: () => area ?? config.simDefaultPm25X10, log });
+  log(`epoch ${epoch}: ${rep.real.length} real + ${verifier.readings.length - rep.real.length} simulated readings, ${rep.flags.length} flag(s)`);
+}
+
+function schedule() {
+  const now = Date.now() / 1000;
+  const next = (Math.floor((now - config.graceSeconds) / config.epochSeconds) + 1) * config.epochSeconds + config.graceSeconds;
+  setTimeout(() => {
+    tick().catch((e) => log(`epoch failed: ${(e as Error).message}`)).finally(schedule);
+  }, Math.max(1000, (next - now) * 1000));
+}
 
 function send(res: ServerResponse, code: number, body: unknown) {
   res.writeHead(code, { "content-type": "application/json", "access-control-allow-origin": "*" });
@@ -29,7 +53,16 @@ createServer((req, res) => {
   const url = new URL(req.url ?? "/", "http://localhost");
   const parts = url.pathname.split("/").filter(Boolean);
 
-  if (req.method === "GET" && url.pathname === "/health") return send(res, 200, { ok: true, epoch: verifier.epoch });
+  if (req.method === "GET" && url.pathname === "/health")
+    return send(res, 200, {
+      ok: true,
+      epoch: verifier.epoch,
+      relayer: relayer ? config.relayerUrl : "mock",
+      verifier: registry?.address ?? null,
+      registry: config.registry || null,
+      stations: openaq ? Object.fromEntries(openaq.byCell) : "mock",
+      stationError: openaq?.lastError || undefined,
+    });
 
   // GET /cells/:geohash -> verifier cell object (TEAM.md "Verifier output")
   if (req.method === "GET" && parts[0] === "cells" && parts.length === 2) {
@@ -50,4 +83,12 @@ createServer((req, res) => {
   }
 
   send(res, 404, { error: "not_found" });
-}).listen(PORT, () => console.log(`verifier on :${PORT}, epoch ${EPOCH_SECONDS}s`));
+}).listen(config.port, async () => {
+  log(`verifier on :${config.port}, epoch ${config.epochSeconds}s (+${config.graceSeconds}s grace), relayer=${relayer ? config.relayerUrl : "mock"}`);
+  if (registry) log(`verifier wallet ${registry.address} on Registry ${config.registry}: isVerifier=${await registry.isVerifier().catch(() => "?")}`);
+  else log("no VERIFIER_PRIVATE_KEY/REGISTRY_ADDRESS: flags are only logged");
+  await refreshStations();
+  setInterval(() => void refreshStations(), 10 * 60 * 1000);
+  void tick();
+  schedule();
+});
