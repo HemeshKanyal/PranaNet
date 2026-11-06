@@ -32,23 +32,32 @@
 #include "secrets.example.h"
 #endif
 
-#if DEVICE == 1
-// ESP32 DevKit 30-pin (CP2102)
+// Board profiles. Both devices are classic ESP32 DevKit 30-pin boards (CP2102), FQBN
+// esp32:esp32:esp32, wired D25 = Sharp LED (active LOW), D34 = Vo via 10k/22k divider (ADC1).
+//   DEVICE 1: classic + DHT22 on D4
+//   DEVICE 2: classic, no DHT22 (temp_x10 = hum_x10 = 0, never NaN)
+// (Device 2 was an ESP32-S3 until Fri 6 Nov; that profile is gone.)
 constexpr uint8_t PIN_SHARP_LED = 25;  // active LOW
-constexpr uint8_t PIN_SHARP_VO = 34;   // ADC1, via divider
+constexpr uint8_t PIN_SHARP_VO = 34;   // ADC1 (input-only pin), via divider
+#if DEVICE == 1
 constexpr uint8_t PIN_DHT = 4;
 #define HAS_DHT 1
 #define DEVICE_ENS DEVICE1_ENS
 #define DEVICE_GEOHASH DEVICE1_GEOHASH
 #elif DEVICE == 2
-// ESP32-S3-N16R8 (CH343 port, CDC On Boot disabled)
-constexpr uint8_t PIN_SHARP_LED = 6;  // active LOW
-constexpr uint8_t PIN_SHARP_VO = 4;   // ADC1, via divider
 #define HAS_DHT 0
 #define DEVICE_ENS DEVICE2_ENS
 #define DEVICE_GEOHASH DEVICE2_GEOHASH
 #else
 #error "DEVICE must be 1 or 2"
+#endif
+#if !defined(CONFIG_IDF_TARGET_ESP32)
+#error "Both device profiles are for the classic ESP32 (FQBN esp32:esp32:esp32)"
+#endif
+// GPIO 6-11 drive the SPI flash on the classic ESP32: touching them crashes the board.
+static_assert(!(PIN_SHARP_LED >= 6 && PIN_SHARP_LED <= 11) && !(PIN_SHARP_VO >= 6 && PIN_SHARP_VO <= 11), "GPIO 6-11 are the SPI flash");
+#if HAS_DHT
+static_assert(!(PIN_DHT >= 6 && PIN_DHT <= 11), "GPIO 6-11 are the SPI flash");
 #endif
 
 #if HAS_DHT
@@ -265,10 +274,10 @@ static void finishEpoch(uint64_t epoch) {
   char json[640];
   snprintf(json, sizeof json,
            "{\"device\":\"%s\",\"ens\":\"%s\",\"geohash\":\"%s\",\"epoch\":%llu,\"pm25_x10\":%llu,\"pm10_x10\":%llu,"
-           "\"temp_x10\":%lld,\"hum_x10\":%llu,\"nonce\":%llu,\"signature\":\"0x%s\",\"simulated\":false}",
+           "\"temp_x10\":%lld,\"hum_x10\":%llu,\"nonce\":%llu,\"signature\":\"0x%s\",\"simulated\":false,\"baseline_mv\":%ld}",
            devAddrHex, DEVICE_ENS, DEVICE_GEOHASH, (unsigned long long)r.epoch, (unsigned long long)r.pm25_x10,
            (unsigned long long)r.pm10_x10, (long long)r.temp_x10, (unsigned long long)r.hum_x10,
-           (unsigned long long)r.nonce, sigHex);
+           (unsigned long long)r.nonce, sigHex, isnan(baselineMv) ? 0L : (long)lroundf(baselineMv));
 
   String resp;
   int code = postReading(json, resp);

@@ -24,15 +24,15 @@ docs/        SPEC.md, AI-USAGE.md, DEBRIEFS.md, prompts/
 
 | | Device 1 | Device 2 |
 |---|---|---|
-| Board | ESP32 DevKit 30-pin (CP2102) | ESP32-S3-N16R8 (two USB-C; built for the CH343 COM port, CDC On Boot disabled) |
-| Sharp LED control (active LOW) | GPIO 25 | GPIO 6 |
-| Sharp Vo via divider (ADC1) | GPIO 34 | GPIO 4 |
+| Board | ESP32 DevKit 30-pin (CP2102) | ESP32 DevKit 30-pin (CP2102). *Was an ESP32-S3-N16R8 until Fri 6 Nov 16:00; replaced.* |
+| Sharp LED control (active LOW) | GPIO 25 | GPIO 25 |
+| Sharp Vo via divider (ADC1) | GPIO 34 | GPIO 34 |
 | DHT22 data | GPIO 4 | none |
 | Divider | 10k top, 22k bottom → ×1.45 | 10k top, 22k bottom → ×1.45 |
 
-Sensor: Sharp GP2Y1014AU0F (PM proxy, not a calibrated PM2.5 counter). Sampling: pulse the LED LOW, read at 280 µs, LED HIGH, 10 ms period; average ~100 samples. Clean-air output differs per unit (device 2 measured ~0.16–0.28 V), so **measure the baseline at boot** and report dust as the rise above it. Wi-Fi on does not affect ADC1 readings (tested).
+Sensor: Sharp GP2Y1014AU0F (PM proxy, not a calibrated PM2.5 counter). Sampling: pulse the LED LOW, read at 280 µs, LED HIGH, 10 ms period; average ~100 samples. Clean-air output differs per unit (device 2 measured ~0.16–0.28 V), so **measure the baseline at boot** and report dust as the rise above it. Because indoor air at boot is not clean, the boot baseline is tied to the nearest OpenAQ reference station's PM2.5 at that moment (one-point field calibration, serial `cal <µg/m³>`, stored in NVS). Never use GPIO 6–11 on the classic ESP32 (SPI flash). The two CP2102s share a serial number, so `/dev/ttyUSB*` can swap: identify boards with the `addr` serial command or the DHT values, never by port. Wi-Fi on does not affect ADC1 readings (tested).
 
-Location: no GPS. Each device has a 6-character geohash (~1.2 × 0.6 km) set at registration.
+Location: no GPS. Each device has a 6-character geohash (~1.2 × 0.6 km) set at registration. Both devices are at the hackathon venue: Jio World Convention Centre, BKC (19.0631, 72.8656) → `te7u6n`, labels `bkc-01` and `bkc-02`.
 
 **Secrets never enter the repo:** Wi-Fi credentials and the device private key live in `firmware/secrets.h` (gitignored); commit `secrets.example.h` only.
 
@@ -68,7 +68,7 @@ The device signs `keccak256("\x19Ethereum Signed Message:\n32" ‖ message)` and
 
 | Function | Behaviour |
 |---|---|
-| `registerDevice(device, owner, label, geohash)` | Backend-only, after a valid World ID proof. Creates the ENSv2 subname with a geohash record. Max 3 devices per human (nullifier). |
+| `registerDevice(device, owner, label, geohash)` | Backend-only, after a valid World ID proof (`owner` from the optional POST /register field, default the operator wallet). Creates the ENSv2 subname with a geohash record. Max 3 devices per human (nullifier). |
 | `stake()` / `unstake()` | Operator deposits a small stake per device. |
 | `submitEpoch(reading, sig)` | ecrecover; device registered and active; nonce increasing; emits `ReadingAccepted`. |
 | `flag(device, epoch, reason)` | Verifier role. Three consecutive flags trigger `slash`. |

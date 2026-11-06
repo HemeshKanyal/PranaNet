@@ -79,7 +79,11 @@ export async function handleRegister(raw: unknown, deps: RegisterDeps): Promise<
   if (typeof b.device !== "string" || !isAddress(b.device, { strict: false })) return fail(400, "invalid_device");
   if (typeof b.label !== "string" || !LABEL_RE.test(b.label)) return fail(400, "invalid_label");
   if (typeof b.geohash !== "string" || !GEOHASH_RE.test(b.geohash)) return fail(400, "invalid_geohash");
+  if (b.owner !== undefined && (typeof b.owner !== "string" || !isAddress(b.owner, { strict: false }) || /^0x0{40}$/i.test(b.owner)))
+    return fail(400, "invalid_owner");
   const device = getAddress(b.device);
+  // Optional owner (TEAM.md): the wallet that stakes and claims; default the operator wallet.
+  const owner = b.owner !== undefined ? getAddress(b.owner as string) : deps.owner;
   const { label, geohash } = b;
   const idkit = b.idkit as Record<string, unknown> | undefined;
   if (!idkit || typeof idkit !== "object") return fail(400, "missing_proof");
@@ -122,12 +126,12 @@ export async function handleRegister(raw: unknown, deps: RegisterDeps): Promise<
   if (await deps.isRegistered(device)) return fail(409, "already_registered");
   if ((await deps.devicesPerNullifier(nullifier)) >= MAX_DEVICES_PER_HUMAN) return fail(409, "max_devices");
 
-  const out = await deps.sendRegister(device, deps.owner, label, geohash, nullifier);
+  const out = await deps.sendRegister(device, owner, label, geohash, nullifier);
   if (!out.ok) {
     const [status, error] = REVERT_TO_ERROR[out.error ?? ""] ?? [502, "register_failed"];
     return fail(status, error, out.error);
   }
-  return { status: 200, body: { ok: true, ens: `${label}.${deps.cfg.ensParent}`, tx: out.tx } };
+  return { status: 200, body: { ok: true, ens: `${label}.${deps.cfg.ensParent}`, tx: out.tx, owner } };
 }
 
 /** Wire handleRegister to the chain and the relayer's tx queue. */

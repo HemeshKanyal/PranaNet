@@ -35,6 +35,7 @@ export function createApp(deps: AppDeps) {
   const { cfg, chain, store, submitter } = deps;
   const live = new LiveHub();
   const lastReading = new Map<string, Reading>();
+  const baselineMv = new Map<string, number>(); // optional, unsigned, from POST /readings
   const allow = (o: string | undefined) => originAllowed(cfg.corsOrigins, o);
   let syncing = true;
   // Simulated neighbour devices published by the verifier (never on-chain, always simulated: true).
@@ -50,7 +51,7 @@ export function createApp(deps: AppDeps) {
     geohash: d.geohash,
     status: statusOf(d),
     stake_wei: d.stakeWei.toString(),
-    baseline_mv: 0,
+    baseline_mv: baselineMv.get(d.device) ?? 0,
     last_reading: lastReading.get(d.device) ?? null,
     simulated: false,
   });
@@ -83,7 +84,7 @@ export function createApp(deps: AppDeps) {
             owner: d.owner,
             label: d.label,
             stake_wei: d.stakeWei.toString(),
-            baseline_mv: 0,
+            baseline_mv: baselineMv.get(d.device) ?? 0,
             simulated: false,
           })
           .catch((e) => log("arkiv", `device write failed ${d.ens}:`, (e as Error).message.split("\n")[0]));
@@ -165,7 +166,14 @@ export function createApp(deps: AppDeps) {
     store,
     submitter,
     broadcast: (m) => live.broadcast(m),
-    onAccepted: (r) => lastReading.set(r.device, r),
+    onAccepted: (r, mv) => {
+      lastReading.set(r.device, r);
+      if (mv !== undefined && mv !== baselineMv.get(r.device)) {
+        baselineMv.set(r.device, mv);
+        const d = chain.devices.get(r.device);
+        if (d) syncDevice(d); // keep the Arkiv device entity's baseline_mv current
+      }
+    },
   };
 
   // --------------------------------------------------------------- http

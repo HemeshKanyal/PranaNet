@@ -17,10 +17,10 @@
 #define EPOCH_SECONDS 60
 
 // ---- Per-device metadata sent with each reading (not signed; the relayer uses on-chain values)
-#define DEVICE1_ENS     "device1.prananet.eth"
-#define DEVICE1_GEOHASH "te7ud2"
-#define DEVICE2_ENS     "device2.prananet.eth"
-#define DEVICE2_GEOHASH "te7ud2"
+#define DEVICE1_ENS     "bkc-01.prananet.eth"
+#define DEVICE1_GEOHASH "te7u6n"
+#define DEVICE2_ENS     "bkc-02.prananet.eth"
+#define DEVICE2_GEOHASH "te7u6n"
 
 // One-point calibration: PM2.5 (ug/m3) the boot baseline stands for, normally the nearest
 // reference station (OpenAQ) at boot. Overridden at runtime with the serial command `cal <ug>`.

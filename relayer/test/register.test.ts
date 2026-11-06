@@ -50,7 +50,7 @@ describe("POST /register", () => {
   it("verifies with World ID (result forwarded unchanged) and registers", async () => {
     const { d, fetchMock, sendRegister } = deps();
     const out = await handleRegister(body(), d);
-    expect(out).toEqual({ status: 200, body: { ok: true, ens: "andheri-01.prananet.eth", tx: "0xtx" } });
+    expect(out).toEqual({ status: 200, body: { ok: true, ens: "andheri-01.prananet.eth", tx: "0xtx", owner: OWNER } });
     const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe("https://developer.world.org/api/v4/verify/rp_test");
     expect(JSON.parse(init.body as string)).toEqual(idkit());
@@ -112,5 +112,15 @@ describe("POST /register", () => {
     const dev = deps();
     dev.d.cfg = { ...dev.d.cfg, allowDevRegister: true };
     expect((await handleRegister(body({ idkit: mock }), dev.d)).status).toBe(200);
+  });
+
+  it("uses the optional owner when given, else the operator wallet", async () => {
+    const human = "0x000000000000000000000000000000000000bEEF";
+    const { d, sendRegister } = deps();
+    const out = await handleRegister(body({ owner: human.toLowerCase() }), d);
+    expect(out.body).toMatchObject({ ok: true, owner: human });
+    expect(sendRegister).toHaveBeenCalledWith(expect.anything(), human, "andheri-01", "te7ud2", BigInt(NULLIFIER));
+    expect((await handleRegister(body({ owner: "0x0000000000000000000000000000000000000000" }), d)).body).toMatchObject({ error: "invalid_owner" });
+    expect((await handleRegister(body({ owner: "bob" }), d)).body).toMatchObject({ error: "invalid_owner" });
   });
 });

@@ -27,3 +27,19 @@ describe("fixed vector", () => {
     expect(await recoverReadingSigner(r, FOUNDRY.signature as `0x${string}`, vector.chain_id, c)).toBe(FOUNDRY.address);
   });
 });
+
+import { parseReading } from "../src/message.ts";
+import vec from "./vector.json" with { type: "json" };
+describe("optional baseline_mv (unsigned)", () => {
+  const body = { ...vec.reading, signature: vec.signature, ens: "x.prananet.eth", geohash: "te7ud2", simulated: false };
+  it("is accepted, returned separately and not part of the reading", () => {
+    const p = parseReading({ ...body, baseline_mv: 612 });
+    expect(p.ok && p.baseline_mv).toBe(612);
+    expect(p.ok && "baseline_mv" in p.reading).toBe(false);
+  });
+  it("is optional and validated", () => {
+    expect(parseReading(body).ok).toBe(true);
+    expect(parseReading({ ...body, baseline_mv: -1 }).ok).toBe(false);
+    expect(parseReading({ ...body, baseline_mv: 1.5 }).ok).toBe(false);
+  });
+});

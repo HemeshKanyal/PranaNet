@@ -15,7 +15,7 @@ export interface IntakeDeps {
   store: Store;
   submitter: Pick<Submitter, "pendingNonce" | "submit">;
   broadcast: (msg: { type: "reading"; data: Reading }) => void;
-  onAccepted?: (r: Reading) => void;
+  onAccepted?: (r: Reading, baselineMv?: number) => void;
   onTx?: (r: Reading, res: TxResult) => void;
 }
 
@@ -54,7 +54,7 @@ export async function handleReading(body: unknown, deps: IntakeDeps): Promise<In
   const reading: Reading = { ...r, ens: device.ens, geohash: device.geohash, simulated: false };
 
   deps.broadcast({ type: "reading", data: reading });
-  deps.onAccepted?.(reading);
+  deps.onAccepted?.(reading, parsed.baseline_mv);
   deps.store.putReading(reading).catch((e) => log("arkiv", `write failed nonce=${r.nonce}:`, (e as Error).message));
   void deps.submitter.submit(reading).then((res) => deps.onTx?.(reading, res));
 

@@ -63,9 +63,12 @@ EIP-191 personal_sign over that hash. Nonce starts at 1, strictly increasing.
   "temp_x10": 291, "hum_x10": 640,
   "nonce": 17,
   "signature": "0x…",
-  "simulated": false
+  "simulated": false,
+  "baseline_mv": 612
 }
 ```
+
+`baseline_mv` (added Fri 6 Nov, approved by Hemesh): **optional, not signed**, the sensor's boot baseline in mV (integer 0..5000). Diagnostic only; the relayer reports it as the device's `baseline_mv` in `GET /devices`. It is never stored in the reading entity or the contract.
 
 ### Relayer endpoints (Hemesh)
 
@@ -75,7 +78,7 @@ EIP-191 personal_sign over that hash. Nonce starts at 1, strictly increasing.
 | `GET /devices/:ens` | one device object + `readings: Reading[]` (latest 200) |
 | `GET /devices/:ens/readings?from=&to=` | `Reading[]` |
 | `WS /live` | messages `{ "type": "reading", "data": Reading }`, `{ "type": "flag", "data": Flag }`, `{ "type": "slash", "data": { device, ens, tx } }` |
-| `POST /register` | body `{ idkit: <IDKit result object, passed through unchanged>, device, label, geohash }` → `{ ok, ens, tx }` or `{ ok: false, error }` (e.g. `"max_devices"`) |
+| `POST /register` | body `{ idkit: <IDKit result object, passed through unchanged>, device, label, geohash, owner? }` → `{ ok, ens, tx, owner }` or `{ ok: false, error }`. `owner` (optional, added Fri 6 Nov) is the wallet that stakes and claims rewards; default the operator wallet. The IDKit `signal` must be the device address. Errors: `max_devices`, `invalid_proof`, `already_registered`, `label_taken`, `invalid_device`, `invalid_label`, `invalid_geohash`, `invalid_owner`, `missing_proof` |
 
 ### Flag (verifier → contract and Arkiv)
 

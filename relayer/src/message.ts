@@ -81,7 +81,9 @@ function isSafeUint(v: unknown): v is number {
 }
 
 /** Shape check for a POST /readings body. Returns the normalised reading or an error. */
-export function parseReading(body: unknown): { ok: true; reading: Reading } | { ok: false; error: ValidationError } {
+export function parseReading(
+  body: unknown,
+): { ok: true; reading: Reading; baseline_mv?: number } | { ok: false; error: ValidationError } {
   const fail = (field: string, error: string) => ({ ok: false as const, error: { field, error } });
   if (typeof body !== "object" || body === null) return fail("body", "expected a JSON object");
   const b = body as Record<string, unknown>;
@@ -99,6 +101,9 @@ export function parseReading(body: unknown): { ok: true; reading: Reading } | { 
   if (s > SECP256K1_HALF_N) return fail("signature", "high-s signature not accepted");
   if (b.simulated !== undefined && typeof b.simulated !== "boolean") return fail("simulated", "expected boolean");
   if (BigInt(b.nonce as number) > U256_MAX) return fail("nonce", "too large");
+  // Optional, NOT signed: the sensor's boot baseline in mV (TEAM.md). Diagnostic only.
+  if (b.baseline_mv !== undefined && !(isSafeUint(b.baseline_mv) && b.baseline_mv <= 5000))
+    return fail("baseline_mv", "expected integer 0..5000");
 
   return {
     ok: true,
@@ -115,5 +120,6 @@ export function parseReading(body: unknown): { ok: true; reading: Reading } | { 
       signature: b.signature.toLowerCase() as Hex,
       simulated: b.simulated === true,
     },
+    ...(b.baseline_mv !== undefined ? { baseline_mv: b.baseline_mv as number } : {}),
   };
 }
