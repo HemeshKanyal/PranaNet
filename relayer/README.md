@@ -31,7 +31,7 @@ Contract addresses come from `../contracts/deployments/sepolia.json` (written by
 | `POST /readings` | Reading (TEAM.md shape) → 202 `{ok}` / 400 `invalid_shape` / 401 `bad_signature` / 403 `unknown_device`, `inactive_device` / 409 `stale_nonce` |
 | `GET /devices`, `/devices/:ens`, `/devices/:ens/readings?from=&to=` | device list, device + latest 200 readings, range |
 | `WS /live` | `reading`, `flag`, `slash` messages in on-chain order |
-| `GET /register/context`, `POST /register` | World ID RP signature for IDKit; proof check → `registerDevice` + ENS subname |
+| `POST /register` | `{ idkit, device, label, geohash }`: World ID proof checked with the Developer Portal → `registerDevice` + ENS subname (the RP signature for IDKit is made by web/app/api/rp-context) |
 | `POST /flags` | verifier writes a Flag entity to Arkiv (needs `FLAG_WRITE_TOKEN`) |
 
 ## Public URL (Cloudflare quick tunnel)
