@@ -33,6 +33,8 @@ contract Readings {
 
     Registry public immutable registry;
     mapping(address => uint256) public lastNonce;
+    /// @notice Accepted epochs per device (used by RewardPool).
+    mapping(address => uint256) public acceptedEpochs;
 
     event ReadingAccepted(
         address indexed device,
@@ -64,6 +66,7 @@ contract Readings {
         uint256 last = lastNonce[reading.device];
         if (reading.nonce <= last) revert NonceNotIncreasing(reading.nonce, last);
         lastNonce[reading.device] = reading.nonce;
+        acceptedEpochs[reading.device] += 1;
 
         emit ReadingAccepted(
             reading.device,

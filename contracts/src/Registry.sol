@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {IDeviceNamer} from "./interfaces/IDeviceNamer.sol";
+import {IStakeManager} from "./interfaces/IStakeManager.sol";
 
 /// @title PranaNet device Registry
 /// @notice Records which ESP32 device keys may submit readings, who operates them, and the
@@ -41,6 +42,10 @@ contract Registry {
     mapping(address => uint8) public consecutiveFlags;
     /// @notice Last epoch flagged or cleared per device; flags must move forward in time.
     mapping(address => uint256) public lastCheckedEpoch;
+    /// @notice All flags ever raised against a device (flagged epochs earn no rewards).
+    mapping(address => uint256) public totalFlags;
+    /// @notice Stake contract that moves a slashed device's stake to the reward pool.
+    IStakeManager public stakeManager;
 
     event DeviceRegistered(
         address indexed device, address indexed owner, uint256 indexed nullifierHash, string label, string geohash
@@ -51,6 +56,7 @@ contract Registry {
     event ControllerSet(address indexed account, bool allowed);
     event NamerSet(address indexed namer);
     event VerifierSet(address indexed account, bool allowed);
+    event StakeManagerSet(address indexed stakeManager);
     event DeviceFlagged(address indexed device, uint256 indexed epoch, uint8 reason, uint8 consecutiveFlags);
     event FlagsCleared(address indexed device, uint256 indexed epoch);
     event DeviceSlashed(address indexed device, uint256 indexed epoch);
@@ -110,6 +116,11 @@ contract Registry {
         emit VerifierSet(account, allowed);
     }
 
+    function setStakeManager(IStakeManager stakeManager_) external onlyAdmin {
+        stakeManager = stakeManager_;
+        emit StakeManagerSet(address(stakeManager_));
+    }
+
     // ---------------------------------------------------------- registration
 
     /// @notice Register a device key. Backend-only, called after a valid World ID proof.
@@ -165,7 +176,7 @@ contract Registry {
 
     /// @notice Verifier flags a device's epoch as an outlier. `reason`: 1 = neighbour outlier,
     ///         2 = station outlier. The third consecutive flag slashes the device: it is
-    ///         deactivated and its ENS subname revoked. (Stake transfer is added with Stake, M4.)
+    ///         deactivated, its ENS subname revoked and its stake moved to the reward pool.
     function flag(address device, uint256 epoch, uint8 reason) external {
         if (!isVerifier[msg.sender]) revert NotVerifier();
         if (reason != REASON_NEIGHBOUR_OUTLIER && reason != REASON_STATION_OUTLIER) revert InvalidReason(reason);
@@ -176,12 +187,15 @@ contract Registry {
 
         uint8 count = consecutiveFlags[device] + 1;
         consecutiveFlags[device] = count;
+        totalFlags[device] += 1;
         emit DeviceFlagged(device, epoch, reason, count);
 
         if (count >= SLASH_THRESHOLD) {
             consecutiveFlags[device] = 0;
             emit DeviceSlashed(device, epoch);
             _setActive(device, d, false);
+            IStakeManager sm = stakeManager;
+            if (address(sm) != address(0)) sm.slash(device);
         }
     }
 
