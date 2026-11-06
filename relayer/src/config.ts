@@ -38,6 +38,8 @@ export const config = {
   namer: addr("NAMER_ADDRESS", "DeviceNamer"),
   deployBlock: BigInt(env("DEPLOY_BLOCK", String(deployment.deployBlock ?? 0))),
   pollMs: Number(env("POLL_MS", "6000")),
+  // Alchemy's free tier rejects eth_getLogs over more than 10 blocks; paid RPCs can raise this.
+  logChunkBlocks: BigInt(env("LOG_CHUNK_BLOCKS", "10")),
   ensParent: env("ENS_PARENT", "prananet.eth"),
   // Arkiv (Rabdi testnet). ARKIV_PRIVATE_KEY defaults to the relayer key.
   arkivAccessKey: env("ARKIV_ACCESS_KEY"),

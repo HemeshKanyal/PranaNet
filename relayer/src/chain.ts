@@ -132,7 +132,7 @@ export class ChainIndex implements ChainReads {
   /** Fetch new logs from all contracts in block chunks and apply them in order. */
   async poll() {
     const head = await this.client.getBlockNumber();
-    const CHUNK = 5000n;
+    const CHUNK = this.cfg.logChunkBlocks > 0n ? this.cfg.logChunkBlocks : 10n;
     while (this.lastBlock < head) {
       const from = this.lastBlock + 1n;
       const to = from + CHUNK - 1n < head ? from + CHUNK - 1n : head;

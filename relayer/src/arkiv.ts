@@ -4,7 +4,7 @@
 import { ExpirationTime, createPublicClient, createWalletClient } from "@arkiv-network/sdk";
 import { rabdi } from "@arkiv-network/sdk/chains";
 import { and, between, desc, eq } from "@arkiv-network/sdk/query";
-import { addr, bool, defineSchema, i32, str, u64 } from "@arkiv-network/sdk/schema";
+import { addr, bool, bytes, defineSchema, i32, str, u64 } from "@arkiv-network/sdk/schema";
 import { type Address, type Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import type { Config } from "./config.ts";
@@ -21,7 +21,7 @@ export const ReadingEntity = defineSchema("prananet.reading", {
   temp_x10: i32(),
   hum_x10: i32(),
   nonce: u64().indexed(),
-  signature: str(),
+  signature: bytes(), // 65-byte sig is 132 hex chars; str is capped at 128 bytes
   simulated: bool().indexed(),
 });
 
@@ -115,7 +115,7 @@ export class ArkivStore implements Store {
         temp_x10: i32(i32clamp(r.temp_x10)),
         hum_x10: i32(i32clamp(r.hum_x10)),
         nonce: u64(BigInt(r.nonce)),
-        signature: r.signature,
+        signature: bytes(r.signature),
         simulated: r.simulated,
       },
       { expiration: READING_TTL },

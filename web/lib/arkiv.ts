@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { createPublicClient } from "@arkiv-network/sdk";
 import { rabdi } from "@arkiv-network/sdk/chains";
 import { and, asc, desc, eq, gt, gte, lt } from "@arkiv-network/sdk/query";
-import { addr, bool, defineSchema, i32, str, u64 } from "@arkiv-network/sdk/schema";
+import { addr, bool, bytes, defineSchema, i32, str, u64 } from "@arkiv-network/sdk/schema";
 import { http, keccak256, toHex } from "viem";
 import { getDevice, getDevices, RELAYER_URL } from "./relayer";
 import type { Address, Flag, FlagReason, Hex, Reading } from "./types";
@@ -23,7 +23,7 @@ const ReadingEntity = defineSchema("prananet.reading", {
   temp_x10: i32(),
   hum_x10: i32(),
   nonce: u64().indexed(),
-  signature: str(),
+  signature: bytes(), // matches relayer/src/arkiv.ts (str is capped at 128 bytes)
   simulated: bool().indexed(),
 });
 
