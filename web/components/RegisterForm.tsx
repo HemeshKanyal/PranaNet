@@ -17,6 +17,8 @@ const ERRORS: Record<string, string> = {
   bad_geohash: "Geohash must be 6 characters.",
   missing_proof: "Verify with World ID first.",
   relayer_unreachable: "The relayer didn't answer. Try again in a moment.",
+  register_not_configured: "Registration isn't switched on at the relayer yet (World ID + ENS are still being wired up).",
+  register_unavailable: "Registration isn't switched on at the relayer yet.",
 };
 
 export function RegisterForm() {
