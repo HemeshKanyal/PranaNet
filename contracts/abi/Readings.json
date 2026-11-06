@@ -1,0 +1,327 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "registry_",
+        "type": "address",
+        "internalType": "contract Registry"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "acceptedEpochs",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "digestOf",
+    "inputs": [
+      {
+        "name": "r",
+        "type": "tuple",
+        "internalType": "struct Readings.Reading",
+        "components": [
+          {
+            "name": "device",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "epoch",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pm25_x10",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pm10_x10",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "temp_x10",
+            "type": "int256",
+            "internalType": "int256"
+          },
+          {
+            "name": "hum_x10",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "nonce",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "lastNonce",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "messageOf",
+    "inputs": [
+      {
+        "name": "r",
+        "type": "tuple",
+        "internalType": "struct Readings.Reading",
+        "components": [
+          {
+            "name": "device",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "epoch",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pm25_x10",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pm10_x10",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "temp_x10",
+            "type": "int256",
+            "internalType": "int256"
+          },
+          {
+            "name": "hum_x10",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "nonce",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "registry",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract Registry"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "submitEpoch",
+    "inputs": [
+      {
+        "name": "reading",
+        "type": "tuple",
+        "internalType": "struct Readings.Reading",
+        "components": [
+          {
+            "name": "device",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "epoch",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pm25_x10",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pm10_x10",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "temp_x10",
+            "type": "int256",
+            "internalType": "int256"
+          },
+          {
+            "name": "hum_x10",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "nonce",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "name": "sig",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "ReadingAccepted",
+    "inputs": [
+      {
+        "name": "device",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "epoch",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "nonce",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "pm25_x10",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "pm10_x10",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "temp_x10",
+        "type": "int256",
+        "indexed": false,
+        "internalType": "int256"
+      },
+      {
+        "name": "hum_x10",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "DeviceNotActive",
+    "inputs": [
+      {
+        "name": "device",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "InvalidSignature",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidSignatureLength",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidSignatureS",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidSignatureV",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NonceNotIncreasing",
+    "inputs": [
+      {
+        "name": "nonce",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "lastNonce",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  }
+]
