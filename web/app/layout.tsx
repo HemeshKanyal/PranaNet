@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { getDevices, RELAYER_URL } from "@/lib/relayer";
 import { getFlags } from "@/lib/arkiv";
+import { mukta, rozha } from "@/lib/story/fonts";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -21,7 +22,7 @@ export const dynamic = "force-dynamic";
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const [devices, flags] = await Promise.all([getDevices(), getFlags()]);
   return (
-    <html lang="en">
+    <html lang="en" className={`${rozha.variable} ${mukta.variable}`}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <LiveProvider
           initialDevices={devices}

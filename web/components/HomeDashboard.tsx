@@ -7,25 +7,13 @@ import { LiveFeed } from "./LiveFeed";
 import { useLive } from "./LiveProvider";
 import { SensorMap, type FlyTarget } from "./MapLoader";
 import { VerifyBadge } from "./VerifyBadge";
-import { aqi, aqiStyle, WHO_PM25, type AqiCategory } from "@/lib/aqi";
+import { aqi, aqiStyle, WHO_PM25 } from "@/lib/aqi";
 import { areaStats, deriveAreas, devicePos, LOCALITIES, nodeCounts, RADIUS_KM, type Area, type Locality } from "@/lib/area";
 import { ensUrl } from "@/lib/chain";
 import { eth, time, x10 } from "@/lib/format";
 import { isGeohash, decode } from "@/lib/geohash";
 import { recordId } from "@/lib/verify";
 import type { DeviceDetail, Reading } from "@/lib/types";
-
-/* ---------- headline per category (bands come from aqiStyle, the single source) ---------- */
-
-const HEADLINES: Record<AqiCategory, string> = {
-  Good: "A good day to be outside",
-  Satisfactory: "The air is reasonably comfortable",
-  Moderate: "Give your outdoor plans a little thought",
-  Poor: "Take care when spending time outdoors",
-  "Very Poor": "Reduce prolonged outdoor exposure",
-  Severe: "The air needs immediate attention",
-};
-const NO_DATA_HEADLINE = "No live readings here yet";
 
 /* ---------- search ---------- */
 
@@ -321,7 +309,7 @@ export function HomeDashboard() {
 
   const st = place ? areaStats(devices, place) : null;
   const style = st?.aqi != null ? aqiStyle(st.aqi) : null;
-  const headline = style ? HEADLINES[style.cat] : NO_DATA_HEADLINE;
+  const headline = place ? `${place.name}'s air right now, signed and cross-checked` : "No nodes yet";
 
   return (
     <main className="mx-auto max-w-7xl px-4 pb-8">

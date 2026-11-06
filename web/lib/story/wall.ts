@@ -1,6 +1,6 @@
 // Chapter 1 evidence wall (docs/STORY.md). Our own one-line summaries + links, never copies of
 // the articles. Keep the wording exactly this careful: allegations stay allegations.
-export interface WallCard { place: string; when: string; summary: string; source: string; url: string; kind: "conviction" | "allegation" | "inquiry" | "survey" }
+export interface WallCard { place: string; when: string; summary: string; source: string; url: string; kind: "conviction" | "notice" | "news" | "allegation" | "inquiry" | "survey" }
 
 const STAR = "https://www.thestar.com.my/aseanplus/aseanplus-news/2025/12/02/indias-capital-accused-of-tampering-with-air-quality-readings-to-make-pollution-look-less-dire";
 
@@ -12,7 +12,7 @@ export const WALL: WallCard[] = [
     url: "https://www.caixinglobal.com/2018-01-29/court-papers-reveal-how-officials-faked-xian-air-pollution-readings-101204613.html",
   },
   {
-    place: "Hunan, China", when: "2018", kind: "allegation",
+    place: "Hunan, China", when: "2018", kind: "notice",
     summary: "Workers sprayed mist cannons near monitoring stations during smog, per a provincial notice.",
     source: "Caixin, 2 Feb 2018",
     url: "https://www.caixinglobal.com/2018-02-02/what-bad-air-hunan-officials-use-mist-cannons-to-fool-pollution-meters-101206784.html",
@@ -24,7 +24,7 @@ export const WALL: WallCard[] = [
     url: "https://www.newslaundry.com/2025/10/27/ground-still-wet-air-stays-toxic-a-reality-check-at-anand-vihar-air-monitor-after-water-sprinkler-video",
   },
   {
-    place: "Delhi", when: "Diwali 2025", kind: "allegation",
+    place: "Delhi", when: "Diwali 2025", kind: "news",
     summary: "163 hours of peak-period AQI data were lost, against 34 hours the year before.",
     source: "The Straits Times via The Star, 2 Dec 2025",
     url: STAR,

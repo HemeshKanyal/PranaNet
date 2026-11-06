@@ -66,8 +66,8 @@ export function TamperDemo() {
   return (
     <>
       <p>
-        Each node holds its own key and <b>signs every reading on the sensor itself</b>. Here is the latest reading from{" "}
-        <b>{source.ens}</b>{source.simulated ? " (simulated)" : ", a real board at our venue"}, exactly as it was signed:
+        The latest reading from <b>{source.ens}</b>{source.simulated ? " (simulated)" : ", a real board at our venue"}, exactly as it
+        was signed:
       </p>
       <div className="mt-4 overflow-hidden rounded border border-maroon/30 bg-[#fbf1da] font-mono text-[0.8rem] sm:text-sm">
         <Row k="device" v={<span title={original.device}>{short(original.device)}</span>} />
@@ -123,8 +123,7 @@ export function TamperDemo() {
           )}
         </div>
       </div>
-      <p className="mt-4 font-semibold">Not even the server that carries the data can change it.</p>
-      <p className="mt-1 text-sm text-kohl/70">
+      <p className="mt-4 text-sm text-kohl/70">
         Full breakdown of the 264 signed bytes:{" "}
         <Link href={`/records/${recordId(original)}`} className="text-vermilion underline">open this record</Link>.
       </p>

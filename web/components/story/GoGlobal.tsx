@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useReducedMotion } from "@/lib/story/hooks";
 import type { useStoryArea } from "@/lib/story/live";
+import { Stage } from "./Stage";
 
 type Live = ReturnType<typeof useStoryArea>;
 type View = { lon: number; lat: number; scale: number };
@@ -119,8 +120,9 @@ export function GoGlobal({ live }: { live: Live }) {
 
   return (
     <div className="grid items-start gap-8 lg:grid-cols-[1fr_1fr]">
-      <div className="lg:sticky lg:top-[10svh]">
-        <svg viewBox={`0 0 ${W} ${H}`} className="mx-auto aspect-square w-full max-w-[420px]" role="img" aria-label={`Globe: ${STEPS[step].title}`}>
+      <div className="lg:sticky lg:top-[12svh]">
+        <Stage fill={{ fill: "#2E3A22", motif: "#F2A12E" }} prop="pot">
+        <svg viewBox={`0 0 ${W} ${H}`} className="aspect-square w-full" role="img" aria-label={`Globe: ${STEPS[step].title}`}>
           <defs>
             <clipPath id="globe-clip"><circle cx={cx} cy={cy} r={Math.min(radius, 199)} /></clipPath>
             <radialGradient id="globe-fill" cx="40%" cy="35%"><stop offset="0%" stopColor="#fbf1da" /><stop offset="100%" stopColor="#ecd3a0" /></radialGradient>
@@ -149,6 +151,7 @@ export function GoGlobal({ live }: { live: Live }) {
             })()}
           </g>
         </svg>
+        </Stage>
       </div>
       <ol className="space-y-[30svh] py-[10svh] lg:space-y-[40svh]">
         {STEPS.map((s, i) => (
@@ -156,11 +159,11 @@ export function GoGlobal({ live }: { live: Live }) {
             key={s.title}
             ref={(el) => { stepEls.current[i] = el; }}
             data-step={i}
-            className={`rounded border-2 p-4 transition-colors duration-500 ${step === i ? "border-vermilion bg-[#fbf1da]" : "border-maroon/20"}`}
+            className={`rounded-md border p-5 transition-colors duration-500 ${step === i ? "border-saffron bg-[#1f1912]" : "border-cream/10"}`}
           >
-            <div className="text-xs font-bold uppercase tracking-widest text-vermilion">{["Now", "Next", "Then", "Everywhere"][i]}</div>
-            <h3 className="display mt-1 text-2xl">{s.title}</h3>
-            <p className="mt-1">{i === 0 ? liveBody : s.body}</p>
+            <div className="text-xs font-bold uppercase tracking-widest text-saffron">{["Now", "Next", "Then", "Everywhere"][i]}</div>
+            <h3 className="display mt-1 text-2xl text-cream">{s.title}</h3>
+            <p className="mt-1 text-cream/85">{i === 0 ? liveBody : s.body}</p>
           </li>
         ))}
       </ol>

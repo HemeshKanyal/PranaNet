@@ -41,7 +41,7 @@ export function Eye({ state = "open", size = 44, blink = true, delay = 0, title,
       height={(size * 40) / 64}
       role="img"
       aria-label={title ?? EYE_LABEL[state]}
-      className={`${canBlink ? "eye-blink" : ""} ${className}`}
+      className={`eye ${canBlink ? "eye-blink" : ""} ${state === "flagged" ? "eye-pulse" : ""} ${className}`}
       style={canBlink ? ({ ["--d" as string]: `${delay}s` } as React.CSSProperties) : undefined}
     >
       <title>{title ?? EYE_LABEL[state]}</title>

@@ -6,7 +6,7 @@ import { useLive } from "@/components/LiveProvider";
 import { aqiStyle } from "../aqi";
 import { areaStats, deriveAreas, nodeCounts } from "../area";
 import { getCell, parseStationName, type VerifierCell } from "../verifier";
-import { SCENE_OF, type Scene } from "./scenes";
+import { POSE_OF, type Pose } from "./poses";
 
 /** A reading older than this is shown as offline (half-closed eye). */
 export const STALE_S = 5 * 60;
@@ -21,10 +21,10 @@ export function useStoryArea(initialCell: VerifierCell | null = null) {
   const cellHash = area?.devices.find((d) => !d.simulated)?.geohash ?? area?.devices[0]?.geohash ?? null;
   const cell = useCell(cellHash, initialCell);
   const station = cell?.station ? { ...parseStationName(cell.station.name), name: cell.station.name, pm25_x10: cell.station.pm25_x10 } : null;
-  // Hero scene: today's category; with no data a neutral watchful scene, never a comforting one.
-  const scene: Scene = style ? SCENE_OF[style.cat] : "poor";
+  // Hero pose: today's category; with no data the neutral watchful stance, never a comforting one.
+  const pose: Pose = style ? POSE_OF[style.cat] : "standing";
   const placeName = area ? (station?.city ? `${area.name}, ${station.city}` : area.name) : null;
-  return { devices, area, stats, style, counts, cell, station, scene, placeName, cellHash };
+  return { devices, area, stats, style, counts, cell, station, pose, placeName, cellHash };
 }
 
 export function useCell(geohash: string | null, initial: VerifierCell | null = null): VerifierCell | null {
