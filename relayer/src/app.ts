@@ -5,6 +5,7 @@ import type { FlagRecord, Store } from "./arkiv.ts";
 import { type ChainIndex, type DeviceState, statusOf } from "./chain.ts";
 import type { Config } from "./config.ts";
 import { type IntakeDeps, handleReading } from "./intake.ts";
+import { type SimDeviceView, parseSimDevice, parseSimFlag, parseSimReading } from "./sim.ts";
 import { LiveHub } from "./live.ts";
 import { log } from "./log.ts";
 import type { Reading } from "./message.ts";
@@ -36,6 +37,11 @@ export function createApp(deps: AppDeps) {
   const lastReading = new Map<string, Reading>();
   const allow = (o: string | undefined) => originAllowed(cfg.corsOrigins, o);
   let syncing = true;
+  // Simulated neighbour devices published by the verifier (never on-chain, always simulated: true).
+  const simDevices = new Map<string, SimDeviceView>();
+  let arkivSimQueue: Promise<unknown> = Promise.resolve();
+  const authed = (req: IncomingMessage) =>
+    !!cfg.simToken && req.headers.authorization === `Bearer ${cfg.simToken}`;
 
   // ------------------------------------------------------------ device view
   const deviceView = (d: DeviceState) => ({
@@ -194,7 +200,7 @@ export function createApp(deps: AppDeps) {
         res.writeHead(allow(origin) ? 204 : 403, {
           ...(origin && allow(origin) ? { "access-control-allow-origin": origin, vary: "Origin" } : {}),
           "access-control-allow-methods": "GET, POST, OPTIONS",
-          "access-control-allow-headers": "content-type",
+          "access-control-allow-headers": "content-type, authorization",
           "access-control-max-age": "86400",
         });
         return res.end();
@@ -224,6 +230,42 @@ export function createApp(deps: AppDeps) {
         return send(res, req, out.status, out.body);
       }
 
+      // Verifier → relayer: simulated neighbour readings. Stored on Arkiv with simulated: true and
+      // pushed on WS; never sent to the Readings contract (they carry no device signature).
+      if (req.method === "POST" && url.pathname === "/sim/readings") {
+        if (!cfg.simToken) return send(res, req, 503, { ok: false, error: "sim_disabled" });
+        if (!authed(req)) return send(res, req, 401, { ok: false, error: "unauthorized" });
+        const body = (await readBody(req)) as { readings?: unknown[]; devices?: unknown[] };
+        const readings = (body.readings ?? []).map(parseSimReading);
+        const devices = (body.devices ?? []).map(parseSimDevice);
+        if (readings.some((r) => !r) || devices.some((d) => !d)) return send(res, req, 400, { ok: false, error: "invalid_shape" });
+        for (const dv of devices) simDevices.set(dv!.ens, { ...dv!, last_reading: simDevices.get(dv!.ens)?.last_reading ?? null });
+        for (const r of readings) {
+          const dv = simDevices.get(r!.ens);
+          if (dv) dv.last_reading = r!;
+          live.broadcast({ type: "reading", data: r });
+          arkivSimQueue = arkivSimQueue
+            .then(() => store.putReading(r!))
+            .catch((e) => log("arkiv", `sim write failed ${r!.ens}:`, (e as Error).message.split("\n")[0]));
+        }
+        return send(res, req, 202, { ok: true, readings: readings.length, devices: devices.length });
+      }
+
+      // Verifier → relayer: a flag on a simulated device (real-device flags come from Registry
+      // events, so they always carry an on-chain tx).
+      if (req.method === "POST" && url.pathname === "/flags") {
+        if (!cfg.simToken) return send(res, req, 503, { ok: false, error: "sim_disabled" });
+        if (!authed(req)) return send(res, req, 401, { ok: false, error: "unauthorized" });
+        const f = parseSimFlag(await readBody(req));
+        if (!f) return send(res, req, 400, { ok: false, error: "invalid_shape" });
+        if (!simDevices.has(f.ens)) return send(res, req, 403, { ok: false, error: "real_device_flags_come_from_chain" });
+        live.broadcast({ type: "flag", data: f });
+        arkivSimQueue = arkivSimQueue
+          .then(() => store.putFlag({ ...f, tx: "" }))
+          .catch((e) => log("arkiv", `sim flag write failed ${f.ens}:`, (e as Error).message.split("\n")[0]));
+        return send(res, req, 202, { ok: true });
+      }
+
       if (req.method === "POST" && url.pathname === "/register") {
         if (!deps.register) return send(res, req, 503, { ok: false, error: "register_unavailable" });
         let body: unknown;
@@ -240,9 +282,19 @@ export function createApp(deps: AppDeps) {
         if (parts.length === 1) {
           const list = [...chain.devices.values()];
           await Promise.all(list.map(fillLastReading));
-          return send(res, req, 200, list.map(deviceView));
+          return send(res, req, 200, [...list.map(deviceView), ...simDevices.values()]);
         }
         const d = chain.byEns(parts[1].toLowerCase());
+        const sim = d ? undefined : simDevices.get(parts[1].toLowerCase());
+        if (sim) {
+          const now = Math.floor(Date.now() / 1000) + 3600;
+          if (parts.length === 2) return send(res, req, 200, { ...sim, readings: await store.readings(sim.ens, 0, now, 200) });
+          if (parts.length === 3 && parts[2] === "readings") {
+            const from = Number(url.searchParams.get("from") ?? 0);
+            const to = Number(url.searchParams.get("to") ?? now);
+            return send(res, req, 200, await store.readings(sim.ens, Math.floor(from), Math.floor(to), 1000));
+          }
+        }
         if (!d) return send(res, req, 404, { ok: false, error: "unknown_device" });
         const now = Math.floor(Date.now() / 1000) + 3600;
         if (parts.length === 2) {
@@ -267,5 +319,5 @@ export function createApp(deps: AppDeps) {
   });
 
   live.attach(server, allow);
-  return { server, live, finishSync, lastReading };
+  return { server, live, finishSync, lastReading, simDevices };
 }

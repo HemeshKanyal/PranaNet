@@ -47,6 +47,8 @@ export const config = {
   arkivEnabled: env("ARKIV_ENABLED", "true") !== "false",
   // Optional: Siddhartha's verifier, used only to enrich flag entities with value/median.
   verifierUrl: env("VERIFIER_URL"),
+  // Shared secret for the verifier's POST /sim/readings and POST /flags (simulated devices only).
+  simToken: env("SIM_TOKEN"),
   corsOrigins: env("CORS_ORIGINS", "http://localhost:3000,https://*.vercel.app")
     .split(",")
     .map((s) => s.trim())
