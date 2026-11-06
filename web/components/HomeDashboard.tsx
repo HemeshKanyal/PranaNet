@@ -7,7 +7,7 @@ import { LiveFeed } from "./LiveFeed";
 import { useLive } from "./LiveProvider";
 import { SensorMap, type FlyTarget } from "./MapLoader";
 import { VerifyBadge } from "./VerifyBadge";
-import { aqi, aqiStyle, WHO_PM25 } from "@/lib/aqi";
+import { aqi, aqiStyle, WHO_PM25, type AqiCategory } from "@/lib/aqi";
 import { areaStats, devicePos, LOCALITIES, nearestLocality, RADIUS_KM, type Locality } from "@/lib/area";
 import { ensUrl } from "@/lib/chain";
 import { eth, time, x10 } from "@/lib/format";
@@ -15,9 +15,54 @@ import { isGeohash, decode } from "@/lib/geohash";
 import { recordId } from "@/lib/verify";
 import type { DeviceDetail, Reading } from "@/lib/types";
 
+/* ---------- CPCB dynamic messages and backgrounds ---------- */
+
+const ALL_CATEGORIES: AqiCategory[] = [
+  "Good",
+  "Satisfactory",
+  "Moderate",
+  "Poor",
+  "Very Poor",
+  "Severe",
+];
+
+const CPCB_HEADLINES: Record<AqiCategory, string> = {
+  Good: "A good day to be outside",
+  Satisfactory: "The air is reasonably comfortable",
+  Moderate: "Give your outdoor plans a little thought",
+  Poor: "Take care when spending time outdoors",
+  "Very Poor": "Reduce prolonged outdoor exposure",
+  Severe: "The air needs immediate attention",
+};
+
+const CPCB_BG: Record<AqiCategory, string> = {
+  Good: "/bg/good.png",
+  Satisfactory: "/bg/satisfactory.png",
+  Moderate: "/bg/moderate.png",
+  Poor: "/bg/poor.png",
+  "Very Poor": "/bg/very poor.png",
+  Severe: "/bg/severe.png",
+};
+
+function getCpcbCategory(aqiVal: number | null): AqiCategory {
+  if (aqiVal == null) return "Satisfactory";
+  if (aqiVal <= 50) return "Good";
+  if (aqiVal <= 100) return "Satisfactory";
+  if (aqiVal <= 200) return "Moderate";
+  if (aqiVal <= 300) return "Poor";
+  if (aqiVal <= 400) return "Very Poor";
+  return "Severe";
+}
+
 /* ---------- search ---------- */
 
-function LocalitySearch({ onPick }: { onPick: (l: Locality) => void }) {
+function LocalitySearch({
+  onPick,
+  currentPlaceName,
+}: {
+  onPick: (l: Locality) => void;
+  currentPlaceName?: string;
+}) {
   const { devices } = useLive();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
@@ -56,36 +101,52 @@ function LocalitySearch({ onPick }: { onPick: (l: Locality) => void }) {
             onKeyDown={(e) => { if (e.key === "Enter" && matches[0]) { onPick(matches[0].l); setQ(""); setOpen(false); } }}
             placeholder="Search a locality, device or geohash: Bandra, andheri-01, te7u3q"
             aria-label="Search locality"
-            className="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm shadow-sm outline-none focus:border-ink"
+            className="w-full rounded-xl border border-black/20 bg-white/55 backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 px-4 py-3 text-sm font-semibold text-black placeholder:text-black/70 shadow-md outline-none transition-colors focus:bg-white/70 focus:border-black/40"
           />
           {open && matches.length > 0 && (
-            <ul className="absolute z-[60] mt-1 w-full overflow-hidden rounded-xl border border-line bg-surface shadow-lg">
+            <ul className="absolute z-[60] mt-1.5 w-full overflow-hidden rounded-xl border border-black/20 bg-white/55 backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 shadow-2xl">
               {matches.map((m) => (
                 <li key={m.hint + m.label}>
                   <button
                     type="button"
                     onMouseDown={() => { onPick(m.l); setQ(""); setOpen(false); }}
-                    className="flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-bg"
+                    className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm font-medium text-black hover:bg-white/60"
                   >
                     <span>{m.label}</span>
-                    <span className="text-xs text-muted">{m.hint}</span>
+                    <span className="text-xs text-black/60">{m.hint}</span>
                   </button>
                 </li>
               ))}
             </ul>
           )}
         </div>
-        <button type="button" onClick={nearMe} className="rounded-xl border border-line bg-surface px-4 text-sm font-medium hover:border-ink">
+        <button
+          type="button"
+          onClick={nearMe}
+          className="rounded-xl border border-black/20 bg-white/55 backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 px-4 text-sm font-semibold text-black shadow-md hover:bg-white/70 hover:border-black/35 transition-colors"
+        >
           Near me
         </button>
       </div>
-      {geoErr && <p className="mt-1 text-xs text-red-700">{geoErr}</p>}
+      {geoErr && <p className="mt-1 text-xs font-semibold text-red-700">{geoErr}</p>}
       <div className="mt-3 flex flex-wrap gap-1.5">
-        {LOCALITIES.map((l) => (
-          <button key={l.name} type="button" onClick={() => onPick(l)} className="rounded-full border border-line bg-surface px-3 py-1 text-xs hover:border-ink">
-            {l.name}
-          </button>
-        ))}
+        {LOCALITIES.map((l) => {
+          const isSelected = currentPlaceName === l.name;
+          return (
+            <button
+              key={l.name}
+              type="button"
+              onClick={() => onPick(l)}
+              className={`rounded-full border px-3.5 py-1.5 text-xs shadow-sm backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 transition-all ${
+                isSelected
+                  ? "border-black bg-black text-white font-bold shadow-md"
+                  : "border-black/20 bg-white/55 text-black font-semibold hover:bg-white/70 hover:border-black/35"
+              }`}
+            >
+              {l.name}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -99,39 +160,53 @@ function AreaCard({ place }: { place: Locality }) {
   const style = st.aqi != null ? aqiStyle(st.aqi) : null;
   const sample = st.used.map((d) => d.last_reading).find((r): r is Reading => !!r);
   return (
-    <div className="card overflow-hidden">
+    // No .card (solid white) and no backdrop-filter on this wrapper: either one stops the panels
+    // inside from blurring the hero image behind the card.
+    <div className="overflow-hidden rounded-3xl border border-white/80 shadow-2xl">
       <div className="flex items-stretch">
-        <div className="flex w-36 shrink-0 flex-col items-center justify-center p-4 text-center" style={{ background: style?.bg ?? "#e2e6e3", color: style?.fg ?? "#13201b" }}>
-          <div className="text-[11px] font-medium uppercase tracking-wide opacity-80">AQI</div>
-          <div className="text-5xl font-bold tabular-nums leading-none">{st.aqi ?? "–"}</div>
-          <div className="mt-1 text-sm font-semibold">{style?.cat ?? "No data"}</div>
+        <div
+          className="flex w-44 sm:w-48 xl:w-52 shrink-0 flex-col items-center justify-center p-6 sm:p-7 text-center transition-colors duration-500"
+          style={{ background: style?.bg ?? "#e2e6e3", color: style?.fg ?? "#13201b" }}
+        >
+          <div className="text-xs sm:text-sm font-semibold uppercase tracking-wider opacity-90">AQI</div>
+          <div className="text-6xl sm:text-7xl xl:text-8xl font-black tabular-nums leading-none mt-1">{st.aqi ?? "–"}</div>
+          <div className="mt-2 text-base sm:text-lg font-bold">{style?.cat ?? "No data"}</div>
         </div>
-        <div className="min-w-0 flex-1 p-4">
-          <div className="text-xs text-muted">Live air in</div>
-          <div className="truncate text-lg font-semibold">{place.name}</div>
+        <div className="min-w-0 flex-1 p-6 sm:p-7 bg-white/55 backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 flex flex-col justify-center">
+          <div className="text-xs sm:text-sm font-medium text-ink/70">Live air in</div>
+          <div className="truncate text-2xl sm:text-3xl font-bold text-ink mt-0.5">{place.name}</div>
           {st.pm25_x10 != null ? (
-            <>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="text-3xl font-semibold tabular-nums">{x10(st.pm25_x10)}</span>
-                <span className="text-sm text-muted">µg/m³ PM2.5</span>
+            <div className="mt-3">
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl sm:text-5xl font-black tabular-nums text-ink">{x10(st.pm25_x10)}</span>
+                <span className="text-base sm:text-lg font-medium text-ink/70">µg/m³ PM2.5</span>
               </div>
-              <div className="text-sm">
-                <b>{(st.pm25_x10 / 10 / WHO_PM25).toFixed(1)}×</b> the WHO 24-hour guideline · PM10 {x10(st.pm10_x10!)} µg/m³
+              <div className="mt-2 text-base sm:text-lg text-ink/90 font-normal">
+                <b className="font-bold">{(st.pm25_x10 / 10 / WHO_PM25).toFixed(1)}×</b> the WHO 24-hour guideline
               </div>
-              <p className="mt-1 text-xs text-muted">{style?.advice}</p>
-            </>
+            </div>
           ) : (
-            <p className="mt-2 text-sm text-muted">No active devices within {RADIUS_KM} km yet. Register one.</p>
+            <p className="mt-3 text-sm text-ink/70 font-medium">No active devices within {RADIUS_KM} km yet. Register one.</p>
           )}
         </div>
       </div>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-line bg-chain-soft/50 px-4 py-2 text-xs text-chain">
+      {/* Verification strip: indigo-tinted glass, same family as the card */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-white/60 bg-chain-soft/75 px-5 py-2.5 text-xs font-medium text-chain backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150">
+        <svg aria-hidden viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+          <path d="M8 1.5l5.5 2v4c0 3.4-2.3 6-5.5 7-3.2-1-5.5-3.6-5.5-7v-4z" />
+        </svg>
         <span>
-          Median of <b>{st.used.length}</b> signed device{st.used.length === 1 ? "" : "s"} within {RADIUS_KM} km
+          Median of <b className="font-bold">{st.used.length}</b> signed device{st.used.length === 1 ? "" : "s"} within {RADIUS_KM} km
         </span>
-        {st.excluded.length > 0 && <span className="text-amber-800">{st.excluded.length} flagged/slashed excluded</span>}
-        {sample && <VerifyBadge reading={sample} />}
-        {st.latestEpoch && <span className="ml-auto text-muted">updated {time(st.latestEpoch)}</span>}
+        {st.excluded.length > 0 && (
+          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-amber-900">{st.excluded.length} flagged/slashed excluded</span>
+        )}
+        {sample && (
+          <Link href={`/records/${recordId(sample)}`} className="rounded-full transition-opacity hover:opacity-80" title="Open this reading and check it yourself">
+            <VerifyBadge reading={sample} />
+          </Link>
+        )}
+        {st.latestEpoch && <span className="ml-auto text-ink/60">updated {time(st.latestEpoch)}</span>}
       </div>
     </div>
   );
@@ -264,25 +339,66 @@ export function HomeDashboard() {
     setSelected(st.used[0]?.device ?? null);
   };
 
-  return (
-    <main className="mx-auto max-w-7xl px-4 py-8">
-      <section className="grid items-start gap-6 lg:grid-cols-[1.1fr_1fr]">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">What is your street breathing right now?</h1>
-          <p className="mt-2 max-w-xl text-muted">
-            Every reading is signed on the sensor, checked against its neighbours, and backed by stake. Search a neighbourhood to see
-            air you can verify yourself.
-          </p>
-          <div className="mt-5">
-            <LocalitySearch onPick={pick} />
-          </div>
-        </div>
-        <AreaCard place={place} />
-      </section>
+  const st = areaStats(devices, place);
+  const currentCat = getCpcbCategory(st.aqi);
+  const headline = CPCB_HEADLINES[currentCat];
 
-      <section className="mt-8">
-        <Stats />
-      </section>
+  return (
+    <main className="w-full">
+      {/* Hero section */}
+      <div className="p-2">
+        <section className="relative w-full h-[calc(100vh-16px)] min-h-[640px] overflow-hidden rounded-2xl border border-line/60 shadow-sm flex flex-col justify-center">
+          {/* Background Images with 2s transition */}
+          <div className="absolute inset-0 select-none pointer-events-none overflow-hidden">
+            {ALL_CATEGORIES.map((cat) => (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                key={cat}
+                src={CPCB_BG[cat]}
+                alt=""
+                aria-hidden="true"
+                className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[2000ms] ease-in-out ${
+                  currentCat === cat ? "opacity-100 z-10" : "opacity-0 z-0"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Foreground content: Left (Headline + Search), Middle (Character space), Right (Live Air Card) */}
+          <div className="relative z-10 mx-auto flex h-full w-full max-w-[1580px] flex-col justify-between p-6 sm:p-10 lg:flex-row lg:items-center lg:gap-12 xl:px-14">
+            {/* Left Section: Shifted more left to occupy larger area with bigger bold black headline */}
+            <div className="w-full lg:max-w-xl xl:max-w-2xl">
+              <div key={`headline-${place.name}-${currentCat}`} className="animate-drop-in">
+                <h1 className="text-5xl font-black tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl leading-[0.98] text-white [text-shadow:-7px_30px_25px_rgba(0,0,0,0.65)]">
+                  {headline}
+                </h1>
+                <p className="mt-5 max-w-xl rounded-2xl border border-black/20 bg-black/5 px-5 py-4 text-base font-bold leading-relaxed text-black/90 shadow-md backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 sm:text-lg lg:text-xl">
+                  Every reading is signed on the sensor, checked against its neighbours, and backed by stake. Search a
+                  neighbourhood to see air you can verify yourself.
+                </p>
+              </div>
+              <div className="mt-6 animate-drop-in-delay-1">
+                <LocalitySearch onPick={pick} currentPlaceName={place.name} />
+              </div>
+            </div>
+
+            {/* Middle Section: Character is visible in the background image */}
+            <div className="hidden lg:block lg:flex-1 min-w-[80px] xl:min-w-[140px] pointer-events-none self-stretch" aria-hidden="true" />
+
+            {/* Right Section: Bigger Live Air Card with blurred white section */}
+            <div className="w-full lg:max-w-lg xl:max-w-xl flex lg:justify-end">
+              <div key={`card-${place.name}-${currentCat}`} className="w-full animate-drop-in-delay-2">
+                <AreaCard place={place} />
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <section className="mt-8">
+          <Stats />
+        </section>
 
       <section className="mt-8">
         <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
@@ -314,6 +430,7 @@ export function HomeDashboard() {
           <p className="mt-3 text-[11px] text-muted">Median of active devices within {RADIUS_KM} km of each locality centre.</p>
         </div>
       </section>
+      </div>
     </main>
   );
 }
