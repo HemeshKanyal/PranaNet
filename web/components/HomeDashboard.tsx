@@ -208,7 +208,7 @@ function DevicePanel({ address, onClose }: { address: string; onClose: () => voi
         </dl>
       )}
       <div className="mt-3 flex-1">
-        <LiveChart readings={readings} flags={flags.filter((f) => f.device === d.device)} height={130} compact />
+        <LiveChart readings={readings} flags={flags.filter((f) => f.device === d.device)} height={190} compact />
       </div>
       <div className="mt-3 flex gap-2 text-sm">
         <Link href={`/devices/${d.ens}`} className="flex-1 rounded-lg bg-ink px-3 py-2 text-center font-medium text-white">Device page</Link>

@@ -19,7 +19,7 @@ export function SiteHeader() {
   const { conn, devices } = useLive();
   const active = devices.filter((d) => d.status === "active").length;
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-surface/90 backdrop-blur">
+    <header className="z-50 border-b sm:sticky sm:top-0 border-line bg-surface/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
           <svg viewBox="0 0 24 24" className="h-6 w-6 text-brand" aria-hidden fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
