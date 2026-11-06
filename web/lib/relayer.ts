@@ -41,6 +41,16 @@ export async function getDevice(ens: string): Promise<DeviceDetail | null> {
   return (await res.json()) as DeviceDetail;
 }
 
+/** Accepts an ENS name or a 0x device address (the relayer itself is keyed by ENS). */
+export async function resolveDevice(id: string): Promise<DeviceDetail | null> {
+  const key = id.toLowerCase();
+  if (/^0x[0-9a-f]{40}$/.test(key)) {
+    const d = (await getDevices()).find((x) => x.device === key);
+    return d ? getDevice(d.ens) : null;
+  }
+  return getDevice(key);
+}
+
 export async function getReadings(ens: string, from?: number, to?: number): Promise<Reading[]> {
   if (USING_MOCKS) {
     const d = await getDevice(ens);
