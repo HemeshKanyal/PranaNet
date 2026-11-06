@@ -9,5 +9,12 @@
   "deployBlock": 12075670,
   "minStakeWei": 1000000000000000,
   "rewardPerEpochWei": 10000000000000,
-  "verifier": "0x1AD82847bb608184465cE3E0de36AF767ddE6d20"
+  "verifier": "0x1AD82847bb608184465cE3E0de36AF767ddE6d20",
+  "ens": {
+    "parent": "prananet.eth",
+    "resolver": "0x5d05e294e7bee7CC8c86d05732CEB2FCE8789dF3",
+    "userRegistry": "0xb6C4779845D6d0875DC6F7BCF7C656990D1A8b63",
+    "ethRegistry": "0xd4ebcbbdf463c9c45784603db0ddd499bc44a8b4",
+    "universalResolver": "0x24e1d8e068620b647ca097f961a61055f4f42d72"
+  }
 }
