@@ -49,13 +49,13 @@ export function SiteHeader() {
   const story = path === "/";
   return (
     <header className="z-50 bg-ground text-cream sm:sticky sm:top-0">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-8 gap-y-2 px-4 pt-3 sm:px-6 md:h-[72px] md:flex-nowrap md:pt-0">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-8 gap-y-2 px-4 pt-3 sm:px-6 lg:h-[72px] lg:flex-nowrap lg:pt-0">
         <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="PranaNet home">
           <LogoEye size={42} />
           <span className="font-[family-name:var(--font-rozha)] text-[1.7rem] leading-none text-cream">PranaNet</span>
         </Link>
 
-        <nav className="order-last -mx-4 flex w-[calc(100%+2rem)] gap-5 overflow-x-auto px-4 pb-2.5 text-base font-semibold [mask-image:linear-gradient(to_right,black_82%,transparent)] [scrollbar-width:none] md:gap-6 md:text-[1.05rem] md:[mask-image:none] md:order-none md:mx-0 md:w-auto md:overflow-visible md:px-0 md:pb-0">
+        <nav className="order-last -mx-4 flex w-[calc(100%+2rem)] gap-5 overflow-x-auto px-4 pb-2.5 text-base font-semibold [mask-image:linear-gradient(to_right,black_82%,transparent)] [scrollbar-width:none] lg:gap-6 lg:text-[1.05rem] md:[mask-image:none] lg:order-none lg:mx-0 lg:w-auto lg:overflow-visible lg:px-0 lg:pb-0">
           {NAV.map((n) => {
             const on = n.href === "/" ? path === "/" : path.startsWith(n.href);
             return (
@@ -63,7 +63,7 @@ export function SiteHeader() {
                 key={n.href}
                 href={n.href}
                 aria-current={on ? "page" : undefined}
-                className={`relative shrink-0 whitespace-nowrap py-2 transition-colors ${"wide" in n ? "md:hidden xl:block" : ""} ${on ? "text-saffron" : "text-cream/75 hover:text-cream"}`}
+                className={`relative shrink-0 whitespace-nowrap py-2 transition-colors ${"wide" in n ? "lg:hidden xl:block" : ""} ${on ? "text-saffron" : "text-cream/75 hover:text-cream"}`}
               >
                 {n.label}
                 {/* folk diamond under the current page */}
@@ -96,7 +96,7 @@ export function SiteHeader() {
       </svg>
 
       {/* Chain strip (app pages): the verification infrastructure */}
-      <div className={story ? "hidden" : "hidden bg-[#1d1711] sm:block"}>
+      <div className={story ? "hidden" : "hidden bg-[#1d1711] lg:block"}>
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-5 gap-y-1 px-4 py-1.5 text-xs font-medium text-sand sm:px-6">
           <span className="font-semibold uppercase tracking-wide text-cream/80">Verified by</span>
           <span>Sepolia · chain {CHAIN_ID}</span>

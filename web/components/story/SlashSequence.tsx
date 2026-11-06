@@ -85,7 +85,7 @@ export function SlashSequence() {
                 <span>bkc-02 stake</span>
                 <span>reward pool</span>
                 <span
-                  className="absolute left-[5.75rem] top-[calc(50%-1rem)] flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#b9770e] bg-saffron text-[10px] font-bold text-kohl shadow transition-transform duration-1000 ease-in-out"
+                  className="absolute left-[5.75rem] top-[calc(50%-1rem)] flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#b9770e] bg-saffron text-xs font-bold text-kohl shadow transition-transform duration-1000 ease-in-out"
                   style={{ transform: step >= 4 ? "translateX(calc(100cqw - 13.25rem))" : "none" }}
                   aria-label={`${SLASH_RUN.stakeEth} ETH stake ${step >= 4 ? "in the reward pool" : "held by the node"}`}
                 >

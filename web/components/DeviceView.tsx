@@ -127,7 +127,7 @@ export function DeviceView({ initial }: { initial: DeviceDetail }) {
                 return (
                   <tr key={x.nonce} className={flagged ? "bg-amber-400/10" : ""}>
                     <td className="px-4 py-1.5">{time(x.epoch)}</td>
-                    <td className="px-4 py-1.5 tabular-nums">{x10(x.pm25_x10)}{flagged && <span className="ml-1 text-[10px] font-medium text-amber-300">flagged</span>}</td>
+                    <td className="px-4 py-1.5 tabular-nums">{x10(x.pm25_x10)}{flagged && <span className="ml-1 text-xs font-medium text-amber-300">flagged</span>}</td>
                     <td className="px-4 py-1.5 tabular-nums">{x10(x.pm10_x10)}</td>
                     <td className="px-4 py-1.5 tabular-nums">{x10(x.temp_x10)}</td>
                     <td className="px-4 py-1.5 tabular-nums">{x10(x.hum_x10)}</td>

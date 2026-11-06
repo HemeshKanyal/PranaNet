@@ -127,7 +127,7 @@ function AreaCard({ place }: { place: Place }) {
           className="flex w-32 shrink-0 flex-col items-center justify-center p-4 text-center sm:w-40"
           style={{ background: style?.bg ?? "var(--color-line)", color: style?.fg ?? "var(--color-muted)" }}
         >
-          <div className="text-[11px] font-semibold uppercase tracking-wider opacity-90">AQI</div>
+          <div className="text-xs font-semibold uppercase tracking-wider opacity-90">AQI</div>
           <div className="mt-0.5 text-5xl font-black leading-none tabular-nums sm:text-6xl">{st.aqi ?? "–"}</div>
           <div className="mt-1.5 text-sm font-bold">{style?.cat ?? "No data"}</div>
         </div>
@@ -197,7 +197,7 @@ function Stats() {
         <div key={t.label} className="card px-4 py-3">
           <div className="text-xs text-muted">{t.label}</div>
           <div className="text-2xl font-semibold tabular-nums">{t.value}</div>
-          <div className="text-[11px] text-muted">{t.sub}</div>
+          <div className="text-xs text-muted">{t.sub}</div>
         </div>
       ))}
     </div>
@@ -362,7 +362,7 @@ export function HomeDashboard() {
         <div className="card p-4">
           <h2 className="mb-3 font-semibold">Areas, worst to best</h2>
           <Ranking areas={areas} onPick={pick} />
-          <p className="mt-3 text-[11px] text-muted">Median of active devices within {RADIUS_KM} km of each area centre.</p>
+          <p className="mt-3 text-xs text-muted">Median of active devices within {RADIUS_KM} km of each area centre.</p>
         </div>
       </section>
     </main>

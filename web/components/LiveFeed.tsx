@@ -16,7 +16,7 @@ function Row({ e }: { e: LiveEvent }) {
         <span className="tabular-nums text-muted">PM2.5 {x10(r.pm25_x10)} · PM10 {x10(r.pm10_x10)}</span>
         <span className="ml-auto flex items-center gap-2">
           <VerifyBadge reading={r} compact />
-          <Link href={`/records/${recordId(r)}`} className="text-[11px] text-chain hover:underline">#{r.nonce}</Link>
+          <Link href={`/records/${recordId(r)}`} className="text-xs text-chain hover:underline">#{r.nonce}</Link>
         </span>
       </li>
     );
@@ -30,7 +30,7 @@ function Row({ e }: { e: LiveEvent }) {
         <span className="text-amber-300/80">
           {x10(f.value_x10)} vs neighbour median {x10(f.median_x10)} µg/m³ · {f.reason.replace("_", " ")}
         </span>
-        <span className="ml-auto text-[11px] text-amber-300/70">Registry.flag() · {time(f.epoch)}</span>
+        <span className="ml-auto text-xs text-amber-300/70">Registry.flag() · {time(f.epoch)}</span>
       </li>
     );
   }
@@ -40,7 +40,7 @@ function Row({ e }: { e: LiveEvent }) {
       <span className="h-2 w-2 rounded-full bg-red-600" aria-hidden />
       <span className="font-medium text-red-300">Slashed {s.ens}</span>
       <span className="text-red-300/80">3 consecutive flags · stake moved to reward pool · ENS revoked</span>
-      <a href={txUrl(s.tx)} target="_blank" rel="noreferrer" className="ml-auto font-mono text-[11px] text-chain hover:underline">
+      <a href={txUrl(s.tx)} target="_blank" rel="noreferrer" className="ml-auto font-mono text-xs text-chain hover:underline">
         tx {s.tx.slice(0, 10)}… ↗
       </a>
     </li>

@@ -85,7 +85,7 @@ export function DevicesTable() {
                     <Link href={`/devices/${d.ens}`} className="font-medium hover:underline">{d.ens}</Link>
                     <div className="flex items-center gap-2 text-xs text-muted">
                       <a href={addressUrl(d.device)} target="_blank" rel="noreferrer" className="font-mono text-chain hover:underline">{short(d.device)}</a>
-                      {d.simulated && <span className="rounded bg-bg px-1 text-[10px]">simulated</span>}
+                      {d.simulated && <span className="rounded bg-bg px-1 text-xs">simulated</span>}
                     </div>
                   </td>
                   <td className="px-4 py-2.5">

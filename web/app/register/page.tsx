@@ -23,7 +23,7 @@ export default function RegisterPage() {
           <ol className="space-y-3 p-4 text-sm">
             {ONCHAIN.map(([t, d], i) => (
               <li key={t} className="flex gap-3">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-chain text-[11px] font-semibold text-ground">{i + 1}</span>
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-chain text-xs font-semibold text-ground">{i + 1}</span>
                 <div>
                   <div className="font-medium">{t}</div>
                   <div className="text-muted">{d}</div>

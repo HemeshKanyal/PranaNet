@@ -80,8 +80,8 @@ export function RecordView({ rec }: { rec: ArkivRecord }) {
       {/* Arkiv entity */}
       <section className="card mt-6 overflow-hidden">
         <div className="flex flex-wrap items-center gap-2 border-b border-line bg-chain-soft/60 px-4 py-2">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-chain">Arkiv entity</h2>
-          {isMock && <span className="rounded bg-amber-400/15 px-1.5 py-0.5 text-[11px] font-medium text-amber-300">mock until the Arkiv writer is live</span>}
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-chain">Arkiv entity</h3>
+          {isMock && <span className="rounded bg-amber-400/15 px-1.5 py-0.5 text-xs font-medium text-amber-300">mock until the Arkiv writer is live</span>}
           {!isMock && (
             <a className="ml-auto text-xs text-chain hover:underline" href={arkivEntityUrl(rec.entityKey)} target="_blank" rel="noreferrer">
               Open in Arkiv explorer ↗
@@ -105,7 +105,7 @@ export function RecordView({ rec }: { rec: ArkivRecord }) {
             <dt className="mb-1 text-xs text-muted">Queryable attributes</dt>
             <dd className="flex flex-wrap gap-1.5">
               {Object.entries(rec.attributes).map(([k, val]) => (
-                <span key={k} className="rounded-md bg-bg px-2 py-0.5 font-mono text-[11px]">{k} = {String(val)}</span>
+                <span key={k} className="rounded-md bg-bg px-2 py-0.5 font-mono text-xs">{k} = {String(val)}</span>
               ))}
             </dd>
           </div>

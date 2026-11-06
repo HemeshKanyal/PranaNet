@@ -14,6 +14,12 @@
   --color-chain-soft: #1f1c33;
   --color-brand: #f2a12e;
   --font-sans: var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
+  /* Container widths fixed to the 18 px scale, so pages keep their margins on a 1440 px screen */
+  --container-3xl: 44rem;
+  --container-4xl: 50rem;
+  --container-5xl: 56rem;
+  --container-6xl: 64rem;
+  --container-7xl: 69rem;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   /* Story palette (docs/STORY.md), taken from the folk-art scenes */
   --color-vermilion: #c8341e;
@@ -31,6 +37,30 @@
 
 :root {
   color-scheme: dark;
+}
+
+/* One type scale for the whole site: everything sized in rem grows together. */
+html { font-size: 106.25%; }          /* 17 px on phones */
+@media (min-width: 768px) {
+  html { font-size: 112.5%; }         /* 18 px from tablets up */
+}
+
+/* App pages speak the story's language: Rozha headings, one size per level. */
+main:not(.story) h1 {
+  font-family: var(--font-display, var(--font-rozha)), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 2.9rem);
+  line-height: 1.12;
+  color: var(--color-cream);
+}
+main:not(.story) h2 {
+  font-family: var(--font-rozha), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: 1.45rem;
+  line-height: 1.25;
+  color: var(--color-cream);
 }
 
 body {
@@ -65,7 +95,7 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  font: 600 11px/1 var(--font-sans);
+  font: 600 0.72rem/1 var(--font-sans);
   box-shadow: 0 0 0 2px #15110c, 0 1px 4px rgb(0 0 0 / 0.5);
   transition: transform 0.15s;
 }

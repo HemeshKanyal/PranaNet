@@ -34,7 +34,7 @@ export default function AboutPage() {
               <div className="flex items-center gap-2">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ink text-xs font-semibold text-ground">{i + 1}</span>
                 <h3 className="font-semibold">{p.who}</h3>
-                <span className="ml-auto rounded-full bg-chain-soft px-2 py-0.5 font-mono text-[10px] text-chain">{p.chain}</span>
+                <span className="ml-auto rounded-full bg-chain-soft px-2 py-0.5 font-mono text-xs text-chain">{p.chain}</span>
               </div>
               <p className="mt-2 text-sm text-muted">{p.what}</p>
             </li>
