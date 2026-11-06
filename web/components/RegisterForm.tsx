@@ -101,7 +101,7 @@ export function RegisterForm() {
           <div className="text-sm">
             <span className="mb-1 block text-muted">Location cell (6-character geohash, about 1.2 × 0.6 km). Only this cell is published.</span>
             <div className="flex flex-wrap gap-2">
-              <input className={`${input} w-32 font-mono`} value={geohash} onChange={(e) => setGeohash(e.target.value.toLowerCase().slice(0, 6))} placeholder="te7u3q" spellCheck={false} />
+              <input className={`${input} w-32 font-mono`} value={geohash} onChange={(e) => setGeohash(e.target.value.toLowerCase().slice(0, 6))} placeholder="te7u6n" spellCheck={false} />
               <select
                 className={`${input} w-auto`}
                 value=""

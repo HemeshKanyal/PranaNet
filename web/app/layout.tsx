@@ -4,6 +4,7 @@ import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { LiveProvider } from "@/components/LiveProvider";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { getDevices, RELAYER_URL } from "@/lib/relayer";
 import { getFlags } from "@/lib/arkiv";
 
@@ -30,10 +31,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         >
           <SiteHeader />
           {children}
-          <footer className="mx-auto mt-16 max-w-7xl px-4 pb-10 text-xs text-muted">
-            PranaNet · ETHGlobal Mumbai 2026 · Sensor values are a PM proxy (Sharp GP2Y1014AU0F); AQI shown is indicative,
-            computed on instant readings with India&apos;s CPCB breakpoints.
-          </footer>
+          <SiteFooter />
         </LiveProvider>
       </body>
     </html>
