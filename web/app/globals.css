@@ -285,3 +285,43 @@ body {
   .eye-blink .eye-ball, .eye:hover .eye-ball, .eye-pulse { animation: none; }
   .flip-inner, .stage-tilt { transition: none; }
 }
+
+
+/* Refinement: keep the painted identity, give content and controls a calmer frame. */
+.site-header { border-bottom: 1px solid var(--color-line); }
+.site-header > svg { display: none; }
+.site-header nav a { font-size: .88rem; }
+.site-header nav a[aria-current="page"] { color: var(--color-cream); }
+.site-header nav a > span[aria-hidden] { display: none; }
+.site-header nav a[aria-current="page"]::after {
+  content: ""; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px; background: var(--color-saffron);
+}
+.story-hero > div { padding-top: clamp(2rem, 5vw, 5rem); padding-bottom: 3.5rem; }
+.story-hero h1 { font-size: clamp(2.5rem, 4.5vw, 4rem); line-height: 1.06; letter-spacing: -.025em; }
+.story-hero .prose-col { max-width: 34ch; font-size: 1.2rem; line-height: 1.55; color: var(--color-sand); }
+.hero-reading { border-radius: 6px; background: var(--color-surface); color: var(--color-cream); padding: 1rem; font-size: .88rem; box-shadow: none; }
+.hero-reading .text-kohl\/80 { color: var(--color-sand); }
+.story-contents { padding-top: 1.5rem; padding-bottom: 3rem; }
+.story-contents ol { column-gap: 2rem; }
+.story-contents a { min-height: 48px; font-size: .95rem; }
+.ledger { box-shadow: none; border-radius: 8px; }
+.ledger::before { display: none; }
+.card { border-radius: 8px; }
+.btn-primary { background: var(--color-saffron); color: var(--color-kohl); box-shadow: none; }
+.btn-primary:hover { background: var(--color-cream); }
+.btn-primary::before { display: none; }
+button, a, input, select { touch-action: manipulation; }
+main:not(.story) h1 { font-size: clamp(1.65rem, 2.5vw, 2rem); }
+@media (max-width: 767px) {
+  .story-hero > div { gap: 1.5rem; padding-top: 2.25rem; padding-bottom: 1.5rem; }
+  .story-hero h1 { font-size: clamp(2rem, 9vw, 3rem); }
+  .story-hero .prose-col { font-size: 1.1rem; }
+  .hero-art .stage { max-width: 260px; }
+  .hero-reading { width: 100%; }
+  .site-header nav a { min-height: 44px; display: inline-flex; align-items: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

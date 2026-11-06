@@ -5,8 +5,8 @@ import { CHAPTERS } from "@/lib/story/chapters";
 /** Contents list under the hero (I–IX). */
 export function Contents() {
   return (
-    <nav aria-label="Chapters" className="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
-      <p className="text-sm font-bold uppercase tracking-[0.25em] text-sand">Contents</p>
+    <nav aria-label="Chapters" className="story-contents mx-auto max-w-6xl px-4 pb-14 sm:px-6">
+      <p className="text-base font-semibold text-sand">Explore the story</p>
       <ol className="mt-3 grid gap-x-8 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
         {CHAPTERS.map((c) => (
           <li key={c.id}>
