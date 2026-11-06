@@ -90,5 +90,5 @@ echo "  records -> $(send "$RESOLVER" "multicall(bytes[])" "[$($C calldata "setT
 
 tmp=$(mktemp)
 jq --arg p "$LABEL.eth" --arg r "$RESOLVER" --arg u "$USERREG" --arg e $ETH_REGISTRY --arg ur 0x24e1d8e068620b647ca097f961a61055f4f42d72 \
-  '.ens = {parent: $p, resolver: $r, userRegistry: $u, ethRegistry: $e, universalResolver: $ur}' deployments/sepolia.json > "$tmp" && mv "$tmp" deployments/sepolia.json
+  '.ens = {parent: $p, resolver: $r, userRegistry: $u, ethRegistry: $e, universalResolver: $ur}' deployments/sepolia.json > "$tmp" && mv "$tmp" deployments/sepolia.json && chmod 644 deployments/sepolia.json
 echo "written deployments/sepolia.json .ens"
