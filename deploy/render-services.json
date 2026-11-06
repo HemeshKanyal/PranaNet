@@ -1,0 +1,10 @@
+{
+  "relayer": "https://prananet-relayer.onrender.com",
+  "verifier": "https://prananet-verifier.onrender.com",
+  "api": "https://prananet-api.onrender.com",
+  "ids": {
+    "relayer": "srv-dbms66h5efls738fa1j0",
+    "verifier": "srv-dbms67rbc2fs73aq8e70",
+    "api": "srv-dbms68h5efls738fa7d0"
+  }
+}
