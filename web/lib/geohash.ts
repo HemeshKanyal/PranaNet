@@ -10,8 +10,8 @@ export interface Cell {
 
 export function decode(hash: string): Cell {
   let even = true;
-  let lat: [number, number] = [-90, 90];
-  let lon: [number, number] = [-180, 180];
+  const lat: [number, number] = [-90, 90];
+  const lon: [number, number] = [-180, 180];
   for (const c of hash.toLowerCase()) {
     const n = B32.indexOf(c);
     if (n < 0) throw new Error(`bad geohash: ${hash}`);
@@ -29,8 +29,8 @@ export function decode(hash: string): Cell {
 
 export function encode(lat: number, lon: number, precision = 6): string {
   let even = true;
-  let la: [number, number] = [-90, 90];
-  let lo: [number, number] = [-180, 180];
+  const la: [number, number] = [-90, 90];
+  const lo: [number, number] = [-180, 180];
   let out = "";
   let bits = 0;
   let n = 0;
