@@ -20,7 +20,7 @@ const pub = makePublicClient(config);
 const chain = new ChainIndex(pub, config);
 const store: Store = config.arkivEnabled && config.arkivKey ? new ArkivStore(config) : new MemoryStore();
 const queue = new TxQueue(pub, config);
-const register = makeRegister(config, pub, chain);
+const register = makeRegister(config, pub, queue);
 
 const { server, finishSync } = createApp({ cfg: config, chain, store, submitter: queue, register });
 

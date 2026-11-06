@@ -29,7 +29,7 @@ export interface Submitter {
   submit(r: Reading): Promise<TxResult>;
 }
 
-type Job = { reading: Reading; resolve: (r: TxResult) => void };
+type Job = { run: () => Promise<void> };
 
 export class TxQueue implements Submitter {
   readonly address: Address;
@@ -56,8 +56,18 @@ export class TxQueue implements Submitter {
   submit(reading: Reading): Promise<TxResult> {
     const k = reading.device.toLowerCase();
     this.pending.set(k, Math.max(this.pendingNonce(reading.device), reading.nonce));
-    return new Promise((resolve) => {
-      this.jobs.push({ reading, resolve });
+    return this.exclusive(async () => {
+      const res = await this.send(reading);
+      if (this.pending.get(k) === reading.nonce) this.pending.delete(k);
+      this.onResult(reading, res);
+      return res;
+    });
+  }
+
+  /** Run `fn` with the relayer wallet while no other job is sending (keeps the account nonce in order). */
+  exclusive<T>(fn: (wallet: typeof this.wallet) => Promise<T>): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      this.jobs.push({ run: () => fn(this.wallet).then(resolve, reject) });
       void this.drain();
     });
   }
@@ -71,11 +81,7 @@ export class TxQueue implements Submitter {
     this.running = true;
     while (this.jobs.length) {
       const job = this.jobs.shift()!;
-      const res = await this.send(job.reading);
-      const k = job.reading.device.toLowerCase();
-      if (this.pending.get(k) === job.reading.nonce) this.pending.delete(k);
-      this.onResult(job.reading, res);
-      job.resolve(res);
+      await job.run().catch(() => {});
     }
     this.running = false;
   }

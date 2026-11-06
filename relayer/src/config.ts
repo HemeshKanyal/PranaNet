@@ -56,6 +56,9 @@ export const config = {
   worldAction: env("WORLD_ACTION", "register-device"),
   worldRpId: env("WORLD_RP_ID"),
   worldSigningKey: env("WORLD_SIGNING_KEY") as Hex | "",
+  // Owner recorded for devices registered through POST /register (stakes and claims rewards).
+  // TEAM.md's register body has no owner field, so it is the operator wallet; default: relayer.
+  deviceOwner: env("DEVICE_OWNER", (deployment.admin as string) ?? ""),
   // Dev only: allow POST /register without a World ID proof (never in production).
   allowDevRegister: env("ALLOW_DEV_REGISTER", "false") === "true",
 };
