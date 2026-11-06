@@ -19,6 +19,9 @@ async function get<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
+/** The relayer returns newest first; the UI (charts, prev/next) expects oldest first. */
+const byNonce = (rs: Reading[]) => [...rs].sort((a, b) => a.nonce - b.nonce);
+
 // ENS names are used as file names / path segments; reject anything odd.
 const ENS_RE = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/;
 
@@ -38,7 +41,18 @@ export async function getDevice(ens: string): Promise<DeviceDetail | null> {
   const res = await fetch(`${RELAYER_URL}/devices/${encodeURIComponent(ens)}`, { cache: "no-store" });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`relayer /devices/${ens}: ${res.status}`);
-  return (await res.json()) as DeviceDetail;
+  const d = (await res.json()) as DeviceDetail;
+  return { ...d, readings: byNonce(d.readings) };
+}
+
+/** Accepts an ENS name or a 0x device address (the relayer itself is keyed by ENS). */
+export async function resolveDevice(id: string): Promise<DeviceDetail | null> {
+  const key = id.toLowerCase();
+  if (/^0x[0-9a-f]{40}$/.test(key)) {
+    const d = (await getDevices()).find((x) => x.device === key);
+    return d ? getDevice(d.ens) : null;
+  }
+  return getDevice(key);
 }
 
 export async function getReadings(ens: string, from?: number, to?: number): Promise<Reading[]> {
@@ -49,7 +63,7 @@ export async function getReadings(ens: string, from?: number, to?: number): Prom
   const q = new URLSearchParams();
   if (from != null) q.set("from", String(from));
   if (to != null) q.set("to", String(to));
-  return get<Reading[]>(`/devices/${encodeURIComponent(ens)}/readings?${q}`);
+  return byNonce(await get<Reading[]>(`/devices/${encodeURIComponent(ens)}/readings?${q}`));
 }
 
 export async function register(body: RegisterRequest): Promise<RegisterResponse> {
