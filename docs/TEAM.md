@@ -1,12 +1,13 @@
 # Team split and interfaces
 
-Three people, three folders, one contract between them (this file). Nobody edits another person's folder. If someone gets stuck, their folder can be picked up on any laptop without touching the others.
+Three people, one contract between them (this file). **Update Fri 14:45:** Siddhartha is at Devcon; Hemesh now owns `verifier/`, `api/` and `agent/` too. Siddhartha's `verifier` branch is merged into `main` and his work is kept. The shapes below are unchanged.
+Nobody edits another person's folder. If someone gets stuck, their folder can be picked up on any laptop without touching the others.
 
 | Owner | Folders | Builds | Milestones |
 |---|---|---|---|
-| **Hemesh** | `firmware/`, `contracts/`, `relayer/`, `arkiv/`, `docs/`, root files | Signing on ESP32, contracts, relayer (intake, Arkiv writes, Sepolia tx, World ID server check, ENS) | M1, M3 backend, M4 contracts |
+| **Hemesh** | `firmware/`, `contracts/`, `relayer/`, `arkiv/`, `docs/`, root files, and since Fri 14:45 `verifier/`, `api/`, `agent/` | Signing on ESP32, contracts, relayer (intake, Arkiv writes, Sepolia tx, World ID server check, ENS); now also the verifier, x402 data API on Hedera and paying agent | M1, M3 backend, M4, M5 |
 | **Arpan** (arpan2006hub) | `web/` only | Next.js dashboard on Vercel: map by geohash, device page, live chart, Arkiv-backed view, register page with IDKit widget | M2, M3 frontend |
-| **Siddhartha** (siddhartha7419) | `verifier/`, `api/`, `agent/` | Simulated neighbour devices, OpenAQ fetch, cross-check and flagging, x402 data API on Hedera, paying agent | M4 logic, M5 |
+| **Siddhartha** (siddhartha7419) | ~~`verifier/`, `api/`, `agent/`~~ (handed over Fri 14:45, at Devcon) | Started the verifier, api and agent scaffolds (merged from the `verifier` branch) | — |
 
 ## Git rules (no conflicts)
 
@@ -31,8 +32,8 @@ Nobody waits for anybody. Build against the shapes below with mock data, then sw
 | Service | Port | Owner |
 |---|---|---|
 | relayer | 8080 | Hemesh |
-| verifier | 8081 | Siddhartha |
-| api (x402) | 8082 | Siddhartha |
+| verifier | 8081 | Hemesh (was Siddhartha) |
+| api (x402) | 8082 | Hemesh (was Siddhartha) |
 | web | 3000 | Arpan |
 
 ## Shared shapes
@@ -84,11 +85,11 @@ EIP-191 personal_sign over that hash. Nonce starts at 1, strictly increasing.
 
 Verifier calls `Registry.flag(address device, uint256 epoch, uint8 reason)` with the verifier key (reason 1 = neighbour outlier, 2 = station outlier). Three consecutive flags slash on-chain. ABI comes from `contracts/out/` once Hemesh adds `flag`.
 
-### Verifier output (Siddhartha)
+### Verifier output (Hemesh, started by Siddhartha)
 
 `GET /cells/:geohash` → `{ geohash, epoch, pm25_x10, pm10_x10, devices_used, devices_flagged, station: { name, pm25_x10 } | null }`
 
-### Paid API (Siddhartha)
+### Paid API (Hemesh, started by Siddhartha)
 
 `GET /api/aqi?geohash=te7ud2` behind x402 on `hedera:testnet`; returns the verifier cell object. Revenue address set by `PAY_TO` env.
 
