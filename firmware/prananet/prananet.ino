@@ -84,6 +84,12 @@ float baselineMv = NAN;
 float calUg = CAL_AMBIENT_UG;  // PM2.5 (ug/m3) that the boot baseline stands for
 double baselineSum = 0;
 uint32_t baselineCount = 0;
+// The baseline may only move down. Dirty air during the boot window (smoke, tissue at the inlet)
+// would otherwise set a high baseline and every later clean reading would clamp to 0. A short
+// moving average (~10 s) of Vo is tracked and the baseline follows its minimum, so sample noise
+// alone can't drag it down.
+constexpr float BASE_EMA_ALPHA = 0.1f;
+float baseEmaMv = NAN;
 uint32_t bootMs = 0;
 
 // ---------------------------------------------------------------- identity
@@ -226,7 +232,7 @@ static void handleSerial() {
     else if (line == "selftest") selftest();
     else if (line == "status") status();
     else if (line == "newkey") newKey();
-    else if (line == "cal") Serial.printf("cal=%.1fug/m3 (boot baseline %.0f mV stands for this)\n", calUg, baselineMv);
+    else if (line == "cal") Serial.printf("cal=%.1fug/m3 (baseline %.0f mV, lowest seen since boot, stands for this)\n", calUg, baselineMv);
     else if (line.startsWith("cal ")) {
       float v = line.substring(4).toFloat();
       if (v >= 0 && v < 1000) {
@@ -261,8 +267,9 @@ static int postReading(const char *json, String &resp) {
 static void finishEpoch(uint64_t epoch) {
   if (epCount == 0) return;
   float avgMv = epSumMv / epCount;
+  // Never below the baseline: the baseline stands for calUg, so report that, never 0.
   float dust = calUg + (avgMv - baselineMv) * UG_PER_MV;
-  if (dust < 0) dust = 0;
+  if (dust < calUg) dust = calUg;
 
   EthReading r{};
   memcpy(r.device, devAddr, 20);
@@ -362,7 +369,13 @@ void loop() {
   }
   if (isnan(baselineMv)) {
     baselineMv = baselineCount ? (float)(baselineSum / baselineCount) : voMv;
+    baseEmaMv = baselineMv;
     Serial.printf("Baseline set: %.0f mV (%lu samples)\n", baselineMv, (unsigned long)baselineCount);
+  }
+  baseEmaMv += BASE_EMA_ALPHA * (voMv - baseEmaMv);
+  if (baseEmaMv < baselineMv - 1.0f) {  // 1 mV hysteresis keeps the log quiet
+    baselineMv = baseEmaMv;
+    Serial.printf("Baseline lowered: %.0f mV\n", baselineMv);
   }
 
   if (!timeValid()) {

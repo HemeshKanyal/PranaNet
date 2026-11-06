@@ -92,6 +92,8 @@ Serial commands: `addr`, `selftest` (check with `cd relayer && npm run verify-ve
 
 ## Demo script (≈4 min)
 
+> **Keep the sensor clear whenever a board resets**: plugging it in, flashing, opening the serial port (it resets a classic ESP32), and `demo-reset`. The board measures its clean-air baseline for the first 10 s after boot. Remove tissue and wait for smoke or incense to clear first. Since prompt 04 the baseline can only move down and readings never go below it (no false zeros), but a dirty boot still under-reports until the air clears.
+
 1. **Map** (`web/` → home): two real devices at the venue cell `te7u6n` next to 5 clearly labelled simulated neighbours; cell value ≈ the BKC reference station (OpenAQ, 0.5 km).
 2. **Signed data**: open `bkc-01.prananet.eth` → live chart; open a record → "raw data on Arkiv": entity, writer wallet, expiry, the query, and the signature re-verified in the browser. Show `npx tsx scripts/arkiv-query.ts te7u6n` returning the same data from Arkiv directly.
 3. **Forged reading**: `npm run fake-reading -- --device <addr> --relayer https://prananet-relayer.onrender.com` → relayer 401 and an on-chain `InvalidSignature` revert.
@@ -99,7 +101,7 @@ Serial commands: `addr`, `selftest` (check with `cd relayer && npm run verify-ve
 5. **Cheat and get slashed**: tissue or incense on device 2 → 3 neighbour-outlier flags appear live (WS) → `DeviceSlashed`: stake to the pool, status `slashed`, ENS name cleared (`prananet.status = slashed`).
 6. **Agent pays**: `cd agent && npm start` → 402 → pays 0.1 HBAR → data + HashScan link → HCS message.
 7. **Money flows to the honest**: `cd api && npm run bridge` → `fundPool`; `claimRewards(bkc-01)` pays; `claimRewards(bkc-02)` reverts `DeviceNotActive`.
-8. **Reset for the next take**: `cd relayer && npm run demo-reset` (new key on the board, next label, another simulator human, staked). Run `npm run demo-reset -- --warm` once well before.
+8. **Reset for the next take** (sensor clear, see above): `cd relayer && npm run demo-reset` (new key on the board, next label, another simulator human, staked). Run `npm run demo-reset -- --warm` once well before.
 
 ## Layout
 
