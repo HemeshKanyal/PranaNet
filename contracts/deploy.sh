@@ -10,7 +10,10 @@ set -a; source .env; set +a
 
 args=(script script/Deploy.s.sol:Deploy --rpc-url "$SEPOLIA_RPC_URL")
 if [ "${1:-}" != "--dry-run" ]; then
-  args+=(--broadcast)
+  # Sepolia now charges far more for contract creation (state growth pricing) than forge's
+  # local simulation assumes: Registry needs ~10.3M gas on-chain vs ~1.5M simulated (7x). Without a
+  # multiplier every CREATE runs out of gas. Unused gas is refunded, so overshooting is cheap.
+  args+=(--broadcast --gas-estimate-multiplier "${GAS_ESTIMATE_MULTIPLIER:-900}")
   [ -n "${ETHERSCAN_API_KEY:-}" ] && args+=(--verify --etherscan-api-key "$ETHERSCAN_API_KEY")
 fi
 "$FORGE" "${args[@]}"
