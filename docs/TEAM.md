@@ -1,6 +1,7 @@
 # Team split and interfaces
 
 Three people, one contract between them (this file). **Update Fri 14:45:** Siddhartha is at Devcon; Hemesh now owns `verifier/`, `api/` and `agent/` too. Siddhartha's `verifier` branch is merged into `main` and his work is kept. The shapes below are unchanged.
+
 Nobody edits another person's folder. If someone gets stuck, their folder can be picked up on any laptop without touching the others.
 
 | Owner | Folders | Builds | Milestones |
