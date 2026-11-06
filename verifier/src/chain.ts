@@ -7,6 +7,7 @@ import Registry from "../../contracts/abi/Registry.json" with { type: "json" };
 import type { Config } from "./config.ts";
 
 const abi = Registry as Abi;
+export const FLAG_GAS = 1_200_000n;
 
 export class RegistryClient {
   readonly address: Address;
@@ -34,7 +35,12 @@ export class RegistryClient {
   private send(functionName: "flag" | "clearFlags", args: readonly unknown[]): Promise<{ ok: boolean; tx?: string; error?: string }> {
     const run = async () => {
       try {
-        const { request } = await this.pub.simulateContract({ account: this.wallet.account, address: this.cfg.registry as Address, abi, functionName, args });
+        // flag() may slash, and the slash revokes the ENS name inside a try/catch. eth_estimateGas
+        // happily returns a limit where that inner call runs out of gas (the try/catch swallows
+        // it), which leaves the name alive. The revoke alone needs ~300k on Sepolia, so flag()
+        // always gets FLAG_GAS (unused gas is refunded).
+        const gas = functionName === "flag" ? FLAG_GAS : undefined;
+        const { request } = await this.pub.simulateContract({ account: this.wallet.account, address: this.cfg.registry as Address, abi, functionName, args, gas });
         const tx = await this.wallet.writeContract(request);
         const r = await this.pub.waitForTransactionReceipt({ hash: tx, timeout: 120_000 });
         return { ok: r.status === "success", tx };
