@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { Art } from "./Art";
 import { Reveal } from "./Reveal";
 
 const S = { fill: "none", stroke: "currentColor", strokeWidth: 2.2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
@@ -8,11 +9,7 @@ const TRICKS: { label: string; caught: string; icon: React.ReactNode }[] = [
   {
     label: "Spray water",
     caught: "Its reading drops far below the nodes around it. The next one-minute check flags it.",
-    icon: (
-      <svg viewBox="0 0 48 48" {...S}>
-        <path d="M6 30h14l6-6h6" /><path d="M10 30v8h8v-8" /><path d="M36 18c2 3 2 5 0 7M40 15c3 4 3 9 0 13M44 12c4 5 4 13 0 19" />
-      </svg>
-    ),
+    icon: <Art name="folk-art-water-sprinkler-truck" small className="h-full w-auto max-w-none" />,
   },
   {
     label: "Switch it off",
@@ -26,12 +23,7 @@ const TRICKS: { label: string; caught: string; icon: React.ReactNode }[] = [
   {
     label: "Stuff it with cotton",
     caught: "Same as water: it reads too low next to its neighbours and gets flagged.",
-    icon: (
-      <svg viewBox="0 0 48 48" {...S}>
-        <rect x="10" y="14" width="28" height="24" rx="3" /><path d="M16 22h16M16 28h16" />
-        <path d="M18 14c-4-2-2-8 2-7 1-4 7-4 8 0 4-1 6 5 2 7" />
-      </svg>
-    ),
+    icon: <Art name="vintage-folk-art-aq-sensor" small className="h-full w-auto max-w-none" />,
   },
   {
     label: "Move it somewhere clean",
@@ -83,7 +75,7 @@ export function TrickTiles() {
           >
             <span className="flip-inner block">
               <span className="flip-face flex flex-col items-center justify-center rounded-md border border-cream/15 bg-[#1f1912] p-3 text-center">
-                <span className="h-12 w-12 text-saffron">{t.icon}</span>
+                <span className="flex h-16 items-center justify-center text-saffron [&>svg]:h-12 [&>svg]:w-12">{t.icon}</span>
                 <span className="mt-2 font-semibold leading-tight text-cream">{t.label}</span>
               </span>
               <span className="flip-face flip-back flex flex-col justify-center rounded-md bg-cream p-3.5 text-kohl">

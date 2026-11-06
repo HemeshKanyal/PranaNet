@@ -121,7 +121,7 @@ export function GoGlobal({ live }: { live: Live }) {
   return (
     <div className="grid items-start gap-8 lg:grid-cols-[1fr_1fr]">
       <div className="lg:sticky lg:top-[12svh]">
-        <Stage fill={{ fill: "#2E3A22", motif: "#F2A12E" }} prop="pot">
+        <Stage fill="#2E3A22" arch={false} props={["table"]}>
         <svg viewBox={`0 0 ${W} ${H}`} className="aspect-square w-full" role="img" aria-label={`Globe: ${STEPS[step].title}`}>
           <defs>
             <clipPath id="globe-clip"><circle cx={cx} cy={cy} r={Math.min(radius, 199)} /></clipPath>

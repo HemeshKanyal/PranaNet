@@ -8,6 +8,7 @@ import { useNow } from "@/lib/story/hooks";
 import { STALE_S, type useStoryArea } from "@/lib/story/live";
 import { ABS_UG, band, isOutlier, median, REL } from "@/lib/story/rule";
 import type { Device } from "@/lib/types";
+import { Art } from "./Art";
 import { Eye, type EyeState } from "./Eye";
 
 type Live = ReturnType<typeof useStoryArea>;
@@ -105,18 +106,19 @@ export function CheatPanel({ live }: { live: Live }) {
       {/* Controls */}
       <div className="mt-3 flex flex-wrap gap-2">
         {([
-          ["honest", "Honest reading"],
-          ["spray", "Spray water"],
-          ["incense", "Burn incense"],
-          ["off", "Switch it off"],
-        ] as const).map(([k, label]) => (
+          ["honest", "Honest reading", "vintage-folk-art-aq-sensor"],
+          ["spray", "Spray water", "folk-art-water-sprinkler-truck"],
+          ["incense", "Burn incense", "folk-art-incense-holder-with-curling-smoke"],
+          ["off", "Switch it off", null],
+        ] as const).map(([k, label, icon]) => (
           <button
             key={k}
             type="button"
             onClick={() => setMode(k)}
             aria-pressed={mode === k}
-            className={`rounded-full border-2 px-3.5 py-1.5 text-base font-bold transition-colors ${mode === k ? "border-kohl bg-kohl text-cream" : "border-kohl/40 hover:border-kohl"}`}
+            className={`inline-flex items-center gap-2 rounded-full border-2 py-1.5 pl-2 pr-3.5 text-base font-bold transition-colors ${mode === k ? "border-kohl bg-kohl text-cream" : "border-kohl/40 hover:border-kohl"}`}
           >
+            {icon ? <Art name={icon} small className="h-7 w-auto" /> : <svg viewBox="0 0 24 24" className="h-7 w-7 p-1" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden><path d="M12 3v8" /><path d="M6.3 7.5a8 8 0 1 0 11.4 0" /></svg>}
             {label}
           </button>
         ))}
