@@ -161,7 +161,7 @@ export function GoGlobal({ live }: { live: Live }) {
             data-step={i}
             className={`rounded-md border p-5 transition-colors duration-500 ${step === i ? "border-saffron bg-[#1f1912]" : "border-cream/10"}`}
           >
-            <div className="text-xs font-bold uppercase tracking-widest text-saffron">{["Now", "Next", "Then", "Everywhere"][i]}</div>
+            <div className="text-sm font-bold uppercase tracking-widest text-saffron">{["Now", "Next", "Then", "Everywhere"][i]}</div>
             <h3 className="display mt-1 text-2xl text-cream">{s.title}</h3>
             <p className="mt-1 text-cream/85">{i === 0 ? liveBody : s.body}</p>
           </li>

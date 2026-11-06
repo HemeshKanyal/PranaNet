@@ -126,7 +126,7 @@ export function Stage({ pose, mood, label, prop, walk = false, priority = false,
                 </picture>
                 {label && (
                   <span
-                    className={`pointer-events-none absolute left-[62%] top-[2%] whitespace-nowrap rounded-lg bg-cream px-2.5 py-1 text-xs font-bold text-kohl shadow-lg transition-[opacity,transform] duration-200 ${showLabel ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0"}`}
+                    className={`pointer-events-none absolute left-[62%] top-[2%] whitespace-nowrap rounded-lg bg-cream px-2.5 py-1 text-sm font-bold text-kohl shadow-lg transition-[opacity,transform] duration-200 ${showLabel ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0"}`}
                     aria-hidden={!showLabel}
                   >
                     {label}

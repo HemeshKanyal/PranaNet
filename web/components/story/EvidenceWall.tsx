@@ -17,7 +17,7 @@ export function DelhiStory() {
       <blockquote className="mt-5 border-l-2 border-vermilion pl-4 italic text-cream/90">
         Delhi, winter 2025. I watched people&apos;s home sensors show far worse air than the official numbers, while officials
         were accused of spraying water around the monitoring stations. Nobody could say which number to believe.
-        <footer className="mt-1 text-sm not-italic text-sand">Hemesh, PranaNet</footer>
+        <footer className="mt-1 text-base not-italic text-sand">Hemesh, PranaNet</footer>
       </blockquote>
       <p className="mt-5 font-semibold text-cream">
         Spray it, switch it off, stuff it with cotton: when one party owns the meter, the number is whatever they need it to be.
@@ -45,14 +45,14 @@ export function Clippings() {
             <span className="absolute -top-2.5 left-1/2 h-5 w-16 -translate-x-1/2 -rotate-2 bg-saffron/55 shadow-sm" aria-hidden />
             <div className="flex items-baseline justify-between gap-2">
               <span className="font-[family-name:var(--font-rozha)] text-lg text-maroon">{c.place}</span>
-              <span className="shrink-0 text-xs font-semibold text-kohl/60">{c.when}</span>
+              <span className="shrink-0 text-sm font-semibold text-kohl/60">{c.when}</span>
             </div>
-            <p className="mt-1 text-[0.97rem] leading-snug">{c.summary}</p>
-            <div className="mt-3 flex items-center justify-between gap-2 text-xs text-kohl/60">
+            <p className="mt-1 text-[1.05rem] leading-snug">{c.summary}</p>
+            <div className="mt-3 flex items-center justify-between gap-2 text-sm text-kohl/60">
               <span className="truncate">{c.source}</span>
               <span className="shrink-0 rounded-full bg-maroon/10 px-2 py-0.5">{KIND[c.kind]}</span>
             </div>
-            <span className="mt-2 block text-xs font-bold text-vermilion opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
+            <span className="mt-2 block text-sm font-bold text-vermilion opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
               Read the source →
             </span>
           </a>

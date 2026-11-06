@@ -7,7 +7,7 @@ const S = { fill: "none", stroke: "currentColor", strokeWidth: 2.2, strokeLineca
 const TRICKS: { label: string; caught: string; icon: React.ReactNode }[] = [
   {
     label: "Spray water",
-    caught: "Reads far lower than its neighbours → flagged.",
+    caught: "Its reading drops far below the nodes around it. The next one-minute check flags it.",
     icon: (
       <svg viewBox="0 0 48 48" {...S}>
         <path d="M6 30h14l6-6h6" /><path d="M10 30v8h8v-8" /><path d="M36 18c2 3 2 5 0 7M40 15c3 4 3 9 0 13M44 12c4 5 4 13 0 19" />
@@ -16,7 +16,7 @@ const TRICKS: { label: string; caught: string; icon: React.ReactNode }[] = [
   },
   {
     label: "Switch it off",
-    caught: "The gap is recorded publicly; neighbours keep the map alive.",
+    caught: "The other nodes keep reporting, and the hole in its record is public.",
     icon: (
       <svg viewBox="0 0 48 48" {...S}>
         <path d="M24 8v14" /><path d="M14 14a14 14 0 1 0 20 0" />
@@ -25,7 +25,7 @@ const TRICKS: { label: string; caught: string; icon: React.ReactNode }[] = [
   },
   {
     label: "Stuff it with cotton",
-    caught: "Reads low against its neighbours → flagged.",
+    caught: "Same as water: it reads too low next to its neighbours and gets flagged.",
     icon: (
       <svg viewBox="0 0 48 48" {...S}>
         <rect x="10" y="14" width="28" height="24" rx="3" /><path d="M16 22h16M16 28h16" />
@@ -35,7 +35,7 @@ const TRICKS: { label: string; caught: string; icon: React.ReactNode }[] = [
   },
   {
     label: "Move it somewhere clean",
-    caught: "Its location cell is public on ENS: anyone can see it moved.",
+    caught: "Its location cell is written to its ENS name. Moving it shows.",
     icon: (
       <svg viewBox="0 0 48 48" {...S}>
         <path d="M8 36h12M28 36h12" /><path d="M12 36V24h6v12M32 36V20l4-6 4 6v16" /><path d="M20 18h10m-3-3 3 3-3 3" />
@@ -44,7 +44,7 @@ const TRICKS: { label: string; caught: string; icon: React.ReactNode }[] = [
   },
   {
     label: "Drop the data",
-    caught: "Missing epochs are visible on-chain.",
+    caught: "Every minute it skips is missing on-chain, for anyone to count.",
     icon: (
       <svg viewBox="0 0 48 48" {...S}>
         <path d="M6 30l8-8 6 6 6-10" /><path d="M30 18l2 2" strokeDasharray="1 4" /><path d="M36 26l6-8" /><path d="M6 40h36" />
@@ -59,9 +59,9 @@ export function TricksText() {
     <>
       <p className="mt-5">
         An official station is <b className="text-cream">one meter with one owner</b>. If the owner wants a better number, there are plenty of
-        ways to get one. Every one of them works because nobody else is watching.
+        ways to get one, and every one of them works because nobody else is watching.
       </p>
-      <p className="mt-3 text-sand">Hover or tap a trick to see how a network of eyes catches it.</p>
+      <p className="mt-3 text-sand">Try each one on a PranaNet node. Tap a card to see what happens.</p>
     </>
   );
 }
@@ -87,8 +87,8 @@ export function TrickTiles() {
                 <span className="mt-2 font-semibold leading-tight text-cream">{t.label}</span>
               </span>
               <span className="flip-face flip-back flex flex-col justify-center rounded-md bg-cream p-3.5 text-kohl">
-                <span className="text-[0.7rem] font-bold uppercase tracking-wider text-olive">Caught</span>
-                <span className="mt-1 text-[0.92rem] font-semibold leading-snug">{t.caught}</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-olive">What happens</span>
+                <span className="mt-1 text-[1.05rem] font-semibold leading-snug">{t.caught}</span>
               </span>
             </span>
           </button>

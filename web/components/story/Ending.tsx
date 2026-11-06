@@ -5,10 +5,10 @@ import { DOCS, REPO } from "@/lib/story/evidence";
 export function EndingText() {
   return (
     <>
-      <p className="mt-5 font-[family-name:var(--font-rozha)] text-[1.9rem] leading-tight text-cream sm:text-[2.3rem]">
+      <p className="mt-5 font-[family-name:var(--font-rozha)] text-[2.2rem] leading-tight text-cream sm:text-[2.8rem]">
         When anyone can run the meter, nobody can own the truth.
       </p>
-      <p className="mt-4 text-sand">The Watcher and the builder walk together: one runs the meter, the other pays for honest air.</p>
+      <p className="mt-4 text-sand">The Watcher runs the meter. The builder pays for honest air. Neither of them can fake it.</p>
       <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3 font-bold">
         <Link href="/run-a-node" className="btn-primary rounded-full px-6 py-3 shadow-lg">Run a node</Link>
         <Link href="/live" className="link-sweep text-cream">Live map</Link>
@@ -22,7 +22,7 @@ export function EndingText() {
 export function StoryFooter() {
   return (
     <footer className="text-cream/85">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-14 text-sm sm:grid-cols-2 sm:px-6">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-14 text-base sm:grid-cols-2 sm:px-6">
         <div>
           <p className="font-[family-name:var(--font-rozha)] text-2xl text-cream">PranaNet</p>
           <p className="mt-2">Built at ETHGlobal Mumbai 2026 · ENS · World · Arkiv · Hedera · Sepolia</p>

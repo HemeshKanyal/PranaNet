@@ -6,7 +6,7 @@ import { CHAPTERS } from "@/lib/story/chapters";
 export function Contents() {
   return (
     <nav aria-label="Chapters" className="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
-      <p className="text-xs font-bold uppercase tracking-[0.25em] text-sand">Contents</p>
+      <p className="text-sm font-bold uppercase tracking-[0.25em] text-sand">Contents</p>
       <ol className="mt-3 grid gap-x-8 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
         {CHAPTERS.map((c) => (
           <li key={c.id}>
@@ -46,10 +46,10 @@ export function SideIndex() {
           const on = c.id === active;
           return (
             <li key={c.id}>
-              <a href={`#${c.id}`} aria-current={on ? "true" : undefined} className={`group flex items-center gap-2 text-sm ${on ? "text-saffron" : "text-sand hover:text-cream"}`}>
+              <a href={`#${c.id}`} aria-current={on ? "true" : undefined} className={`group flex items-center gap-2 text-base ${on ? "text-saffron" : "text-sand hover:text-cream"}`}>
                 <span className={`h-px transition-all ${on ? "w-6 bg-saffron" : "w-3 bg-current"}`} />
                 <span className="w-8 font-[family-name:var(--font-rozha)]">{c.roman}</span>
-                <span className={`max-w-[9rem] truncate rounded bg-ground/90 px-1 text-xs transition-opacity ${on ? "opacity-0 group-hover:opacity-100 2xl:opacity-100" : "opacity-0 group-hover:opacity-100"}`}>{c.title}</span>
+                <span className={`max-w-[9rem] truncate rounded bg-ground/90 px-1 text-sm transition-opacity ${on ? "opacity-0 group-hover:opacity-100 2xl:opacity-100" : "opacity-0 group-hover:opacity-100"}`}>{c.title}</span>
               </a>
             </li>
           );

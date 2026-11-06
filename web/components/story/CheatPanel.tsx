@@ -63,11 +63,11 @@ export function CheatPanel({ live }: { live: Live }) {
     <div className="mt-4">
       {/* Eye map of the live area */}
       <div className="relative h-56 overflow-hidden rounded border border-maroon/30 bg-[#fbf1da] sm:h-64" role="group" aria-label={`Nodes around ${live.area?.name}`}>
-        <div className="absolute left-2 top-1.5 text-xs font-semibold text-kohl/60">{live.area?.name} · live nodes</div>
+        <div className="absolute left-2 top-1.5 text-sm font-semibold text-kohl/60">{live.area?.name} · live nodes</div>
         {nodes.map((d, i) => (
           <div key={d.device} className="absolute -translate-x-1/2 -translate-y-1/2 text-center" style={{ left: `${layout.pts[i].x}%`, top: `${layout.pts[i].y}%` }}>
             <Eye state={states[i]} size={40} delay={(i * 1.37) % 6} title={`${d.ens}: ${states[i]}`} />
-            <div className="mt-0.5 whitespace-nowrap text-[10px] leading-tight text-kohl/70">
+            <div className="mt-0.5 whitespace-nowrap text-xs leading-tight text-kohl/70">
               {d.ens.split(".")[0]}
               {d.simulated && <span className="text-olive"> (sim)</span>}
             </div>
@@ -77,7 +77,7 @@ export function CheatPanel({ live }: { live: Live }) {
           <div className={`rounded-full p-1 ${flagged ? "bg-vermilion/20" : "bg-saffron/40"}`}>
             <Eye state={myState} size={52} delay={0.8} title={`your node: ${myState}`} />
           </div>
-          <div className="text-[11px] font-bold">your node</div>
+          <div className="text-sm font-bold">your node</div>
         </div>
       </div>
 
@@ -89,7 +89,7 @@ export function CheatPanel({ live }: { live: Live }) {
             <span key={d.device} className="absolute top-2 h-3 w-1 -translate-x-1/2 rounded bg-olive" style={{ left: pct(d.last_reading!.pm25_x10 / 10) }} title={`${d.ens} ${d.last_reading!.pm25_x10 / 10}`} />
           ))}
           <span className="absolute inset-y-0 w-0.5 -translate-x-1/2 bg-kohl" style={{ left: pct(m) }} />
-          <span className="absolute -top-0.5 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold" style={{ left: pct(m) }}>median {m.toFixed(1)}</span>
+          <span className="absolute -top-0.5 -translate-x-1/2 whitespace-nowrap text-xs font-bold" style={{ left: pct(m) }}>median {m.toFixed(1)}</span>
           {stationUg != null && (
             <span className="absolute bottom-0.5 -translate-x-1/2" style={{ left: pct(stationUg) }} title={`${live.station?.name}: ${stationUg} µg/m³`}>
               <Eye state="official" size={22} blink={false} />
@@ -99,7 +99,7 @@ export function CheatPanel({ live }: { live: Live }) {
             <span className={`absolute bottom-1 h-5 w-5 -translate-x-1/2 rounded-full border-2 border-kohl ${flagged ? "bg-vermilion" : "bg-saffron"} transition-[left] duration-300`} style={{ left: pct(mine) }} title={`your node ${mine}`} />
           )}
         </div>
-        <div className="mt-0.5 flex justify-between text-[10px] text-kohl/60"><span>0</span><span>PM2.5 µg/m³</span><span>{vmax}</span></div>
+        <div className="mt-0.5 flex justify-between text-xs text-kohl/60"><span>0</span><span>PM2.5 µg/m³</span><span>{vmax}</span></div>
       </div>
 
       {/* Controls */}
@@ -115,13 +115,13 @@ export function CheatPanel({ live }: { live: Live }) {
             type="button"
             onClick={() => setMode(k)}
             aria-pressed={mode === k}
-            className={`rounded-full border-2 px-3.5 py-1.5 text-sm font-bold transition-colors ${mode === k ? "border-kohl bg-kohl text-cream" : "border-kohl/40 hover:border-kohl"}`}
+            className={`rounded-full border-2 px-3.5 py-1.5 text-base font-bold transition-colors ${mode === k ? "border-kohl bg-kohl text-cream" : "border-kohl/40 hover:border-kohl"}`}
           >
             {label}
           </button>
         ))}
       </div>
-      <label className="mt-3 flex items-center gap-3 text-sm">
+      <label className="mt-3 flex items-center gap-3 text-base">
         <span className="shrink-0 font-semibold">Or set it:</span>
         <input
           type="range"
@@ -140,7 +140,7 @@ export function CheatPanel({ live }: { live: Live }) {
         <span className="w-20 shrink-0 text-right font-mono">{mine != null ? `${mine.toFixed(0)} µg` : "off"}</span>
       </label>
 
-      <div aria-live="polite" className={`mt-3 min-h-[4.75rem] rounded border-2 p-3 text-[0.95rem] leading-snug ${mode === "off" ? "border-olive bg-olive/10" : flagged ? "border-vermilion bg-vermilion/10" : "border-leaf bg-leaf/15"}`}>
+      <div aria-live="polite" className={`mt-3 min-h-[4.75rem] rounded border-2 p-3 text-[1.05rem] leading-snug ${mode === "off" ? "border-olive bg-olive/10" : flagged ? "border-vermilion bg-vermilion/10" : "border-leaf bg-leaf/15"}`}>
         {mode === "off" ? (
           <>
             <b>Switched off.</b> Your eye closes, the {peers.length} neighbours keep the map alive, and the missing epochs are recorded publicly.
@@ -158,7 +158,7 @@ export function CheatPanel({ live }: { live: Live }) {
           </>
         )}
       </div>
-      <p className="mt-2 text-xs text-kohl/70">
+      <p className="mt-2 text-sm text-kohl/70">
         Rule: flagged if more than {REL * 100}% <b>and</b> more than {ABS_UG} µg/m³ away from the neighbourhood median.
         {live.station && stationUg != null && (
           <> Official reference: {live.station.name}, {stationUg.toFixed(1)} µg/m³ (gold eye, via OpenAQ).</>

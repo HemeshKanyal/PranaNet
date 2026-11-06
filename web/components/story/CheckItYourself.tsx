@@ -40,17 +40,15 @@ export function CheckItYourself({ writer }: { writer: Address | null }) {
 
   return (
     <div ref={ref}>
-      <p className="max-w-3xl text-[1.05rem] leading-relaxed">
-        These rows were just fetched by <b>your browser</b>, straight from Arkiv, not from our server. Only entities written by
-        the relayer&apos;s wallet{writer && <> (<span className="font-mono text-sm">{short(writer)}</span>)</>} count. Press verify and
-        your browser recovers each signer itself.
+      <p className="max-w-3xl text-lg leading-relaxed">
+        Fetched just now by your browser. Only entries written by the relayer&apos;s wallet{writer && <> (<span className="font-mono text-base">{short(writer)}</span>)</>} count, because anyone can write look-alikes.
       </p>
       <div className="mt-5 min-h-[25rem] overflow-hidden rounded border-2 border-maroon/40 bg-[#fbf1da]">
-        <div className="hidden grid-cols-[1.4fr_0.8fr_1fr_1.3fr] gap-3 border-b border-maroon/30 px-4 py-2 text-xs font-bold uppercase tracking-wider text-kohl/60 sm:grid">
+        <div className="hidden grid-cols-[1.4fr_0.8fr_1fr_1.3fr] gap-3 border-b border-maroon/30 px-4 py-2 text-sm font-bold uppercase tracking-wider text-kohl/60 sm:grid">
           <span>Node</span><span>PM2.5</span><span>Signed at</span><span>Check</span>
         </div>
         {err ? (
-          <p className="p-4 text-sm text-vermilion">Couldn&apos;t reach Arkiv from this browser: {err}</p>
+          <p className="p-4 text-base text-vermilion">Couldn&apos;t reach Arkiv from this browser: {err}</p>
         ) : !rows ? (
           [0, 1, 2, 3, 4, 5].map((i) => <div key={i} className="m-3 h-12 animate-pulse rounded bg-maroon/10 motion-reduce:animate-none" />)
         ) : (
@@ -70,28 +68,28 @@ function Row({ rec }: { rec: BrowserRecord }) {
   const r = rec.reading;
   const [v, setV] = useState<Verdict | null>(null);
   return (
-    <li className="grid grid-cols-2 items-center gap-x-3 gap-y-1 border-b border-maroon/15 px-4 py-2.5 text-sm last:border-0 sm:grid-cols-[1.4fr_0.8fr_1fr_1.3fr]">
+    <li className="grid grid-cols-2 items-center gap-x-3 gap-y-1 border-b border-maroon/15 px-4 py-2.5 text-base last:border-0 sm:grid-cols-[1.4fr_0.8fr_1fr_1.3fr]">
       <span className="col-span-2 flex items-center gap-2 font-semibold sm:col-span-1">
         <Eye state={r.simulated ? "sim" : "open"} size={26} blink={false} />
         <span className="truncate">{r.ens.split(".")[0]}</span>
-        {r.simulated && <span className="rounded bg-olive/15 px-1.5 text-[10px] font-semibold text-olive">simulated</span>}
+        {r.simulated && <span className="rounded bg-olive/15 px-1.5 text-xs font-semibold text-olive">simulated</span>}
       </span>
       <span className="font-mono">{x10(r.pm25_x10)} µg/m³</span>
-      <span className="text-xs text-kohl/70">{time(r.epoch)}</span>
+      <span className="text-sm text-kohl/70">{time(r.epoch)}</span>
       <span className="col-span-2 flex flex-wrap items-center gap-2 sm:col-span-1">
         {v ? (
-          <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${v.ok ? "bg-leaf/20 text-leaf" : "bg-vermilion/15 text-vermilion"}`} title={v.signer ?? ""}>
+          <span className={`rounded-full px-2 py-0.5 text-sm font-bold ${v.ok ? "bg-leaf/20 text-leaf" : "bg-vermilion/15 text-vermilion"}`} title={v.signer ?? ""}>
             {v.ok ? `✓ signer ${short(v.signer ?? "")}` : "✕ invalid"}
           </span>
         ) : (
-          <button type="button" onClick={() => verifyReading(r).then(setV)} className="rounded-full border-2 border-kohl px-2.5 py-0.5 text-xs font-bold hover:bg-kohl hover:text-cream">
+          <button type="button" onClick={() => verifyReading(r).then(setV)} className="rounded-full border-2 border-kohl px-2.5 py-0.5 text-sm font-bold hover:bg-kohl hover:text-cream">
             verify signature
           </button>
         )}
-        <a href={arkivEntityUrl(rec.entityKey)} target="_blank" rel="noreferrer" className="text-xs text-vermilion underline">
+        <a href={arkivEntityUrl(rec.entityKey)} target="_blank" rel="noreferrer" className="text-sm text-vermilion underline">
           Arkiv ↗
         </a>
-        <Link href={`/records/${recordId(r)}`} className="text-xs underline">record</Link>
+        <Link href={`/records/${recordId(r)}`} className="text-sm underline">record</Link>
       </span>
     </li>
   );

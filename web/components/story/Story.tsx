@@ -36,11 +36,11 @@ export function Story({ arkivWriter, initialCell }: { arkivWriter: Address | nul
         id="signed"
         side="right"
         stage={<Stage pose="seated" mood="Moderate" label={moodLabel("Moderate")} />}
-        below={<Ledger className="mx-auto max-w-3xl"><TamperDemo /></Ledger>}
+        below={<Ledger className="mx-auto max-w-4xl"><TamperDemo /></Ledger>}
       >
         <p className="mt-5">
-          Each node holds its own key and <b className="text-cream">signs every reading on the sensor itself</b>. Your browser can check that
-          signature without asking anyone, and if a single digit changes, the check fails.
+          The ESP32 on each node <b className="text-cream">signs every reading with its own key</b> before it leaves the board. Below is the
+          latest one from our sensor at BKC. Change a single digit and your browser rejects it.
         </p>
         <p className="mt-3 text-sand">Not even the server that carries the data can change it.</p>
       </Chapter>
@@ -49,27 +49,27 @@ export function Story({ arkivWriter, initialCell }: { arkivWriter: Address | nul
         id="democracy"
         side="left"
         stage={<Stage pose="standing" mood="Poor" label={moodLabel("Poor")} />}
-        below={<Ledger className="mx-auto max-w-3xl"><p className="font-[family-name:var(--font-rozha)] text-2xl text-maroon">Try to cheat</p><CheatPanel live={live} /></Ledger>}
+        below={<Ledger className="mx-auto max-w-4xl"><p className="font-[family-name:var(--font-rozha)] text-2xl text-maroon">Try to cheat</p><CheatPanel live={live} /></Ledger>}
       >
         <p className="mt-5">
           Anyone can run a node: a home, a school, a housing society. <b className="text-cream">One human, one voice:</b> World ID proves
           you&apos;re a unique person without revealing who, and each person can run at most 3 nodes, so nobody can fake a crowd.
         </p>
-        <p className="mt-3 text-sand">Neighbours and the official station check each other. Below are the real nodes around us, live.</p>
+        <p className="mt-3 text-sand">Below are the nodes at BKC right now. Put yours in the middle and try to fool them.</p>
       </Chapter>
 
       <SlashSequence />
 
       <Chapter id="check" below={<Ledger><CheckItYourself writer={arkivWriter} /></Ledger>}>
-        <p className="mt-5">The latest readings, read straight from Arkiv by your browser. Verify any of them yourself.</p>
+        <p className="mt-5">Every reading is stored on Arkiv. The table below comes straight from Arkiv into your browser, without passing through our server. Press verify on any row.</p>
       </Chapter>
 
       <Chapter id="pays" below={<Ledger><WhoPays /></Ledger>}>
-        <p className="mt-5">Honest work gets paid from revenue, not from a token.</p>
+        <p className="mt-5">Construction sites in Mumbai already have to monitor their dust, which makes them the first people who would pay for readings that come with proof, along with regulators and apps. That money goes to the people running the nodes. There is no token.</p>
       </Chapter>
 
       <Chapter id="global" below={<GoGlobal live={live} />}>
-        <p className="mt-5">One venue today. Every city with a dispute about its air tomorrow.</p>
+        <p className="mt-5">Today it&apos;s a handful of nodes at one venue in BKC. Mumbai&apos;s construction sites come next, then Delhi, where this started.</p>
       </Chapter>
 
       <Chapter id="ending" side="left" stage={<Stage pose="with-builder" mood="Good" label={moodLabel("Good")} prop="peacock-right" walk />}>

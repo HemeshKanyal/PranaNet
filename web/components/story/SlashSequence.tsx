@@ -31,13 +31,13 @@ export function SlashSequence() {
       <section id="honest-work" className="scroll-mt-16 pt-16 lg:pt-24">
         <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16">
           <Stage pose="gasmask" mood="Severe" label={moodLabel("Severe")} />
-          <Stagger className="prose-col text-[1.08rem]">
+          <Stagger className="prose-col text-lg lg:text-[1.3rem]">
             <ChapterHeading id="honest-work" />
             <p className="mt-5">
               A signed reading that agrees with its neighbours is a unit of <b className="text-cream">honest work</b> and earns from the reward
               pool. Every node stakes a deposit. Three flags in a row and it&apos;s slashed.
             </p>
-            <p className="mt-3 text-sand">Scroll through the real run from our demo: tissue on the sensor of bkc-02.</p>
+            <p className="mt-3 text-sand">On Friday evening we put a tissue over bkc-02&apos;s sensor to see what would happen. Scroll to replay it.</p>
           </Stagger>
         </div>
         <div ref={ref} className={reduced ? "py-12" : "relative h-[300svh]"}>
@@ -46,16 +46,16 @@ export function SlashSequence() {
           <div className="mt-4 flex items-center gap-4">
                 <Eye state={eye} size={60} blink={step === 0} />
                 <div className="min-w-0">
-                  <div className="text-sm font-semibold">
+                  <div className="text-base font-semibold">
                     <span className="relative inline-block">
                       {SLASH_RUN.ens}
                       <span className="absolute left-0 top-1/2 h-[3px] bg-vermilion transition-[width] duration-700" style={{ width: step >= 5 ? "100%" : "0%" }} aria-hidden />
                     </span>
-                    {step >= 5 && <span className="ml-2 rounded bg-vermilion px-1.5 py-0.5 text-xs font-bold text-cream">revoked</span>}
+                    {step >= 5 && <span className="ml-2 rounded bg-vermilion px-1.5 py-0.5 text-sm font-bold text-cream">revoked</span>}
                   </div>
                   <div className={`font-mono text-4xl font-bold tabular-nums transition-colors sm:text-5xl ${step >= 1 ? "text-vermilion" : "text-kohl"}`}>
                     {value.toFixed(1)}
-                    <span className="ml-1 text-base font-normal text-kohl/70">µg/m³</span>
+                    <span className="ml-1 text-lg font-normal text-kohl/70">µg/m³</span>
                   </div>
                 </div>
               </div>
@@ -70,7 +70,7 @@ export function SlashSequence() {
                         href={f.tx}
                         target="_blank"
                         rel="noreferrer"
-                        className={`block rounded border-2 px-2 py-1.5 text-center text-xs font-bold transition-colors ${on ? "border-vermilion bg-vermilion text-cream" : "border-dashed border-maroon/30 text-kohl/40"}`}
+                        className={`block rounded border-2 px-2 py-1.5 text-center text-sm font-bold transition-colors ${on ? "border-vermilion bg-vermilion text-cream" : "border-dashed border-maroon/30 text-kohl/40"}`}
                       >
                         {i === 2 ? "Flag 3 + slash" : `Flag ${f.n}`}
                         <span className="block font-normal opacity-90">{f.ug} vs {f.medianUg} ↗</span>
@@ -81,11 +81,11 @@ export function SlashSequence() {
               </ol>
 
               {/* Stake → pool */}
-              <div className="relative mt-4 flex items-center justify-between rounded border [container-type:inline-size] border-maroon/30 bg-[#fbf1da] px-3 py-2 text-xs font-semibold">
+              <div className="relative mt-4 flex items-center justify-between rounded border [container-type:inline-size] border-maroon/30 bg-[#fbf1da] px-3 py-2 text-sm font-semibold">
                 <span>bkc-02 stake</span>
                 <span>reward pool</span>
                 <span
-                  className="absolute left-[5.75rem] top-[calc(50%-1rem)] flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#b9770e] bg-saffron text-[9px] font-bold text-kohl shadow transition-transform duration-1000 ease-in-out"
+                  className="absolute left-[5.75rem] top-[calc(50%-1rem)] flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#b9770e] bg-saffron text-[10px] font-bold text-kohl shadow transition-transform duration-1000 ease-in-out"
                   style={{ transform: step >= 4 ? "translateX(calc(100cqw - 13.25rem))" : "none" }}
                   aria-label={`${SLASH_RUN.stakeEth} ETH stake ${step >= 4 ? "in the reward pool" : "held by the node"}`}
                 >
@@ -93,11 +93,11 @@ export function SlashSequence() {
                 </span>
               </div>
 
-              <p aria-live="polite" className="mt-3 min-h-[2.75rem] text-[0.95rem] font-semibold leading-snug">
+              <p aria-live="polite" className="mt-3 min-h-[2.75rem] text-[1.05rem] font-semibold leading-snug">
                 {STEPS[step]}
               </p>
 
-              <div className={`grid gap-1 text-xs ${step >= 6 ? "visible" : "invisible"}`}>
+              <div className={`grid gap-1 text-sm ${step >= 6 ? "visible" : "invisible"}`}>
                 <a className="text-leaf underline" href={REWARDS.honestClaim.tx} target="_blank" rel="noreferrer">
                   ✓ {REWARDS.honestClaim.ens.split(".")[0]} claimRewards: {REWARDS.honestClaim.eth} ETH for {REWARDS.honestClaim.epochs} honest epochs ↗
                 </a>
