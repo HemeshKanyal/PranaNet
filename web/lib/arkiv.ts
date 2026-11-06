@@ -7,35 +7,11 @@ import { join } from "node:path";
 import { createPublicClient } from "@arkiv-network/sdk";
 import { rabdi } from "@arkiv-network/sdk/chains";
 import { and, asc, desc, eq, gt, gte, lt } from "@arkiv-network/sdk/query";
-import { addr, bool, bytes, defineSchema, i32, str, u64 } from "@arkiv-network/sdk/schema";
+import { addr, u64 } from "@arkiv-network/sdk/schema";
 import { http, keccak256, toHex } from "viem";
+import { FlagEntity, ReadingEntity, readingFromEntity } from "./arkiv-schema";
 import { getDevice, getDevices, RELAYER_URL } from "./relayer";
 import type { Address, Flag, FlagReason, Hex, Reading } from "./types";
-
-// ---- schemas (keep in sync with relayer/src/arkiv.ts)
-const ReadingEntity = defineSchema("prananet.reading", {
-  device: addr().indexed(),
-  ens: str().indexed(),
-  geohash: str().indexed(),
-  epoch: u64().indexed(),
-  pm25_x10: i32().indexed(),
-  pm10_x10: i32().indexed(),
-  temp_x10: i32(),
-  hum_x10: i32(),
-  nonce: u64().indexed(),
-  signature: bytes(), // matches relayer/src/arkiv.ts (str is capped at 128 bytes)
-  simulated: bool().indexed(),
-});
-
-const FlagEntity = defineSchema("prananet.flag", {
-  device: addr().indexed(),
-  ens: str().indexed(),
-  epoch: u64().indexed(),
-  reason: str().indexed(),
-  value_x10: i32(),
-  median_x10: i32(),
-  tx: str(),
-});
 
 const BLOCK_TIME = 2; // seconds per Rabdi block; $expiresAt is a block number
 const READING_TTL = 3 * 24 * 3600; // SPEC: readings live ~3 days
@@ -145,19 +121,7 @@ async function arkivRecord(writer: Address, device: Address, nonce: number): Pro
   ]);
   const e = hit.entities[0];
   if (!e) return null;
-  const reading: Reading = {
-    device: lower(e.device.value),
-    ens: e.ens.value,
-    geohash: e.geohash.value,
-    epoch: Number(e.epoch.value),
-    pm25_x10: e.pm25_x10.value,
-    pm10_x10: e.pm10_x10.value,
-    temp_x10: e.temp_x10.value,
-    hum_x10: e.hum_x10.value,
-    nonce: Number(e.nonce.value),
-    signature: e.signature.value as Hex,
-    simulated: e.simulated.value,
-  };
+  const reading = readingFromEntity(e);
   // $expiresAt is a block number; convert using the block the query was answered at.
   const now = Math.floor(Date.now() / 1000);
   const expiresAt = e.$expiresAt != null && hit.blockNumber != null
