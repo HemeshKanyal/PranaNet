@@ -29,5 +29,15 @@ log("relayer", `arkiv writer ${store.writer ?? "(memory only)"}`);
 log("relayer", `Registry ${config.registry} Readings ${config.readings} chainId ${config.chainId}`);
 
 server.listen(config.port, () => log("relayer", `listening on :${config.port}`));
+if (config.keepAliveUrls.length) {
+  const ping = () =>
+    config.keepAliveUrls.forEach((u) =>
+      fetch(u, { signal: AbortSignal.timeout(60_000) })
+        .then((r) => r.ok || log("keepalive", `${u} -> ${r.status}`))
+        .catch((e) => log("keepalive", `${u} failed: ${(e as Error).message}`)),
+    );
+  ping();
+  setInterval(ping, 5 * 60_000).unref();
+}
 await chain.start(); // first poll replays history
 await finishSync();

@@ -49,6 +49,8 @@ export const config = {
   verifierUrl: env("VERIFIER_URL"),
   // Shared secret for the verifier's POST /sim/readings and POST /flags (simulated devices only).
   simToken: env("SIM_TOKEN"),
+  // URLs pinged every 5 min so free-plan hosts (Render) never put the verifier/api to sleep.
+  keepAliveUrls: env("KEEPALIVE_URLS").split(",").map((s) => s.trim()).filter(Boolean),
   corsOrigins: env("CORS_ORIGINS", "http://localhost:3000,https://*.vercel.app")
     .split(",")
     .map((s) => s.trim())
