@@ -18,6 +18,7 @@ One line per task: when (IST) · files · what the AI did · what I directed.
 | Fri 6 Nov ~14:50 | docs/TEAM.md, (merge) verifier/, api/, agent/ | Merged Siddhartha's `verifier` branch with --no-ff, kept all his work; TEAM.md now records Hemesh owning verifier/api/agent; shapes unchanged | Prompt 03 intro |
 | Fri 6 Nov ~15:00 | relayer/.env (not committed) | Read World ID 4.0 RP-signature spec plus the Developer Portal source (register-rp handler, Register RP dialog, v4 verify handler). Generated the RP signer key straight into relayer/.env, reported only its address. Found from the verify handler source that a reused nullifier returns `success: true` ("nullifier reuse"), so the 3-per-human cap can live in the contract | Prompt 03 step 0 |
 | Fri 6 Nov ~15:10 | relayer/.env (not committed) | Rotated the exposed relayer key: new wallet into .env, swept 2 tGLM on Rabdi and Sepolia ETH to it. First Sepolia sweep reverted: on Sepolia a value transfer to a never-used address now costs ~207k gas, not 21k; resent with the estimated limit | Prompt 03 step 1 |
+| Fri 6 Nov ~15:20 | docs/evidence/device2-selftest.md | Uploaded DEVICE=2 to the S3 on /dev/ttyACM0, ran `selftest` over serial, piped it into verify-vector: address, message, digest and signature byte-identical to viem (sign 550 ms). A live reading from the device key also recovers to the device. No firmware change needed | Prompt 03 step 2 |
 
 ## Friction
 
