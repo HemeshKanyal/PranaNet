@@ -4,6 +4,8 @@
   "description": "PranaNet agent: discovers the data API and pays over x402",
   "scripts": {
     "start": "tsx src/agent.ts",
+    "setup": "tsx src/setup.ts",
+    "test": "node --import tsx --test test/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
@@ -15,5 +17,11 @@
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@hiero-ledger/sdk": "2.90.1",
+    "@x402/core": "2.30.0",
+    "@x402/fetch": "2.30.0",
+    "@x402/hedera": "2.30.0"
+  }
 }
