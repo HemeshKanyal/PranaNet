@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { RecordView } from "@/components/RecordView";
-import { ARKIV_IS_MOCK, getRecord } from "@/lib/arkiv";
+import { getRecord } from "@/lib/arkiv";
 import { parseRecordId } from "@/lib/verify";
 
 export const dynamic = "force-dynamic";
@@ -12,5 +12,5 @@ export default async function RecordPage({ params }: { params: Promise<{ recordI
   if (!id) notFound();
   const rec = await getRecord(id.device, id.nonce);
   if (!rec) notFound();
-  return <RecordView rec={rec} isMock={ARKIV_IS_MOCK} />;
+  return <RecordView rec={rec} />;
 }

@@ -12,5 +12,6 @@ const ETHERSCAN = "https://sepolia.etherscan.io";
 export const txUrl = (tx: string) => `${ETHERSCAN}/tx/${tx}`;
 export const addressUrl = (a: string) => `${ETHERSCAN}/address/${a}`;
 export const ensUrl = (name: string) => `https://sepolia.app.ens.domains/${name}`;
-/** Arkiv explorer base, e.g. for an entity page. Empty until Hemesh confirms the URL. */
-export const ARKIV_EXPLORER = process.env.NEXT_PUBLIC_ARKIV_EXPLORER || "";
+/** Arkiv explorer (Rabdi testnet, where the relayer writes). */
+export const ARKIV_EXPLORER = (process.env.NEXT_PUBLIC_ARKIV_EXPLORER || "https://rabdi.explorer.arkiv.network").replace(/\/$/, "");
+export const arkivEntityUrl = (key: string) => `${ARKIV_EXPLORER}/entity/${key}`;

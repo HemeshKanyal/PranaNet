@@ -5,7 +5,7 @@ import { AqiChip } from "./Aqi";
 import { useVerdict } from "./VerifyBadge";
 import { aqi } from "@/lib/aqi";
 import type { ArkivRecord } from "@/lib/arkiv";
-import { addressUrl, ARKIV_EXPLORER, CHAIN_ID, READINGS_CONTRACT } from "@/lib/chain";
+import { addressUrl, arkivEntityUrl, CHAIN_ID, READINGS_CONTRACT, txUrl } from "@/lib/chain";
 import { time, x10 } from "@/lib/format";
 import { PACKED_FIELDS, packed, recordId } from "@/lib/verify";
 
@@ -22,7 +22,8 @@ function Step({ n, title, ok, children }: { n: number; title: string; ok: boolea
   );
 }
 
-export function RecordView({ rec, isMock }: { rec: ArkivRecord; isMock: boolean }) {
+export function RecordView({ rec }: { rec: ArkivRecord }) {
+  const isMock = rec.mock;
   const r = rec.reading;
   const v = useVerdict(r);
   const hex = useMemo(() => packed(r), [r]);
@@ -81,8 +82,8 @@ export function RecordView({ rec, isMock }: { rec: ArkivRecord; isMock: boolean 
         <div className="flex flex-wrap items-center gap-2 border-b border-line bg-chain-soft/60 px-4 py-2">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-chain">Arkiv entity</h2>
           {isMock && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-medium text-amber-800">mock until the Arkiv writer is live</span>}
-          {ARKIV_EXPLORER && (
-            <a className="ml-auto text-xs text-chain hover:underline" href={`${ARKIV_EXPLORER}/${rec.entityKey}`} target="_blank" rel="noreferrer">
+          {!isMock && (
+            <a className="ml-auto text-xs text-chain hover:underline" href={arkivEntityUrl(rec.entityKey)} target="_blank" rel="noreferrer">
               Open in Arkiv explorer ↗
             </a>
           )}
@@ -110,7 +111,7 @@ export function RecordView({ rec, isMock }: { rec: ArkivRecord; isMock: boolean 
           </div>
           <div className="sm:col-span-2">
             <dt className="mb-1 text-xs text-muted">Query that finds this record</dt>
-            <dd><code className="block overflow-x-auto rounded-lg bg-ink px-3 py-2 font-mono text-xs text-white">type = &quot;reading&quot; && device = &quot;{r.device}&quot; && nonce = {r.nonce}</code></dd>
+            <dd><code className="block overflow-x-auto rounded-lg bg-ink px-3 py-2 font-mono text-xs text-white">from(&quot;prananet.reading&quot;).where(device = {r.device} && nonce = {r.nonce}).ownedBy({rec.owner})</code></dd>
           </div>
         </dl>
       </section>
@@ -173,9 +174,12 @@ export function RecordView({ rec, isMock }: { rec: ArkivRecord; isMock: boolean 
           <Step n={6} title="Cross-checked against neighbours" ok={rec.flag ? false : true}>
             {rec.flag ? (
               <p className="text-amber-900">
-                Flagged by the verifier: {x10(rec.flag.value_x10)} µg/m³ against a neighbour median of {x10(rec.flag.median_x10)} µg/m³
-                ({rec.flag.reason.replace("_", " ")}). The signature is genuine, but the value disagrees with its neighbours by more
-                than 50% and 25 µg/m³.
+                Flagged by the verifier: {x10(rec.flag.value_x10)} µg/m³
+                {rec.flag.median_x10 > 0 && <> against a neighbour median of {x10(rec.flag.median_x10)} µg/m³</>} ({rec.flag.reason.replace("_", " ")}).
+                The signature is genuine, but the value disagrees with its neighbours by more than 50% and 25 µg/m³.
+                {rec.flag.tx && (
+                  <> <a className="font-mono text-chain hover:underline" href={txUrl(rec.flag.tx)} target="_blank" rel="noreferrer">Flag tx ↗</a></>
+                )}
               </p>
             ) : (
               <p>Not flagged. The value agrees with neighbouring devices within the verifier&apos;s threshold.</p>
