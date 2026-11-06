@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "verify-vector": "tsx scripts/verify-vector.ts",
     "fake-reading": "tsx scripts/fake-reading.ts",
-    "register-dev": "tsx scripts/register-dev.ts"
+    "register-dev": "tsx scripts/register-dev.ts",
+    "sign-reading": "tsx scripts/sign-reading.ts"
   },
   "engines": {
     "node": ">=22"
