@@ -48,14 +48,14 @@ export function SiteHeader() {
   const path = usePathname();
   const story = path === "/";
   return (
-    <header className="z-50 bg-ground text-cream sm:sticky sm:top-0">
+    <header className="site-header z-50 bg-ground text-cream sm:sticky sm:top-0">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-8 gap-y-2 px-4 pt-3 sm:px-6 lg:h-[72px] lg:flex-nowrap lg:pt-0">
         <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="PranaNet home">
           <LogoEye size={42} />
           <span className="font-[family-name:var(--font-rozha)] text-[1.7rem] leading-none text-cream">PranaNet</span>
         </Link>
 
-        <nav className="order-last -mx-4 flex w-[calc(100%+2rem)] gap-5 overflow-x-auto px-4 pb-2.5 text-base font-semibold [mask-image:linear-gradient(to_right,black_82%,transparent)] [scrollbar-width:none] lg:gap-6 lg:text-[1.05rem] md:[mask-image:none] lg:order-none lg:mx-0 lg:w-auto lg:overflow-visible lg:px-0 lg:pb-0">
+        <nav aria-label="Main navigation" className="order-last -mx-4 flex w-[calc(100%+2rem)] gap-5 overflow-x-auto px-4 pb-2.5 text-base font-semibold [mask-image:linear-gradient(to_right,black_82%,transparent)] [scrollbar-width:none] lg:gap-6 lg:text-[1.05rem] md:[mask-image:none] lg:order-none lg:mx-0 lg:w-auto lg:overflow-visible lg:px-0 lg:pb-0">
           {NAV.map((n) => {
             const on = n.href === "/" ? path === "/" : path.startsWith(n.href);
             return (
