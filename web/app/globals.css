@@ -73,3 +73,30 @@ body {
 .aqi-marker.pulse {
   animation: pulse-ring 0.9s ease-out;
 }
+
+/* Hero drop-in animation (Slide Down and Fade In).
+   fill-mode "backwards", not "both": an animation that keeps holding opacity after it ends turns
+   the wrapper into a backdrop root in Chromium, so backdrop-blur inside it (search, chips) sees
+   nothing behind it and the blur silently disappears. */
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-drop-in {
+  animation: dropIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.animate-drop-in-delay-1 {
+  animation: dropIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.12s backwards;
+}
+
+.animate-drop-in-delay-2 {
+  animation: dropIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.22s backwards;
+}
