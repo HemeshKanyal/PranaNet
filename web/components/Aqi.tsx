@@ -16,7 +16,7 @@ export function AqiChip({ value, size = "sm" }: { value: number | null; size?: "
 export function AqiLegend({ className = "" }: { className?: string }) {
   let lo = 0;
   return (
-    <div className={`text-[10px] ${className}`}>
+    <div className={`text-xs ${className}`}>
       <div className="flex gap-0.5 overflow-hidden rounded">
         {AQI_SCALE.map((s) => {
           const range = `${lo}–${s.max}`;

@@ -3,15 +3,23 @@
 /* PranaNet palette. "chain" (indigo) is reserved for anything verifiable on-chain or on
    Arkiv: signatures, contracts, tx links, ENS. Air quality uses the CPCB AQI colours (lib/aqi.ts). */
 @theme {
-  --color-bg: #f6f7f5;
-  --color-surface: #ffffff;
-  --color-ink: #13201b;
-  --color-muted: #5d6b65;
-  --color-line: #e2e6e3;
-  --color-chain: #4338ca;
-  --color-chain-soft: #eef0fd;
-  --color-brand: #0e5a43;
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  /* App pages share the story's dark "editorial folk" ground. "chain" (soft indigo) is still
+     reserved for anything verifiable on-chain or on Arkiv; air quality keeps the CPCB colours. */
+  --color-bg: #15110c;
+  --color-surface: #1f1912;
+  --color-ink: #f3e3be;
+  --color-muted: #bfa98a;
+  --color-line: #3a3026;
+  --color-chain: #a5b4fc;
+  --color-chain-soft: #1f1c33;
+  --color-brand: #f2a12e;
+  --font-sans: var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
+  /* Container widths fixed to the 18 px scale, so pages keep their margins on a 1440 px screen */
+  --container-3xl: 44rem;
+  --container-4xl: 50rem;
+  --container-5xl: 56rem;
+  --container-6xl: 64rem;
+  --container-7xl: 69rem;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   /* Story palette (docs/STORY.md), taken from the folk-art scenes */
   --color-vermilion: #c8341e;
@@ -21,12 +29,38 @@
   --color-leaf: #6e8b3d;
   --color-cream: #f3e3be;
   --color-kohl: #2a1a12;
+  --color-sand: #bfa98a;
+  --color-ground: #15110c;
   --font-display: var(--font-rozha), Georgia, serif;
   --font-story: var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+}
+
+/* One type scale for the whole site: everything sized in rem grows together. */
+html { font-size: 106.25%; }          /* 17 px on phones */
+@media (min-width: 768px) {
+  html { font-size: 112.5%; }         /* 18 px from tablets up */
+}
+
+/* App pages speak the story's language: Rozha headings, one size per level. */
+main:not(.story) h1 {
+  font-family: var(--font-display, var(--font-rozha)), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 2.9rem);
+  line-height: 1.12;
+  color: var(--color-cream);
+}
+main:not(.story) h2 {
+  font-family: var(--font-rozha), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: 1.45rem;
+  line-height: 1.25;
+  color: var(--color-cream);
 }
 
 body {
@@ -44,12 +78,13 @@ body {
 /* Leaflet: keep its panes under our sticky header */
 .leaflet-container {
   font-family: var(--font-sans);
-  background: #e9ece8;
+  background: #1b1612;
 }
-/* Mute the basemap so the AQI markers carry the colour */
+/* Dark, muted basemap so the AQI markers carry the colour */
 .pn-tiles {
-  filter: grayscale(0.85) contrast(0.9) brightness(1.05);
+  filter: invert(1) hue-rotate(180deg) grayscale(0.75) brightness(0.8) contrast(0.95);
 }
+.leaflet-tooltip { color: #2a1a12; }
 .leaflet-pane,
 .leaflet-top,
 .leaflet-bottom {
@@ -60,8 +95,8 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  font: 600 11px/1 var(--font-sans);
-  box-shadow: 0 0 0 2px #fff, 0 1px 4px rgb(0 0 0 / 0.35);
+  font: 600 0.72rem/1 var(--font-sans);
+  box-shadow: 0 0 0 2px #15110c, 0 1px 4px rgb(0 0 0 / 0.5);
   transition: transform 0.15s;
 }
 .aqi-marker.selected {
@@ -115,16 +150,28 @@ body {
   animation: dropIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.22s backwards;
 }
 
-/* ================================================================ story site (/) */
-/* next/font sets --font-rozha/--font-mukta on .story itself, so reference them here, not via
-   :root tokens (a var() in :root resolves before those variables exist). */
+/* ================================================================ story site (/): "editorial folk" */
 .story {
   --font-display: var(--font-rozha), Georgia, serif;
   --font-story: var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
+  --ground: #15110c;
+  --muted: #bfa98a;
+  position: relative;
   font-family: var(--font-story);
-  color: var(--color-kohl);
-  background: var(--color-cream);
+  color: var(--color-cream);
+  background: var(--ground);
 }
+/* Paper grain: inline SVG noise at ~4% opacity, fixed so it never repaints with scroll */
+.story::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.95 0 0 0 0 0.85 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.story > :not(.fixed) { position: relative; z-index: 1; }
 .story h1,
 .story h2,
 .story h3.display {
@@ -132,67 +179,109 @@ body {
   font-weight: 400;
   letter-spacing: 0;
 }
+.story .prose-col { max-width: 60ch; line-height: 1.7; }
 
-/* Cream paper panel: the text scrim over the scenes */
-.paper {
-  background: rgb(243 227 190 / 0.95);
-  border: 2px solid var(--color-maroon);
+/* Ledger card: cream notebook page with a folk-dot border, for every data module */
+.ledger {
+  position: relative;
+  background: var(--color-cream);
+  color: var(--color-kohl);
   border-radius: 6px;
-  box-shadow: 0 0 0 4px rgb(243 227 190 / 0.95), 0 0 0 6px var(--color-vermilion), 0 18px 40px rgb(42 26 18 / 0.35);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.3) inset, 0 22px 50px rgb(0 0 0 / 0.45);
+}
+.ledger::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 2px dotted rgb(90 26 18 / 0.45);
+  border-radius: 4px;
+  pointer-events: none;
 }
 
-/* Folk-art border band (section divider): saffron diamonds on vermilion between maroon rules */
-.folk-band {
-  height: 22px;
-  background:
-    linear-gradient(var(--color-maroon), var(--color-maroon)) top / 100% 3px no-repeat,
-    linear-gradient(var(--color-maroon), var(--color-maroon)) bottom / 100% 3px no-repeat,
-    conic-gradient(from 45deg at 50% 50%, var(--color-saffron) 0 25%, transparent 0 50%, var(--color-saffron) 0 75%, transparent 0) center / 16px 16px repeat-x,
-    var(--color-vermilion);
+/* Links: saffron underline sweeps in */
+.link-sweep {
+  background: linear-gradient(var(--color-saffron), var(--color-saffron)) left bottom / 0 2px no-repeat;
+  transition: background-size 0.3s ease, color 0.2s;
+  padding-bottom: 1px;
 }
+.link-sweep:hover, .link-sweep:focus-visible { background-size: 100% 2px; color: var(--color-saffron); }
+
+/* Primary button: vermilion fills to saffron */
+.btn-primary {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--color-vermilion);
+  color: var(--color-cream);
+  transition: color 0.3s;
+}
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-saffron);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-primary:hover::before, .btn-primary:focus-visible::before { transform: scaleX(1); }
+.btn-primary:hover, .btn-primary:focus-visible { color: var(--color-kohl); }
+
+/* Keyboard focus everywhere on the site */
+:focus-visible { outline: 2px solid var(--color-saffron); outline-offset: 3px; border-radius: 4px; }
 
 /* Reveal on scroll (IntersectionObserver sets data-in) */
-.reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal[data-in="true"] {
-  opacity: 1;
-  transform: none;
-}
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+.reveal[data-in="true"] { opacity: 1; transform: none; }
+/* Text lines stagger in */
+.stagger > * { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.stagger[data-in="true"] > * { opacity: 1; transform: none; }
+.stagger[data-in="true"] > *:nth-child(2) { transition-delay: 0.08s; }
+.stagger[data-in="true"] > *:nth-child(3) { transition-delay: 0.16s; }
+.stagger[data-in="true"] > *:nth-child(4) { transition-delay: 0.24s; }
+.stagger[data-in="true"] > *:nth-child(5) { transition-delay: 0.32s; }
+.stagger[data-in="true"] > *:nth-child(n + 6) { transition-delay: 0.4s; }
 
-/* Scenes: slow zoom on the active image */
-@keyframes scene-zoom {
-  from { transform: scale(1); }
-  to { transform: scale(1.07); }
-}
-.scene-img {
-  animation: scene-zoom 28s ease-in-out infinite alternate;
-  will-change: transform;
-}
+/* Stage: arch scales up, the Watcher rises in 120 ms later */
+.stage-arch { opacity: 0; transform: scale(0.96); transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: 50% 100%; }
+.stage-rise { opacity: 0; transform: translateY(40px); transition: opacity 0.6s ease-out 0.12s, transform 0.6s ease-out 0.12s; }
+.stage[data-in="true"] .stage-arch, .stage[data-in="true"] .stage-rise { opacity: 1; transform: none; }
+/* Chapter IX: walk in from the left, once */
+.stage-walk { opacity: 0; transform: translateX(-55vw); transition: transform 1.8s cubic-bezier(0.25, 0.7, 0.3, 1), opacity 0.6s ease; }
+.stage[data-in="true"] .stage-walk { opacity: 1; transform: none; }
+.stage-tilt { transition: transform 0.25s ease-out, filter 0.25s ease-out; transform-style: preserve-3d; filter: drop-shadow(0 8px 10px rgb(0 0 0 / 0.35)); }
+.stage-tilt[data-hover="true"] { filter: drop-shadow(0 18px 18px rgb(0 0 0 / 0.5)); }
 
-/* Eyes blink: the eyeball squashes for a moment every few seconds */
+/* Eyes: blink every few seconds, once more on hover; flagged eyes pulse red once */
 @keyframes eye-blink {
   0%, 92%, 100% { transform: scaleY(1); }
   95% { transform: scaleY(0.08); }
 }
-.eye-ball {
-  transform-box: fill-box;
-  transform-origin: center;
+@keyframes eye-blink-once {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.08); }
 }
-.eye-blink .eye-ball {
-  animation: eye-blink 6s infinite;
+@keyframes eye-pulse {
+  0% { filter: drop-shadow(0 0 0 rgb(200 52 30 / 0.9)); }
+  50% { filter: drop-shadow(0 0 9px rgb(200 52 30 / 0.95)); }
+  100% { filter: drop-shadow(0 0 0 rgb(200 52 30 / 0)); }
 }
+.eye-ball { transform-box: fill-box; transform-origin: center; }
+.eye-blink .eye-ball { animation: eye-blink 6s infinite; }
+.eye:hover .eye-ball { animation: eye-blink-once 0.35s ease-in-out 1; }
+.eye-pulse { animation: eye-pulse 0.9s ease-out 1; }
 
-@keyframes coin-slide {
-  from { offset-distance: 0%; }
-  to { offset-distance: 100%; }
-}
+/* Trick tiles flip to show how PranaNet catches each trick */
+.flip { perspective: 900px; }
+.flip-inner { position: relative; height: 100%; transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.3, 1); transform-style: preserve-3d; }
+.flip[data-on="true"] .flip-inner { transform: rotateY(180deg); }
+@media (hover: hover) { .flip:hover .flip-inner { transform: rotateY(180deg); } }
+.flip-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flip-back { transform: rotateY(180deg); }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
-  .scene-img { animation: none; }
-  .eye-blink .eye-ball { animation: none; }
-  .story * { scroll-behavior: auto; }
+  .reveal, .stagger > *, .stage-arch, .stage-rise, .stage-walk { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .eye-blink .eye-ball, .eye:hover .eye-ball, .eye-pulse { animation: none; }
+  .flip-inner, .stage-tilt { transition: none; }
 }

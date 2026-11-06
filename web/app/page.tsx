@@ -4,7 +4,6 @@ import { arkivWriter } from "@/lib/arkiv";
 import { deriveAreas } from "@/lib/area";
 import { getDevices } from "@/lib/relayer";
 import { getCell } from "@/lib/verifier";
-import { mukta, rozha } from "@/lib/story/fonts";
 
 export const metadata: Metadata = {
   title: "PranaNet: the air doesn't lie, the readings can",
@@ -23,7 +22,7 @@ export default async function Home() {
       .catch(() => null),
   ]);
   return (
-    <main className={`story ${rozha.variable} ${mukta.variable}`}>
+    <main className="story">
       <Story arkivWriter={writer} initialCell={cell} />
     </main>
   );

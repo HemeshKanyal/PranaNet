@@ -1,60 +1,82 @@
 "use client";
-import { useMemo } from "react";
 import { useStoryArea } from "@/lib/story/live";
-import type { Scene } from "@/lib/story/scenes";
+import { moodLabel } from "@/lib/story/poses";
 import type { Address } from "@/lib/types";
 import type { VerifierCell } from "@/lib/verifier";
-import { Chapter } from "./Chapter";
+import { Chapter, Ledger } from "./Chapter";
+import { SideIndex } from "./ChapterIndex";
 import { CheatPanel } from "./CheatPanel";
 import { CheckItYourself } from "./CheckItYourself";
-import { Ending, StoryFooter } from "./Ending";
-import { EvidenceWall } from "./EvidenceWall";
+import { EndingText, StoryFooter } from "./Ending";
+import { Clippings, DelhiStory } from "./EvidenceWall";
 import { GoGlobal } from "./GoGlobal";
-import { Hero, StoryNav } from "./Hero";
-import { SceneStage } from "./SceneStage";
+import { Hero } from "./Hero";
 import { SlashSequence } from "./SlashSequence";
+import { Stage } from "./Stage";
 import { TamperDemo } from "./TamperDemo";
-import { Tricks } from "./Tricks";
+import { TrickTiles, TricksText } from "./Tricks";
 import { WhoPays } from "./WhoPays";
 
 export function Story({ arkivWriter, initialCell }: { arkivWriter: Address | null; initialCell: VerifierCell | null }) {
   const live = useStoryArea(initialCell);
-  // Scene per scene-chapter, in scroll order. Index 0 (the hero) is today's live category.
-  const order = useMemo<Scene[]>(() => [live.scene, "very-poor", "satisfactory", "moderate", "poor", "severe", "good"], [live.scene]);
   return (
-    <SceneStage order={order}>
-      <StoryNav />
+    <>
+      <SideIndex />
       <Hero live={live} />
-      <Chapter id="before" idx={1} n={1} title="It's happened before" wide>
-        <EvidenceWall />
+
+      <Chapter id="before" side="right" stage={<Stage pose="pointing" mood="Very Poor" label={moodLabel("Very Poor")} props={["peacock-left"]} />} below={<Clippings />}>
+        <DelhiStory />
       </Chapter>
-      <Chapter id="why" idx={2} n={2} title="Why tampering works">
-        <Tricks />
+
+      <Chapter id="why" side="left" stage={<Stage pose="shrug" mood="Satisfactory" label={moodLabel("Satisfactory")} props={["table"]} />} below={<TrickTiles />}>
+        <TricksText />
       </Chapter>
-      <Chapter id="signed" idx={3} n={3} title="Signed at the source">
-        <TamperDemo />
-      </Chapter>
-      <Chapter id="democracy" idx={4} n={4} title="A democracy of honest nodes" wide>
-        <p>
-          Anyone can run a node: a home, a school, a housing society. <b>One human, one voice:</b> World ID proves you&apos;re a
-          unique person without revealing who, and each person can run at most 3 nodes, so nobody can fake a crowd. Neighbours
-          and the official station check each other. <b>Try to cheat:</b>
+
+      <Chapter
+        id="signed"
+        side="right"
+        stage={<Stage pose="seated" mood="Moderate" label={moodLabel("Moderate")} />}
+        below={<Ledger className="mx-auto max-w-4xl"><TamperDemo /></Ledger>}
+      >
+        <p className="mt-5">
+          The ESP32 on each node <b className="text-cream">signs every reading with its own key</b> before it leaves the board. Below is the
+          latest one from our sensor at BKC. Change a single digit and your browser rejects it.
         </p>
-        <CheatPanel live={live} />
+        <p className="mt-3 text-sand">Not even the server that carries the data can change it.</p>
       </Chapter>
-      <SlashSequence idx={5} />
-      <Chapter id="check" n={6} title="Check it yourself" paper>
-        <CheckItYourself writer={arkivWriter} />
+
+      <Chapter
+        id="democracy"
+        side="left"
+        stage={<Stage pose="standing" mood="Poor" label={moodLabel("Poor")} props={["sensor", "incense"]} />}
+        below={<Ledger className="mx-auto max-w-4xl"><p className="font-[family-name:var(--font-rozha)] text-2xl text-maroon">Try to cheat</p><CheatPanel live={live} /></Ledger>}
+      >
+        <p className="mt-5">
+          Anyone can run a node: a home, a school, a housing society. <b className="text-cream">One human, one voice:</b> World ID proves
+          you&apos;re a unique person without revealing who, and each person can run at most 3 nodes, so nobody can fake a crowd.
+        </p>
+        <p className="mt-3 text-sand">Below are the nodes at BKC right now. Put yours in the middle and try to fool them.</p>
       </Chapter>
-      <Chapter id="pays" n={7} title="Who pays for honest air" paper>
-        <WhoPays />
+
+      <SlashSequence />
+
+      <Chapter id="check" below={<Ledger><CheckItYourself writer={arkivWriter} /></Ledger>}>
+        <p className="mt-5">Every reading is stored on Arkiv. The table below comes straight from Arkiv into your browser, without passing through our server. Press verify on any row.</p>
       </Chapter>
-      <Chapter id="global" n={8} title="Start local, go global" paper>
-        <GoGlobal live={live} />
+
+      <Chapter id="pays" side="right" stage={<Stage pose="builder" fill="#2B4A55" label="The customer: pays for proof" />} below={<Ledger><WhoPays /></Ledger>}>
+        <p className="mt-5">Construction sites in Mumbai already have to monitor their dust, which makes them the first people who would pay for readings that come with proof, along with regulators and apps. That money goes to the people running the nodes. There is no token.</p>
       </Chapter>
-      <Ending idx={6} />
+
+      <Chapter id="global" below={<GoGlobal live={live} />}>
+        <p className="mt-5">Today it&apos;s a handful of nodes at one venue in BKC. Mumbai&apos;s construction sites come next, then Delhi, where this started.</p>
+      </Chapter>
+
+      <Chapter id="ending" side="left" stage={<Stage pose="with-builder" mood="Good" label={moodLabel("Good")} props={["peacock-right"]} walk />}>
+        <EndingText />
+      </Chapter>
+
       <StoryFooter />
-    </SceneStage>
+    </>
   );
 }
-

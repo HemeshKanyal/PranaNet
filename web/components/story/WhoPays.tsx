@@ -22,7 +22,7 @@ export function WhoPays() {
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       <div>
-        <p className="text-[1.05rem] leading-relaxed">
+        <p className="text-lg leading-relaxed">
           Customers buy <b>verified data</b>, not raw readings: a cross-checked value with the signatures behind it.
         </p>
         <ul className="mt-4 grid gap-2">
@@ -40,9 +40,9 @@ export function WhoPays() {
         <ol className="relative mt-3 border-l-4 border-saffron pl-5">
           {FLOW.map((f, i) => (
             <Reveal as="li" key={f.k} delay={i * 120} className="relative pb-4 last:pb-0">
-              <span className="absolute -left-[1.85rem] top-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-maroon bg-cream text-[10px] font-bold">{i + 1}</span>
+              <span className="absolute -left-[1.85rem] top-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-maroon bg-cream text-xs font-bold">{i + 1}</span>
               <div className="font-bold">{f.k}</div>
-              <div className="text-[0.95rem]">
+              <div className="text-[1.05rem]">
                 {f.v}
                 {f.href && (
                   <>
@@ -54,7 +54,7 @@ export function WhoPays() {
             </Reveal>
           ))}
         </ol>
-        <p className="mt-3 text-xs text-kohl/70">
+        <p className="mt-3 text-sm text-kohl/70">
           Try it: the API advertises itself at <a className="underline" href={X402.apiDiscovery} target="_blank" rel="noreferrer">/.well-known/x402</a>.
         </p>
       </div>

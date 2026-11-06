@@ -48,7 +48,7 @@ export default function WorldIdButton({ signal, disabled, onProof }: {
         type="button"
         onClick={start}
         disabled={disabled || busy}
-        className="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2.5 text-sm font-medium text-white disabled:opacity-40"
+        className="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2.5 text-sm font-medium text-ground disabled:opacity-40"
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
           <circle cx="12" cy="12" r="9" />
@@ -56,8 +56,8 @@ export default function WorldIdButton({ signal, disabled, onProof }: {
         </svg>
         {busy ? "Opening…" : WORLD_ID_IS_MOCK ? "Simulate World ID proof" : "Verify with World ID"}
       </button>
-      {WORLD_ID_IS_MOCK && <p className="mt-1 text-xs text-amber-700">Mock mode: NEXT_PUBLIC_WLD_APP_ID is not set, so no real proof is made.</p>}
-      {err && <p className="mt-1 text-xs text-red-700">{err}</p>}
+      {WORLD_ID_IS_MOCK && <p className="mt-1 text-xs text-amber-300">Mock mode: NEXT_PUBLIC_WLD_APP_ID is not set, so no real proof is made.</p>}
+      {err && <p className="mt-1 text-xs text-red-300">{err}</p>}
       {APP_ID && rp && (
         <IDKitRequestWidget
           open={open}

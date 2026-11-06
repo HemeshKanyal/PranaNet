@@ -54,7 +54,7 @@ export function RegisterForm() {
 
   const input = "w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-ink";
   const step = (n: number, done: boolean) => (
-    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${done ? "bg-chain text-white" : "bg-line text-muted"}`}>
+    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${done ? "bg-chain text-ground" : "bg-line text-muted"}`}>
       {done ? "✓" : n}
     </span>
   );
@@ -71,9 +71,9 @@ export function RegisterForm() {
         <div className="mt-4 flex flex-wrap gap-2 text-sm">
           <a href={txUrl(res.tx)} target="_blank" rel="noreferrer" className="rounded-lg border border-chain/40 px-3 py-2 font-mono text-chain">tx {res.tx.slice(0, 12)}… ↗</a>
           <a href={ensUrl(res.ens)} target="_blank" rel="noreferrer" className="rounded-lg border border-chain/40 px-3 py-2 text-chain">View on ENS ↗</a>
-          <Link href="/devices" className="rounded-lg bg-ink px-3 py-2 font-medium text-white">See all devices</Link>
+          <Link href="/devices" className="rounded-lg bg-ink px-3 py-2 font-medium text-ground">See all devices</Link>
         </div>
-        {CONTRACTS_ARE_MOCK && <p className="mt-3 text-xs text-amber-700">Mock response: no transaction was sent.</p>}
+        {CONTRACTS_ARE_MOCK && <p className="mt-3 text-xs text-amber-300">Mock response: no transaction was sent.</p>}
       </div>
     );
   }
@@ -88,7 +88,7 @@ export function RegisterForm() {
           <label className="block text-sm">
             <span className="mb-1 block text-muted">Device address (the key on the ESP32, not your wallet)</span>
             <input className={`${input} font-mono`} value={device} onChange={(e) => setDevice(e.target.value)} placeholder="0x…" spellCheck={false} />
-            {device && !devOk && <span className="mt-1 block text-xs text-red-700">{ERRORS.bad_device}</span>}
+            {device && !devOk && <span className="mt-1 block text-xs text-red-300">{ERRORS.bad_device}</span>}
           </label>
           <label className="block text-sm">
             <span className="mb-1 block text-muted">Name</span>
@@ -96,7 +96,7 @@ export function RegisterForm() {
               <input className={`${input} rounded-r-none`} value={label} onChange={(e) => setLabel(e.target.value.toLowerCase())} placeholder="colaba-02" spellCheck={false} />
               <span className="rounded-r-lg border border-l-0 border-line bg-bg px-3 py-2 text-sm text-muted">.prananet.eth</span>
             </div>
-            {label && !labelOk && <span className="mt-1 block text-xs text-red-700">{ERRORS.bad_label}</span>}
+            {label && !labelOk && <span className="mt-1 block text-xs text-red-300">{ERRORS.bad_label}</span>}
           </label>
           <div className="text-sm">
             <span className="mb-1 block text-muted">Location cell (6-character geohash, about 1.2 × 0.6 km). Only this cell is published.</span>
@@ -115,7 +115,7 @@ export function RegisterForm() {
                 {LOCALITIES.map((l) => <option key={l.name} value={l.name}>{l.name}</option>)}
               </select>
             </div>
-            {geohash && !geoOk && <span className="mt-1 block text-xs text-red-700">{ERRORS.bad_geohash}</span>}
+            {geohash && !geoOk && <span className="mt-1 block text-xs text-red-300">{ERRORS.bad_geohash}</span>}
           </div>
         </div>
       </div>
@@ -155,11 +155,11 @@ export function RegisterForm() {
             type="button"
             onClick={submit}
             disabled={!detailsOk || !proof || busy}
-            className="mt-3 rounded-lg bg-chain px-4 py-2.5 text-sm font-medium text-white disabled:opacity-40"
+            className="mt-3 rounded-lg bg-chain px-4 py-2.5 text-sm font-medium text-ground disabled:opacity-40"
           >
             {busy ? "Registering…" : "Register device"}
           </button>
-          {res && !res.ok && <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{ERRORS[res.error] ?? `Registration failed: ${res.error}`}</p>}
+          {res && !res.ok && <p className="mt-2 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-300">{ERRORS[res.error] ?? `Registration failed: ${res.error}`}</p>}
           {CONTRACTS_ARE_MOCK && <p className="mt-2 text-xs text-muted">Mock mode tip: a name containing &quot;fourth&quot; returns the max_devices error.</p>}
         </div>
       </div>

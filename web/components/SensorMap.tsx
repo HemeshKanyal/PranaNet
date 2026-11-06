@@ -108,7 +108,7 @@ export default function SensorMap({ devices, selected, onSelect, fly, height = 5
       {cell && (
         <Rectangle
           bounds={[[cell[0], cell[1]], [cell[2], cell[3]]]}
-          pathOptions={{ color: "#4338ca", weight: 1.5, dashArray: "4 4", fillOpacity: 0.06 }}
+          pathOptions={{ color: "#a5b4fc", weight: 1.5, dashArray: "4 4", fillOpacity: 0.06 }}
         />
       )}
       {devices.map((d) => {

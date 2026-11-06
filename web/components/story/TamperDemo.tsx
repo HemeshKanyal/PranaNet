@@ -66,10 +66,10 @@ export function TamperDemo() {
   return (
     <>
       <p>
-        Each node holds its own key and <b>signs every reading on the sensor itself</b>. Here is the latest reading from{" "}
-        <b>{source.ens}</b>{source.simulated ? " (simulated)" : ", a real board at our venue"}, exactly as it was signed:
+        The latest reading from <b>{source.ens}</b>{source.simulated ? " (simulated)" : ", a real board at our venue"}, exactly as it
+        was signed:
       </p>
-      <div className="mt-4 overflow-hidden rounded border border-maroon/30 bg-[#fbf1da] font-mono text-[0.8rem] sm:text-sm">
+      <div className="mt-4 overflow-hidden rounded border border-maroon/30 bg-[#fbf1da] font-mono text-sm sm:text-sm">
         <Row k="device" v={<span title={original.device}>{short(original.device)}</span>} />
         <Row k="time" v={time(original.epoch)} />
         <div className="flex items-center gap-2 border-b border-maroon/15 bg-saffron/25 px-3 py-1.5">
@@ -83,7 +83,7 @@ export function TamperDemo() {
             aria-describedby="pm-hint"
           />
           <span className="text-kohl/70">µg/m³</span>
-          <span id="pm-hint" className="ml-auto hidden font-sans text-xs text-kohl/60 sm:inline">← try changing it</span>
+          <span id="pm-hint" className="ml-auto hidden font-sans text-sm text-kohl/60 sm:inline">← try changing it</span>
         </div>
         <Row k="PM10" v={`${x10(original.pm10_x10)} µg/m³`} />
         <Row k="nonce" v={String(original.nonce)} />
@@ -109,7 +109,7 @@ export function TamperDemo() {
       {/* Fixed-height result box: no layout shift when the verdict appears */}
       <div aria-live="polite" className={`mt-3 flex min-h-[5.5rem] items-center gap-3 rounded border-2 p-3 transition-colors ${!verdict ? "border-dashed border-maroon/30" : ok ? "border-leaf bg-leaf/15" : "border-vermilion bg-vermilion/10"}`}>
         <Eye size={48} state={!verdict ? "sim" : ok ? "open" : "flagged"} blink={!verdict} />
-        <div className="min-w-0 text-[0.95rem] leading-snug">
+        <div className="min-w-0 text-[1.05rem] leading-snug">
           {!verdict ? (
             <span className="text-kohl/70">Press verify: your browser recovers the signer from the signature and the values (no server involved).</span>
           ) : ok ? (
@@ -123,8 +123,7 @@ export function TamperDemo() {
           )}
         </div>
       </div>
-      <p className="mt-4 font-semibold">Not even the server that carries the data can change it.</p>
-      <p className="mt-1 text-sm text-kohl/70">
+      <p className="mt-4 text-base text-kohl/70">
         Full breakdown of the 264 signed bytes:{" "}
         <Link href={`/records/${recordId(original)}`} className="text-vermilion underline">open this record</Link>.
       </p>

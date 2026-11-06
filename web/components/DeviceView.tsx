@@ -37,13 +37,13 @@ export function DeviceView({ initial }: { initial: DeviceDetail }) {
       </p>
 
       {d.status === "slashed" && (
-        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+        <div className="mt-4 rounded-xl border border-red-400/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
           This device was slashed after 3 consecutive neighbour-outlier flags. Its stake went to the reward pool and its ENS
           subname was revoked. Its readings are no longer accepted.
         </div>
       )}
       {d.status === "flagged" && (
-        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <div className="mt-4 rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm text-amber-300">
           Flagged {myFlags.length} time{myFlags.length === 1 ? "" : "s"} in a row. A third consecutive flag slashes its stake.
         </div>
       )}
@@ -125,9 +125,9 @@ export function DeviceView({ initial }: { initial: DeviceDetail }) {
               {latest.map((x) => {
                 const flagged = myFlags.some((f) => f.epoch === x.epoch);
                 return (
-                  <tr key={x.nonce} className={flagged ? "bg-amber-50" : ""}>
+                  <tr key={x.nonce} className={flagged ? "bg-amber-400/10" : ""}>
                     <td className="px-4 py-1.5">{time(x.epoch)}</td>
-                    <td className="px-4 py-1.5 tabular-nums">{x10(x.pm25_x10)}{flagged && <span className="ml-1 text-[10px] font-medium text-amber-700">flagged</span>}</td>
+                    <td className="px-4 py-1.5 tabular-nums">{x10(x.pm25_x10)}{flagged && <span className="ml-1 text-xs font-medium text-amber-300">flagged</span>}</td>
                     <td className="px-4 py-1.5 tabular-nums">{x10(x.pm10_x10)}</td>
                     <td className="px-4 py-1.5 tabular-nums">{x10(x.temp_x10)}</td>
                     <td className="px-4 py-1.5 tabular-nums">{x10(x.hum_x10)}</td>

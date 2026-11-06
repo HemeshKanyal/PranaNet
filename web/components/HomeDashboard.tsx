@@ -7,25 +7,13 @@ import { LiveFeed } from "./LiveFeed";
 import { useLive } from "./LiveProvider";
 import { SensorMap, type FlyTarget } from "./MapLoader";
 import { VerifyBadge } from "./VerifyBadge";
-import { aqi, aqiStyle, WHO_PM25, type AqiCategory } from "@/lib/aqi";
+import { aqi, aqiStyle, WHO_PM25 } from "@/lib/aqi";
 import { areaStats, deriveAreas, devicePos, LOCALITIES, nodeCounts, RADIUS_KM, type Area, type Locality } from "@/lib/area";
 import { ensUrl } from "@/lib/chain";
 import { eth, time, x10 } from "@/lib/format";
 import { isGeohash, decode } from "@/lib/geohash";
 import { recordId } from "@/lib/verify";
 import type { DeviceDetail, Reading } from "@/lib/types";
-
-/* ---------- headline per category (bands come from aqiStyle, the single source) ---------- */
-
-const HEADLINES: Record<AqiCategory, string> = {
-  Good: "A good day to be outside",
-  Satisfactory: "The air is reasonably comfortable",
-  Moderate: "Give your outdoor plans a little thought",
-  Poor: "Take care when spending time outdoors",
-  "Very Poor": "Reduce prolonged outdoor exposure",
-  Severe: "The air needs immediate attention",
-};
-const NO_DATA_HEADLINE = "No live readings here yet";
 
 /* ---------- search ---------- */
 
@@ -101,7 +89,7 @@ function LocalitySearch({ areas, onPick, current }: { areas: Area[]; onPick: (l:
           Near me
         </button>
       </div>
-      {geoErr && <p className="mt-1 text-xs font-semibold text-red-700">{geoErr}</p>}
+      {geoErr && <p className="mt-1 text-xs font-semibold text-red-300">{geoErr}</p>}
       {areas.length > 0 && (
         <div className="mt-3 flex flex-wrap items-center gap-1.5">
           <span className="text-xs text-muted">Areas with nodes:</span>
@@ -111,7 +99,7 @@ function LocalitySearch({ areas, onPick, current }: { areas: Area[]; onPick: (l:
               type="button"
               onClick={() => onPick(a)}
               className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                current === a.name ? "border-ink bg-ink text-white" : "border-line bg-surface hover:border-ink/40"
+                current === a.name ? "border-ink bg-ink text-ground" : "border-line bg-surface hover:border-ink/40"
               }`}
             >
               {a.name} <span className="opacity-70">· {a.real} real{a.simulated ? ` · ${a.simulated} sim` : ""}</span>
@@ -139,7 +127,7 @@ function AreaCard({ place }: { place: Place }) {
           className="flex w-32 shrink-0 flex-col items-center justify-center p-4 text-center sm:w-40"
           style={{ background: style?.bg ?? "var(--color-line)", color: style?.fg ?? "var(--color-muted)" }}
         >
-          <div className="text-[11px] font-semibold uppercase tracking-wider opacity-90">AQI</div>
+          <div className="text-xs font-semibold uppercase tracking-wider opacity-90">AQI</div>
           <div className="mt-0.5 text-5xl font-black leading-none tabular-nums sm:text-6xl">{st.aqi ?? "–"}</div>
           <div className="mt-1.5 text-sm font-bold">{style?.cat ?? "No data"}</div>
         </div>
@@ -173,7 +161,7 @@ function AreaCard({ place }: { place: Place }) {
           {st.used.length > 0 && <> ({real} real · {sim} simulated)</>}
         </span>
         {st.excluded.length > 0 && (
-          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-amber-900">{st.excluded.length} flagged/slashed excluded</span>
+          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-amber-300">{st.excluded.length} flagged/slashed excluded</span>
         )}
         {sample && (
           <Link href={`/records/${recordId(sample)}`} className="rounded-full hover:opacity-80" title="Open this reading and check it yourself">
@@ -209,7 +197,7 @@ function Stats() {
         <div key={t.label} className="card px-4 py-3">
           <div className="text-xs text-muted">{t.label}</div>
           <div className="text-2xl font-semibold tabular-nums">{t.value}</div>
-          <div className="text-[11px] text-muted">{t.sub}</div>
+          <div className="text-xs text-muted">{t.sub}</div>
         </div>
       ))}
     </div>
@@ -246,7 +234,7 @@ function DevicePanel({ address, onClose }: { address: string; onClose: () => voi
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {r && <AqiChip value={aqi(r.pm25_x10, r.pm10_x10)} />}
-        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${d.status === "active" ? "bg-green-100 text-green-800" : d.status === "flagged" ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}>
+        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${d.status === "active" ? "bg-green-500/15 text-green-300" : d.status === "flagged" ? "bg-amber-400/15 text-amber-300" : "bg-red-500/15 text-red-300"}`}>
           {d.status}
         </span>
         {r && <VerifyBadge reading={r} />}
@@ -263,7 +251,7 @@ function DevicePanel({ address, onClose }: { address: string; onClose: () => voi
         <LiveChart readings={readings} flags={flags.filter((f) => f.device === d.device)} height={190} compact />
       </div>
       <div className="mt-3 flex gap-2 text-sm">
-        <Link href={`/devices/${d.ens}`} className="flex-1 rounded-lg bg-ink px-3 py-2 text-center font-medium text-white">Device page</Link>
+        <Link href={`/devices/${d.ens}`} className="flex-1 rounded-lg bg-ink px-3 py-2 text-center font-medium text-ground">Device page</Link>
         {r && <Link href={`/records/${recordId(r)}`} className="flex-1 rounded-lg border border-chain/40 px-3 py-2 text-center font-medium text-chain">Arkiv record</Link>}
       </div>
     </div>
@@ -321,7 +309,7 @@ export function HomeDashboard() {
 
   const st = place ? areaStats(devices, place) : null;
   const style = st?.aqi != null ? aqiStyle(st.aqi) : null;
-  const headline = style ? HEADLINES[style.cat] : NO_DATA_HEADLINE;
+  const headline = place ? `${place.name}'s air right now, signed and cross-checked` : "No nodes yet";
 
   return (
     <main className="mx-auto max-w-7xl px-4 pb-8">
@@ -374,7 +362,7 @@ export function HomeDashboard() {
         <div className="card p-4">
           <h2 className="mb-3 font-semibold">Areas, worst to best</h2>
           <Ranking areas={areas} onPick={pick} />
-          <p className="mt-3 text-[11px] text-muted">Median of active devices within {RADIUS_KM} km of each area centre.</p>
+          <p className="mt-3 text-xs text-muted">Median of active devices within {RADIUS_KM} km of each area centre.</p>
         </div>
       </section>
     </main>

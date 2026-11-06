@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageBanner } from "@/components/PageBanner";
 
 const PIPELINE = [
   { who: "Sensor", what: "ESP32 measures dust, temperature and humidity, then signs the reading with its own key (EIP-191 over a 264-byte packed message).", chain: "device key" },
@@ -20,12 +21,10 @@ const STACK = [
 export default function AboutPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
-      <p className="text-xs font-semibold uppercase tracking-wide text-chain">How it works</p>
-      <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">Air-quality data that holds up in a dispute</h1>
-      <p className="mt-3 max-w-3xl text-muted">
+      <PageBanner kicker="How it works" title="Air-quality data that holds up in a dispute" art="watcher-in-folk-art-chair-pose">
         Cheap sensors are everywhere, but their numbers are easy to fake or fudge. PranaNet makes every reading traceable to a
         physical device, checks it against the neighbours, and puts the operator&apos;s money on the line.
-      </p>
+      </PageBanner>
 
       <section className="mt-10">
         <h2 className="text-xl font-semibold">From sensor to verified reading</h2>
@@ -33,9 +32,9 @@ export default function AboutPage() {
           {PIPELINE.map((p, i) => (
             <li key={p.who} className="card relative p-4">
               <div className="flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ink text-xs font-semibold text-white">{i + 1}</span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ink text-xs font-semibold text-ground">{i + 1}</span>
                 <h3 className="font-semibold">{p.who}</h3>
-                <span className="ml-auto rounded-full bg-chain-soft px-2 py-0.5 font-mono text-[10px] text-chain">{p.chain}</span>
+                <span className="ml-auto rounded-full bg-chain-soft px-2 py-0.5 font-mono text-xs text-chain">{p.chain}</span>
               </div>
               <p className="mt-2 text-sm text-muted">{p.what}</p>
             </li>
@@ -56,10 +55,10 @@ export default function AboutPage() {
             against the nearest official (OpenAQ) station.
           </p>
           <div className="mt-4 flex items-center gap-2 text-xs">
-            <span className="rounded-full bg-amber-100 px-2 py-1 font-medium text-amber-800">flag</span>→
-            <span className="rounded-full bg-amber-100 px-2 py-1 font-medium text-amber-800">flag</span>→
-            <span className="rounded-full bg-amber-100 px-2 py-1 font-medium text-amber-800">flag</span>→
-            <span className="rounded-full bg-red-100 px-2 py-1 font-medium text-red-800">slashed</span>
+            <span className="rounded-full bg-amber-400/15 px-2 py-1 font-medium text-amber-300">flag</span>→
+            <span className="rounded-full bg-amber-400/15 px-2 py-1 font-medium text-amber-300">flag</span>→
+            <span className="rounded-full bg-amber-400/15 px-2 py-1 font-medium text-amber-300">flag</span>→
+            <span className="rounded-full bg-red-500/15 px-2 py-1 font-medium text-red-300">slashed</span>
           </div>
         </div>
         <div className="card p-5">
