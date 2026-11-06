@@ -7,7 +7,7 @@ import { RegistryClient } from "./chain.ts";
 import { config } from "./config.ts";
 import { epochToJudge, runVerifierEpoch } from "./loop.ts";
 import { RelayerClient } from "./relayer.ts";
-import { Simulator } from "./sim.ts";
+import { Simulator, simsAround } from "./sim.ts";
 import { OpenAQStations, loadMockStations } from "./stations.ts";
 import { Verifier } from "./verifier.ts";
 
@@ -16,7 +16,7 @@ const log = (m: string) => console.log(`${new Date().toISOString().slice(11, 19)
 
 const live = config.openaqKey !== "mock" && config.openaqKey !== "";
 const openaq = live ? new OpenAQStations(config.openaqKey, config.openaqRadiusM) : null;
-const verifier = new Verifier(new Simulator(), openaq ? new Map() : loadMockStations());
+const verifier = new Verifier(new Simulator(simsAround(config.simCells[0], config.simArea)), openaq ? new Map() : loadMockStations());
 const relayer = config.relayerUrl !== "mock" && config.simToken ? new RelayerClient(config.relayerUrl, config.simToken) : undefined;
 const registry = config.verifierKey && config.registry ? new RegistryClient(config) : undefined;
 

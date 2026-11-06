@@ -40,6 +40,9 @@ export function createApp(deps: AppDeps) {
   let syncing = true;
   // Simulated neighbour devices published by the verifier (never on-chain, always simulated: true).
   const simDevices = new Map<string, SimDeviceView>();
+  const simSeen = new Map<string, number>(); // ens -> last publish (ms); stale sims drop out
+  const SIM_TTL_MS = 5 * 60_000;
+  const liveSims = () => [...simDevices.values()].filter((d) => Date.now() - (simSeen.get(d.ens) ?? 0) < SIM_TTL_MS);
   let arkivSimQueue: Promise<unknown> = Promise.resolve();
   const authed = (req: IncomingMessage) =>
     !!cfg.simToken && req.headers.authorization === `Bearer ${cfg.simToken}`;
@@ -247,7 +250,10 @@ export function createApp(deps: AppDeps) {
         const readings = (body.readings ?? []).map(parseSimReading);
         const devices = (body.devices ?? []).map(parseSimDevice);
         if (readings.some((r) => !r) || devices.some((d) => !d)) return send(res, req, 400, { ok: false, error: "invalid_shape" });
-        for (const dv of devices) simDevices.set(dv!.ens, { ...dv!, last_reading: simDevices.get(dv!.ens)?.last_reading ?? null });
+        for (const dv of devices) {
+          simDevices.set(dv!.ens, { ...dv!, last_reading: simDevices.get(dv!.ens)?.last_reading ?? null });
+          simSeen.set(dv!.ens, Date.now());
+        }
         for (const r of readings) {
           const dv = simDevices.get(r!.ens);
           if (dv) dv.last_reading = r!;
@@ -290,7 +296,7 @@ export function createApp(deps: AppDeps) {
         if (parts.length === 1) {
           const list = [...chain.devices.values()];
           await Promise.all(list.map(fillLastReading));
-          return send(res, req, 200, [...list.map(deviceView), ...simDevices.values()]);
+          return send(res, req, 200, [...list.map(deviceView), ...liveSims()]);
         }
         const d = chain.byEns(parts[1].toLowerCase());
         const sim = d ? undefined : simDevices.get(parts[1].toLowerCase());

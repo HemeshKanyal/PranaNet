@@ -22,7 +22,9 @@ export const config = {
   /** Station search radius around each cell centre (OpenAQ allows up to 25 km). */
   openaqRadiusM: Number(env("OPENAQ_RADIUS_M", "25000")),
   /** Cells that get simulated neighbours (comma list); default: device 2's cell. */
-  simCells: env("SIM_CELLS", "te7ud2").split(",").map((s) => s.trim()).filter(Boolean),
+  simCells: env("SIM_CELLS", "te7u6n").split(",").map((s) => s.trim()).filter(Boolean),
+  /** Name prefix for simulated devices (<area>-sim-0N.sim.prananet.eth) */
+  simArea: env("SIM_AREA", "bkc"),
   /** Fallback PM2.5 (x10) for simulated devices when no station value is known: Mumbai, November. */
   simDefaultPm25X10: Number(env("SIM_DEFAULT_PM25_X10", "480")),
   rpcUrl: env("SEPOLIA_RPC_URL", "https://ethereum-sepolia-rpc.publicnode.com"),

@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import ngeohash from "ngeohash";
 import type { Device, Reading } from "./types.ts";
 
 // Simulated neighbour devices. Always labelled: simulated: true, ens *.sim.prananet.eth, no
@@ -34,6 +35,16 @@ export const DEFAULT_SIMS: Omit<SimDevice, "nonce" | "spike" | "drift">[] = [
   { label: "andheri-sim-04", geohash: "te7ud0", base_pm25_x10: 400 },
   { label: "andheri-sim-05", geohash: "te7ud8", base_pm25_x10: 470 },
 ];
+
+/**
+ * Five simulated neighbours for `cell`: two inside it, three in adjacent cells, named after
+ * `area` (e.g. bkc-sim-01.sim.prananet.eth). Relative levels as in DEFAULT_SIMS.
+ */
+export function simsAround(cell: string, area: string): Omit<SimDevice, "nonce" | "spike" | "drift">[] {
+  const n = ngeohash.neighbors(cell); // [n, ne, e, se, s, sw, w, nw]
+  const cells = [cell, cell, n[0], n[6], n[2]];
+  return DEFAULT_SIMS.map((s, i) => ({ ...s, label: `${area}-sim-0${i + 1}`, geohash: cells[i] }));
+}
 
 export class Simulator {
   readonly devices: SimDevice[];

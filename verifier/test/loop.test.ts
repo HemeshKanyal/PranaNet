@@ -100,3 +100,10 @@ test("OpenAQ v3: nearest monitor with a fresh pm25 value", async () => {
   assert.equal(st?.pm25_x10, 524);
   assert.ok(st!.distance_km < 3);
 });
+
+test("simulated neighbours are placed around the configured cell", async () => {
+  const { simsAround } = await import("../src/sim.ts");
+  const sims = simsAround("te7u6n", "bkc");
+  assert.equal(sims.filter((s) => s.geohash === "te7u6n").length, 2);
+  assert.deepEqual(sims.map((s) => s.label), ["bkc-sim-01", "bkc-sim-02", "bkc-sim-03", "bkc-sim-04", "bkc-sim-05"]);
+});
