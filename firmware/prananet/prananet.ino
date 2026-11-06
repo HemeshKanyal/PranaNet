@@ -2,10 +2,14 @@
 // epoch, sign the reading with the device's secp256k1 key and POST it to the relayer.
 // One sketch for both devices: set DEVICE to 1 or 2 (or pass -DDEVICE=n). Pins from docs/SPEC.md.
 //
-// The Sharp GP2Y1014AU0F is a PM proxy, not a calibrated PM2.5 counter: we report the rise above
-// a clean-air baseline measured over the first ~10 s after boot, as both pm25_x10 and pm10_x10.
+// The Sharp GP2Y1014AU0F is a PM proxy, not a calibrated PM2.5 counter. Its sensitivity is known
+// (datasheet: 0.5 V per 0.1 mg/m3) but its zero is not, and indoor Mumbai air at boot is not clean.
+// So we use a one-point field calibration: the output voltage averaged over the first ~10 s after
+// boot is taken to mean CAL µg/m3, where CAL is the nearest reference station's PM2.5 at that time
+// (set with `cal <ug>`, kept in NVS; default CAL_AMBIENT_UG from secrets.h). Reported value =
+// CAL + (Vo - Vo_boot) x sensitivity, as both pm25_x10 and pm10_x10.
 //
-// Serial commands (115200, newline): help | addr | selftest | status
+// Serial commands (115200, newline): help | addr | selftest | status | cal [ug]
 
 #ifndef DEVICE
 #define DEVICE 2
@@ -63,7 +67,11 @@ constexpr uint32_t PULSE_US = 320;         // total LED on time
 constexpr uint32_t PERIOD_US = 10000;      // 10 ms sampling period
 constexpr uint32_t BASELINE_MS = 10000;    // clean-air baseline window after boot
 
+#ifndef CAL_AMBIENT_UG
+#define CAL_AMBIENT_UG 0.0f
+#endif
 float baselineMv = NAN;
+float calUg = CAL_AMBIENT_UG;  // PM2.5 (ug/m3) that the boot baseline stands for
 double baselineSum = 0;
 uint32_t baselineCount = 0;
 uint32_t bootMs = 0;
@@ -108,6 +116,7 @@ static void loadOrCreateKey() {
     Serial.println("Generated new device key (stored in NVS).");
   }
   lastNonce = prefs.getULong64("nonce", 0);
+  calUg = prefs.getFloat("cal", CAL_AMBIENT_UG);
   if (!eth_derive(devPriv, devPub, devAddr)) {
     Serial.println("FATAL: key derivation failed");
     while (true) delay(1000);
@@ -168,9 +177,9 @@ static void selftest() {
 }
 
 static void status() {
-  Serial.printf("dev=%d addr=%s wifi=%s ip=%s time=%s nonce=%llu base=%.0fmV epoch=%us\n", DEVICE, devAddrHex,
+  Serial.printf("dev=%d addr=%s wifi=%s ip=%s time=%s nonce=%llu base=%.0fmV cal=%.1fug/m3 epoch=%us\n", DEVICE, devAddrHex,
                 WiFi.isConnected() ? "up" : "down", WiFi.localIP().toString().c_str(), timeValid() ? "ok" : "unsynced",
-                (unsigned long long)lastNonce, baselineMv, (unsigned)EPOCH_SECONDS);
+                (unsigned long long)lastNonce, baselineMv, calUg, (unsigned)EPOCH_SECONDS);
 }
 
 static void handleSerial() {
@@ -186,7 +195,16 @@ static void handleSerial() {
     if (line == "addr") printAddress();
     else if (line == "selftest") selftest();
     else if (line == "status") status();
-    else if (line.length()) Serial.println("commands: addr | selftest | status");
+    else if (line == "cal") Serial.printf("cal=%.1fug/m3 (boot baseline %.0f mV stands for this)\n", calUg, baselineMv);
+    else if (line.startsWith("cal ")) {
+      float v = line.substring(4).toFloat();
+      if (v >= 0 && v < 1000) {
+        calUg = v;
+        prefs.putFloat("cal", calUg);
+        Serial.printf("cal set to %.1fug/m3 (saved)\n", calUg);
+      } else Serial.println("cal: expected 0..999 ug/m3");
+    }
+    else if (line.length()) Serial.println("commands: addr | selftest | status | cal [ug]");
     line = "";
   }
 }
@@ -212,7 +230,7 @@ static int postReading(const char *json, String &resp) {
 static void finishEpoch(uint64_t epoch) {
   if (epCount == 0) return;
   float avgMv = epSumMv / epCount;
-  float dust = (avgMv - baselineMv) * UG_PER_MV;
+  float dust = calUg + (avgMv - baselineMv) * UG_PER_MV;
   if (dust < 0) dust = 0;
 
   EthReading r{};

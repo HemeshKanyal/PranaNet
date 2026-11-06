@@ -21,3 +21,7 @@
 #define DEVICE1_GEOHASH "te7ud2"
 #define DEVICE2_ENS     "device2.prananet.eth"
 #define DEVICE2_GEOHASH "te7ud2"
+
+// One-point calibration: PM2.5 (ug/m3) the boot baseline stands for, normally the nearest
+// reference station (OpenAQ) at boot. Overridden at runtime with the serial command `cal <ug>`.
+#define CAL_AMBIENT_UG 0.0f
