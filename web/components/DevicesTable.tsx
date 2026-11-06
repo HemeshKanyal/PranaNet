@@ -5,7 +5,7 @@ import { AqiChip } from "./Aqi";
 import { useLive } from "./LiveProvider";
 import { VerifyBadge } from "./VerifyBadge";
 import { aqi } from "@/lib/aqi";
-import { devicePos, nearestLocality } from "@/lib/area";
+import { placeLabel } from "@/lib/area";
 import { addressUrl } from "@/lib/chain";
 import { eth, short, time, x10 } from "@/lib/format";
 import type { DeviceStatus } from "@/lib/types";
@@ -39,7 +39,7 @@ export function DevicesTable() {
     .filter((d) => (filter === "all" ? true : filter === "real" ? !d.simulated : filter === "simulated" ? d.simulated : d.status === filter))
     .filter((d) => {
       const s = q.trim().toLowerCase();
-      return !s || d.ens.includes(s) || d.device.includes(s) || d.geohash.startsWith(s) || nearestLocality(devicePos(d)).name.toLowerCase().includes(s);
+      return !s || d.ens.includes(s) || d.device.includes(s) || d.geohash.startsWith(s) || placeLabel(d).toLowerCase().includes(s);
     });
 
   return (
@@ -90,7 +90,7 @@ export function DevicesTable() {
                   </td>
                   <td className="px-4 py-2.5">
                     <span className="font-mono">{d.geohash}</span>
-                    <div className="text-xs text-muted">{nearestLocality(devicePos(d)).name}</div>
+                    <div className="text-xs text-muted">{placeLabel(d)}</div>
                   </td>
                   <td className="px-4 py-2.5">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[d.status]}`}>{d.status}</span>

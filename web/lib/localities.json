@@ -1,14 +1,15 @@
 [
-  { "name": "Andheri", "lat": 19.1197, "lon": 72.8468 },
-  { "name": "Bandra", "lat": 19.0596, "lon": 72.8295 },
-  { "name": "Powai", "lat": 19.1176, "lon": 72.906 },
-  { "name": "Colaba", "lat": 18.9067, "lon": 72.8147 },
-  { "name": "Dadar", "lat": 19.0178, "lon": 72.8478 },
-  { "name": "Kurla", "lat": 19.0726, "lon": 72.8845 },
-  { "name": "Worli", "lat": 19.0176, "lon": 72.8162 },
-  { "name": "Chembur", "lat": 19.0522, "lon": 72.9005 },
-  { "name": "Borivali", "lat": 19.2307, "lon": 72.8567 },
-  { "name": "Malad", "lat": 19.1874, "lon": 72.8484 },
-  { "name": "Thane", "lat": 19.2183, "lon": 72.9781 },
-  { "name": "Vashi", "lat": 19.0771, "lon": 72.9986 }
+  {"name": "BKC", "lat": 19.0662, "lon": 72.8653},
+  {"name": "Andheri", "lat": 19.1197, "lon": 72.8468},
+  {"name": "Bandra", "lat": 19.0596, "lon": 72.8295},
+  {"name": "Powai", "lat": 19.1176, "lon": 72.906},
+  {"name": "Colaba", "lat": 18.9067, "lon": 72.8147},
+  {"name": "Dadar", "lat": 19.0178, "lon": 72.8478},
+  {"name": "Kurla", "lat": 19.0726, "lon": 72.8845},
+  {"name": "Worli", "lat": 19.0176, "lon": 72.8162},
+  {"name": "Chembur", "lat": 19.0522, "lon": 72.9005},
+  {"name": "Borivali", "lat": 19.2307, "lon": 72.8567},
+  {"name": "Malad", "lat": 19.1874, "lon": 72.8484},
+  {"name": "Thane", "lat": 19.2183, "lon": 72.9781},
+  {"name": "Vashi", "lat": 19.0771, "lon": 72.9986}
 ]

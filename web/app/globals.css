@@ -13,6 +13,16 @@
   --color-brand: #0e5a43;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Story palette (docs/STORY.md), taken from the folk-art scenes */
+  --color-vermilion: #c8341e;
+  --color-saffron: #f2a12e;
+  --color-maroon: #5a1a12;
+  --color-olive: #6b6a2a;
+  --color-leaf: #6e8b3d;
+  --color-cream: #f3e3be;
+  --color-kohl: #2a1a12;
+  --font-display: var(--font-rozha), Georgia, serif;
+  --font-story: var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -61,6 +71,10 @@ body {
 .aqi-marker.flagged {
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px #f59e0b, 0 1px 4px rgb(0 0 0 / 0.35);
 }
+.aqi-marker.sim {
+  outline: 2px dashed rgb(19 32 27 / 0.55);
+  outline-offset: 2px;
+}
 .aqi-marker.slashed {
   background: #9ca3af !important;
   color: #fff !important;
@@ -99,4 +113,86 @@ body {
 
 .animate-drop-in-delay-2 {
   animation: dropIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.22s backwards;
+}
+
+/* ================================================================ story site (/) */
+/* next/font sets --font-rozha/--font-mukta on .story itself, so reference them here, not via
+   :root tokens (a var() in :root resolves before those variables exist). */
+.story {
+  --font-display: var(--font-rozha), Georgia, serif;
+  --font-story: var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-story);
+  color: var(--color-kohl);
+  background: var(--color-cream);
+}
+.story h1,
+.story h2,
+.story h3.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* Cream paper panel: the text scrim over the scenes */
+.paper {
+  background: rgb(243 227 190 / 0.95);
+  border: 2px solid var(--color-maroon);
+  border-radius: 6px;
+  box-shadow: 0 0 0 4px rgb(243 227 190 / 0.95), 0 0 0 6px var(--color-vermilion), 0 18px 40px rgb(42 26 18 / 0.35);
+}
+
+/* Folk-art border band (section divider): saffron diamonds on vermilion between maroon rules */
+.folk-band {
+  height: 22px;
+  background:
+    linear-gradient(var(--color-maroon), var(--color-maroon)) top / 100% 3px no-repeat,
+    linear-gradient(var(--color-maroon), var(--color-maroon)) bottom / 100% 3px no-repeat,
+    conic-gradient(from 45deg at 50% 50%, var(--color-saffron) 0 25%, transparent 0 50%, var(--color-saffron) 0 75%, transparent 0) center / 16px 16px repeat-x,
+    var(--color-vermilion);
+}
+
+/* Reveal on scroll (IntersectionObserver sets data-in) */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal[data-in="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Scenes: slow zoom on the active image */
+@keyframes scene-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.07); }
+}
+.scene-img {
+  animation: scene-zoom 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Eyes blink: the eyeball squashes for a moment every few seconds */
+@keyframes eye-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.08); }
+}
+.eye-ball {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.eye-blink .eye-ball {
+  animation: eye-blink 6s infinite;
+}
+
+@keyframes coin-slide {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .scene-img { animation: none; }
+  .eye-blink .eye-ball { animation: none; }
+  .story * { scroll-behavior: auto; }
 }

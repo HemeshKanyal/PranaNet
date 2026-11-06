@@ -7,7 +7,7 @@ import { LiveFeed } from "./LiveFeed";
 import { useLive } from "./LiveProvider";
 import { VerifyBadge } from "./VerifyBadge";
 import { aqi } from "@/lib/aqi";
-import { devicePos, nearestLocality } from "@/lib/area";
+import { nearestLocality, devicePos } from "@/lib/area";
 import { addressUrl, ensUrl, REGISTRY_CONTRACT } from "@/lib/chain";
 import { eth, short, time, x10 } from "@/lib/format";
 import { recordId } from "@/lib/verify";
@@ -33,7 +33,7 @@ export function DeviceView({ initial }: { initial: DeviceDetail }) {
         {r && <AqiChip value={aqi(r.pm25_x10, r.pm10_x10)} size="lg" />}
       </div>
       <p className="mt-1 text-sm text-muted">
-        {nearestLocality(devicePos(d)).name} · cell <span className="font-mono">{d.geohash}</span>
+        {nearestLocality(devicePos(d))?.name ?? "Unnamed area"} · cell <span className="font-mono">{d.geohash}</span>
       </p>
 
       {d.status === "slashed" && (

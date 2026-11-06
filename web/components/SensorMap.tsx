@@ -11,7 +11,8 @@ import type { Device } from "@/lib/types";
 
 export interface FlyTarget { lat: number; lon: number; zoom?: number; key: number }
 
-const MUMBAI: [number, number] = [19.08, 72.89];
+/** Start on the whole world; FitDevices then zooms to wherever devices exist. */
+const WORLD: [number, number] = [20, 0];
 
 /** Spread devices that share a cell around its centre so markers don't stack. */
 function positions(devices: Device[]) {
@@ -34,7 +35,7 @@ function icon(d: Device, selected: boolean, pulse: boolean) {
   const v = r ? aqi(r.pm25_x10, r.pm10_x10) : null;
   const s = v != null ? aqiStyle(v) : { bg: "#9ca3af", fg: "#fff" };
   const size = selected ? 36 : 30;
-  const cls = ["aqi-marker", selected && "selected", d.status === "flagged" && "flagged", d.status === "slashed" && "slashed", pulse && "pulse"]
+  const cls = ["aqi-marker", selected && "selected", d.status === "flagged" && "flagged", d.status === "slashed" && "slashed", d.simulated && "sim", pulse && "pulse"]
     .filter(Boolean)
     .join(" ");
   return L.divIcon({
@@ -43,6 +44,18 @@ function icon(d: Device, selected: boolean, pulse: boolean) {
     iconAnchor: [size / 2, size / 2],
     html: `<div class="${cls}" style="width:${size}px;height:${size}px;background:${s.bg};color:${s.fg}">${d.status === "slashed" ? "✕" : (v ?? "–")}</div>`,
   });
+}
+
+function FitDevices({ devices }: { devices: Device[] }) {
+  const map = useMap();
+  const done = useRef(false);
+  useEffect(() => {
+    if (done.current || !devices.length) return;
+    done.current = true;
+    const pts = devices.map((d) => decode(d.geohash)).map((c) => [c.lat, c.lon] as [number, number]);
+    map.fitBounds(L.latLngBounds(pts).pad(0.4), { maxZoom: 14 });
+  }, [devices, map]);
+  return null;
 }
 
 function Fly({ target }: { target: FlyTarget | null }) {
@@ -83,13 +96,14 @@ export default function SensorMap({ devices, selected, onSelect, fly, height = 5
   const cell = sel ? decode(sel.geohash).bounds : null;
 
   return (
-    <MapContainer center={MUMBAI} zoom={11} scrollWheelZoom style={{ height, width: "100%" }} className="rounded-[14px]">
+    <MapContainer center={WORLD} zoom={2} scrollWheelZoom style={{ height, width: "100%" }} className="rounded-[14px]">
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         maxZoom={19}
         className="pn-tiles"
       />
+      <FitDevices devices={devices} />
       <Fly target={fly} />
       {cell && (
         <Rectangle

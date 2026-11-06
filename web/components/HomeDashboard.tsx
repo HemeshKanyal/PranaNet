@@ -8,25 +8,16 @@ import { useLive } from "./LiveProvider";
 import { SensorMap, type FlyTarget } from "./MapLoader";
 import { VerifyBadge } from "./VerifyBadge";
 import { aqi, aqiStyle, WHO_PM25, type AqiCategory } from "@/lib/aqi";
-import { areaStats, devicePos, LOCALITIES, nearestLocality, RADIUS_KM, type Locality } from "@/lib/area";
+import { areaStats, deriveAreas, devicePos, LOCALITIES, nodeCounts, RADIUS_KM, type Area, type Locality } from "@/lib/area";
 import { ensUrl } from "@/lib/chain";
 import { eth, time, x10 } from "@/lib/format";
 import { isGeohash, decode } from "@/lib/geohash";
 import { recordId } from "@/lib/verify";
 import type { DeviceDetail, Reading } from "@/lib/types";
 
-/* ---------- CPCB dynamic messages and backgrounds ---------- */
+/* ---------- headline per category (bands come from aqiStyle, the single source) ---------- */
 
-const ALL_CATEGORIES: AqiCategory[] = [
-  "Good",
-  "Satisfactory",
-  "Moderate",
-  "Poor",
-  "Very Poor",
-  "Severe",
-];
-
-const CPCB_HEADLINES: Record<AqiCategory, string> = {
+const HEADLINES: Record<AqiCategory, string> = {
   Good: "A good day to be outside",
   Satisfactory: "The air is reasonably comfortable",
   Moderate: "Give your outdoor plans a little thought",
@@ -34,61 +25,47 @@ const CPCB_HEADLINES: Record<AqiCategory, string> = {
   "Very Poor": "Reduce prolonged outdoor exposure",
   Severe: "The air needs immediate attention",
 };
-
-const CPCB_BG: Record<AqiCategory, string> = {
-  Good: "/bg/good.png",
-  Satisfactory: "/bg/satisfactory.png",
-  Moderate: "/bg/moderate.png",
-  Poor: "/bg/poor.png",
-  "Very Poor": "/bg/very poor.png",
-  Severe: "/bg/severe.png",
-};
-
-function getCpcbCategory(aqiVal: number | null): AqiCategory {
-  if (aqiVal == null) return "Satisfactory";
-  if (aqiVal <= 50) return "Good";
-  if (aqiVal <= 100) return "Satisfactory";
-  if (aqiVal <= 200) return "Moderate";
-  if (aqiVal <= 300) return "Poor";
-  if (aqiVal <= 400) return "Very Poor";
-  return "Severe";
-}
+const NO_DATA_HEADLINE = "No live readings here yet";
 
 /* ---------- search ---------- */
 
-function LocalitySearch({
-  onPick,
-  currentPlaceName,
-}: {
-  onPick: (l: Locality) => void;
-  currentPlaceName?: string;
-}) {
+type Place = Locality & { code?: string };
+
+function LocalitySearch({ areas, onPick, current }: { areas: Area[]; onPick: (l: Place) => void; current?: string }) {
   const { devices } = useLive();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [geoErr, setGeoErr] = useState("");
 
+  // Placeholder from the data: the first real device and its cell.
+  const example = devices.find((d) => !d.simulated && d.last_reading) ?? devices[0];
+  const placeholder = example
+    ? `Search an area, device or geohash: ${areas[0]?.name ?? ""}, ${example.ens.split(".")[0]}, ${example.geohash}`
+    : "Search an area, device or geohash";
+
   const matches = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return [];
-    const locs = LOCALITIES.filter((l) => l.name.toLowerCase().includes(s)).map((l) => ({ label: l.name, hint: "locality", l }));
+    const ars = areas.filter((a) => a.name.toLowerCase().includes(s)).map((a) => ({ label: a.name, hint: "area", l: a as Place }));
+    const locs = LOCALITIES.filter((l) => l.name.toLowerCase().includes(s) && !areas.some((a) => a.name === l.name)).map((l) => ({ label: l.name, hint: "place", l: l as Place }));
     const devs = devices
       .filter((d) => d.ens.includes(s) || d.geohash.startsWith(s))
-      .map((d) => ({ label: d.ens, hint: `cell ${d.geohash}`, l: { name: d.ens, ...devicePos(d) } }));
-    const cell = isGeohash(s) ? [{ label: s, hint: "geohash cell", l: { name: `cell ${s}`, ...decode(s) } }] : [];
-    return [...locs, ...devs, ...cell].slice(0, 8);
-  }, [q, devices]);
+      .map((d) => ({ label: d.ens, hint: `cell ${d.geohash}`, l: { name: d.ens, ...devicePos(d) } as Place }));
+    const cell = isGeohash(s) ? [{ label: s, hint: "geohash cell", l: { name: `cell ${s}`, ...decode(s) } as Place }] : [];
+    return [...ars, ...devs, ...cell, ...locs].slice(0, 8);
+  }, [q, devices, areas]);
 
   const nearMe = () => {
     setGeoErr("");
     if (!navigator.geolocation) return setGeoErr("Location isn't available in this browser.");
     navigator.geolocation.getCurrentPosition(
-      (p) => onPick({ name: `Near you (${nearestLocality({ lat: p.coords.latitude, lon: p.coords.longitude }).name})`, lat: p.coords.latitude, lon: p.coords.longitude }),
-      () => setGeoErr("Couldn't get your location. Pick a locality instead."),
+      (p) => onPick({ name: "Near you", lat: p.coords.latitude, lon: p.coords.longitude }),
+      () => setGeoErr("Couldn't get your location. Pick an area instead."),
       { timeout: 8000 },
     );
   };
 
+  const field = "rounded-xl border border-line bg-surface shadow-sm";
   return (
     <div>
       <div className="relative flex gap-2">
@@ -99,110 +76,107 @@ function LocalitySearch({
             onFocus={() => setOpen(true)}
             onBlur={() => setTimeout(() => setOpen(false), 150)}
             onKeyDown={(e) => { if (e.key === "Enter" && matches[0]) { onPick(matches[0].l); setQ(""); setOpen(false); } }}
-            placeholder="Search a locality, device or geohash: Bandra, andheri-01, te7u3q"
-            aria-label="Search locality"
-            className="w-full rounded-xl border border-black/20 bg-white/55 backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 px-4 py-3 text-sm font-semibold text-black placeholder:text-black/70 shadow-md outline-none transition-colors focus:bg-white/70 focus:border-black/40"
+            placeholder={placeholder}
+            aria-label="Search area, device or geohash"
+            className={`${field} w-full px-4 py-2.5 text-sm text-ink placeholder:text-muted outline-none focus:border-ink/40`}
           />
           {open && matches.length > 0 && (
-            <ul className="absolute z-[60] mt-1.5 w-full overflow-hidden rounded-xl border border-black/20 bg-white/55 backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 shadow-2xl">
+            <ul className={`${field} absolute z-[60] mt-1.5 w-full overflow-hidden shadow-xl`}>
               {matches.map((m) => (
                 <li key={m.hint + m.label}>
                   <button
                     type="button"
                     onMouseDown={() => { onPick(m.l); setQ(""); setOpen(false); }}
-                    className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm font-medium text-black hover:bg-white/60"
+                    className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm hover:bg-bg"
                   >
                     <span>{m.label}</span>
-                    <span className="text-xs text-black/60">{m.hint}</span>
+                    <span className="text-xs text-muted">{m.hint}</span>
                   </button>
                 </li>
               ))}
             </ul>
           )}
         </div>
-        <button
-          type="button"
-          onClick={nearMe}
-          className="rounded-xl border border-black/20 bg-white/55 backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 px-4 text-sm font-semibold text-black shadow-md hover:bg-white/70 hover:border-black/35 transition-colors"
-        >
+        <button type="button" onClick={nearMe} className={`${field} px-4 text-sm font-medium hover:border-ink/40`}>
           Near me
         </button>
       </div>
       {geoErr && <p className="mt-1 text-xs font-semibold text-red-700">{geoErr}</p>}
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {LOCALITIES.map((l) => {
-          const isSelected = currentPlaceName === l.name;
-          return (
+      {areas.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-muted">Areas with nodes:</span>
+          {areas.map((a) => (
             <button
-              key={l.name}
+              key={a.name}
               type="button"
-              onClick={() => onPick(l)}
-              className={`rounded-full border px-3.5 py-1.5 text-xs shadow-sm backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 transition-all ${
-                isSelected
-                  ? "border-black bg-black text-white font-bold shadow-md"
-                  : "border-black/20 bg-white/55 text-black font-semibold hover:bg-white/70 hover:border-black/35"
+              onClick={() => onPick(a)}
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                current === a.name ? "border-ink bg-ink text-white" : "border-line bg-surface hover:border-ink/40"
               }`}
             >
-              {l.name}
+              {a.name} <span className="opacity-70">· {a.real} real{a.simulated ? ` · ${a.simulated} sim` : ""}</span>
             </button>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
 /* ---------- area card ---------- */
 
-function AreaCard({ place }: { place: Locality }) {
+function AreaCard({ place }: { place: Place }) {
   const { devices } = useLive();
   const st = areaStats(devices, place);
   const style = st.aqi != null ? aqiStyle(st.aqi) : null;
   const sample = st.used.map((d) => d.last_reading).find((r): r is Reading => !!r);
+  const real = st.used.filter((d) => !d.simulated).length;
+  const sim = st.used.length - real;
   return (
-    // No .card (solid white) and no backdrop-filter on this wrapper: either one stops the panels
-    // inside from blurring the hero image behind the card.
-    <div className="overflow-hidden rounded-3xl border border-white/80 shadow-2xl">
+    <div className="card overflow-hidden">
       <div className="flex items-stretch">
         <div
-          className="flex w-44 sm:w-48 xl:w-52 shrink-0 flex-col items-center justify-center p-6 sm:p-7 text-center transition-colors duration-500"
-          style={{ background: style?.bg ?? "#e2e6e3", color: style?.fg ?? "#13201b" }}
+          className="flex w-32 shrink-0 flex-col items-center justify-center p-4 text-center sm:w-40"
+          style={{ background: style?.bg ?? "var(--color-line)", color: style?.fg ?? "var(--color-muted)" }}
         >
-          <div className="text-xs sm:text-sm font-semibold uppercase tracking-wider opacity-90">AQI</div>
-          <div className="text-6xl sm:text-7xl xl:text-8xl font-black tabular-nums leading-none mt-1">{st.aqi ?? "–"}</div>
-          <div className="mt-2 text-base sm:text-lg font-bold">{style?.cat ?? "No data"}</div>
+          <div className="text-[11px] font-semibold uppercase tracking-wider opacity-90">AQI</div>
+          <div className="mt-0.5 text-5xl font-black leading-none tabular-nums sm:text-6xl">{st.aqi ?? "–"}</div>
+          <div className="mt-1.5 text-sm font-bold">{style?.cat ?? "No data"}</div>
         </div>
-        <div className="min-w-0 flex-1 p-6 sm:p-7 bg-white/55 backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 flex flex-col justify-center">
-          <div className="text-xs sm:text-sm font-medium text-ink/70">Live air in</div>
-          <div className="truncate text-2xl sm:text-3xl font-bold text-ink mt-0.5">{place.name}</div>
-          {st.pm25_x10 != null ? (
-            <div className="mt-3">
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl sm:text-5xl font-black tabular-nums text-ink">{x10(st.pm25_x10)}</span>
-                <span className="text-base sm:text-lg font-medium text-ink/70">µg/m³ PM2.5</span>
+        <div className="flex min-w-0 flex-1 flex-col justify-center p-4 sm:p-5">
+          <div className="text-xs text-muted">Live air in</div>
+          <div className="truncate text-xl font-bold sm:text-2xl">{place.name}</div>
+          {st.pm25_x10 != null && st.pm10_x10 != null ? (
+            <>
+              <div className="mt-1.5 flex flex-wrap items-baseline gap-x-4 gap-y-0.5">
+                <span><b className="text-2xl font-black tabular-nums">{x10(st.pm25_x10)}</b> <span className="text-xs text-muted">µg/m³ PM2.5</span></span>
+                <span><b className="text-lg font-bold tabular-nums">{x10(st.pm10_x10)}</b> <span className="text-xs text-muted">µg/m³ PM10</span></span>
               </div>
-              <div className="mt-2 text-base sm:text-lg text-ink/90 font-normal">
-                <b className="font-bold">{(st.pm25_x10 / 10 / WHO_PM25).toFixed(1)}×</b> the WHO 24-hour guideline
+              <div className="mt-1 text-sm">
+                <b>{(st.pm25_x10 / 10 / WHO_PM25).toFixed(1)}×</b> the WHO 24-hour PM2.5 guideline
               </div>
-            </div>
+              {style && <p className="mt-1 text-xs text-muted">{style.advice}</p>}
+            </>
           ) : (
-            <p className="mt-3 text-sm text-ink/70 font-medium">No active devices within {RADIUS_KM} km yet. Register one.</p>
+            <p className="mt-2 text-sm text-muted">
+              No active devices within {RADIUS_KM} km. <Link href="/register" className="font-medium text-chain hover:underline">Register one</Link>.
+            </p>
           )}
         </div>
       </div>
-      {/* Verification strip: indigo-tinted glass, same family as the card */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-white/60 bg-chain-soft/75 px-5 py-2.5 text-xs font-medium text-chain backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-line bg-chain-soft px-4 py-2 text-xs font-medium text-chain">
         <svg aria-hidden viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
           <path d="M8 1.5l5.5 2v4c0 3.4-2.3 6-5.5 7-3.2-1-5.5-3.6-5.5-7v-4z" />
         </svg>
         <span>
-          Median of <b className="font-bold">{st.used.length}</b> signed device{st.used.length === 1 ? "" : "s"} within {RADIUS_KM} km
+          Median of <b>{st.used.length}</b> signed device{st.used.length === 1 ? "" : "s"} within {RADIUS_KM} km
+          {st.used.length > 0 && <> ({real} real · {sim} simulated)</>}
         </span>
         {st.excluded.length > 0 && (
           <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-amber-900">{st.excluded.length} flagged/slashed excluded</span>
         )}
         {sample && (
-          <Link href={`/records/${recordId(sample)}`} className="rounded-full transition-opacity hover:opacity-80" title="Open this reading and check it yourself">
+          <Link href={`/records/${recordId(sample)}`} className="rounded-full hover:opacity-80" title="Open this reading and check it yourself">
             <VerifyBadge reading={sample} />
           </Link>
         )}
@@ -219,10 +193,13 @@ function Stats() {
   const active = devices.filter((d) => d.status === "active").length;
   const slashed = devices.filter((d) => d.status === "slashed").length;
   const staked = devices.reduce((a, d) => a + BigInt(d.stake_wei), BigInt(0));
-  const signed = events.filter((e) => e.type === "reading").length;
+  const sinceOpen = events.filter((e) => e.type === "reading").length;
+  // Nonces count up from 1 per device key, so their sum is every signed reading accepted so far.
+  const accepted = devices.reduce((a, d) => a + (d.last_reading?.nonce ?? 0), 0);
+  const n = nodeCounts(devices);
   const tiles = [
-    { label: "Active devices", value: active, sub: `${devices.length} registered` },
-    { label: "Signed readings (this session)", value: signed, sub: "each re-verified in your browser" },
+    { label: "Real devices reporting", value: n.real, sub: `+ ${n.simulated} simulated · ${active} active of ${devices.length}` },
+    { label: "Signed readings accepted", value: accepted.toLocaleString("en-IN"), sub: `${sinceOpen} since you opened this page` },
     { label: "Flags raised", value: flags.length, sub: "neighbour outliers" },
     { label: "Stake securing data", value: `${eth(staked.toString())} ETH`, sub: `${slashed} device${slashed === 1 ? "" : "s"} slashed` },
   ];
@@ -295,9 +272,9 @@ function DevicePanel({ address, onClose }: { address: string; onClose: () => voi
 
 /* ---------- ranking ---------- */
 
-function Ranking({ onPick }: { onPick: (l: Locality) => void }) {
+function Ranking({ areas, onPick }: { areas: Area[]; onPick: (l: Place) => void }) {
   const { devices } = useLive();
-  const rows = LOCALITIES.map((l) => ({ l, st: areaStats(devices, l) }))
+  const rows = areas.map((l) => ({ l, st: areaStats(devices, l) }))
     .filter((x) => x.st.aqi != null)
     .sort((a, b) => b.st.aqi! - a.st.aqi!);
   const max = Math.max(...rows.map((r) => r.st.aqi!), 1);
@@ -328,83 +305,53 @@ function Ranking({ onPick }: { onPick: (l: Locality) => void }) {
 
 export function HomeDashboard() {
   const { devices } = useLive();
-  const [place, setPlace] = useState<Locality>(LOCALITIES[0]);
+  // Areas follow the devices; the default is the one with the most reporting real devices.
+  const areas = useMemo(() => deriveAreas(devices), [devices]);
+  const [picked, setPicked] = useState<Place | null>(null);
+  const place: Place | null = picked ?? areas[0] ?? null;
   const [selected, setSelected] = useState<string | null>(null);
   const [fly, setFly] = useState<FlyTarget | null>(null);
 
-  const pick = (l: Locality) => {
-    setPlace(l);
-    setFly({ lat: l.lat, lon: l.lon, zoom: 13, key: Date.now() });
+  const pick = (l: Place) => {
+    setPicked(l);
+    setFly({ lat: l.lat, lon: l.lon, zoom: 14, key: Date.now() });
     const st = areaStats(devices, l);
-    setSelected(st.used[0]?.device ?? null);
+    setSelected(st.used.find((d) => !d.simulated)?.device ?? st.used[0]?.device ?? null);
   };
 
-  const st = areaStats(devices, place);
-  const currentCat = getCpcbCategory(st.aqi);
-  const headline = CPCB_HEADLINES[currentCat];
+  const st = place ? areaStats(devices, place) : null;
+  const style = st?.aqi != null ? aqiStyle(st.aqi) : null;
+  const headline = style ? HEADLINES[style.cat] : NO_DATA_HEADLINE;
 
   return (
-    <main className="w-full">
-      {/* Hero section */}
-      <div className="p-2">
-        <section className="relative w-full h-[calc(100vh-16px)] min-h-[640px] overflow-hidden rounded-2xl border border-line/60 shadow-sm flex flex-col justify-center">
-          {/* Background Images with 2s transition */}
-          <div className="absolute inset-0 select-none pointer-events-none overflow-hidden">
-            {ALL_CATEGORIES.map((cat) => (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                key={cat}
-                src={CPCB_BG[cat]}
-                alt=""
-                aria-hidden="true"
-                className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[2000ms] ease-in-out ${
-                  currentCat === cat ? "opacity-100 z-10" : "opacity-0 z-0"
-                }`}
-              />
-            ))}
+    <main className="mx-auto max-w-7xl px-4 pb-8">
+      {/* Small AQI-coloured accent: the only colour the category gets on the dashboard. */}
+      <div className="h-1.5 rounded-b-full transition-colors duration-700" style={{ background: style?.bg ?? "var(--color-line)" }} aria-hidden />
+      <section className="mt-5 grid gap-5 lg:grid-cols-[1fr_minmax(0,520px)] lg:items-start">
+        <div className="order-2 lg:order-1">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{headline}</h1>
+          <p className="mt-1.5 max-w-xl text-sm text-muted">
+            Every reading is signed on the sensor, checked against its neighbours and backed by stake.{" "}
+            <Link href="/" className="font-medium text-chain hover:underline">Why that matters</Link>
+          </p>
+          <div className="mt-4">
+            <LocalitySearch areas={areas} onPick={pick} current={place?.name} />
           </div>
+        </div>
+        <div className="order-1 lg:order-2">
+          {place ? <AreaCard place={place} /> : <div className="card p-6 text-sm text-muted">No devices registered yet.</div>}
+        </div>
+      </section>
 
-          {/* Foreground content: Left (Headline + Search), Middle (Character space), Right (Live Air Card) */}
-          <div className="relative z-10 mx-auto flex h-full w-full max-w-[1580px] flex-col justify-between p-6 sm:p-10 lg:flex-row lg:items-center lg:gap-12 xl:px-14">
-            {/* Left Section: Shifted more left to occupy larger area with bigger bold black headline */}
-            <div className="w-full lg:max-w-xl xl:max-w-2xl">
-              <div key={`headline-${place.name}-${currentCat}`} className="animate-drop-in">
-                <h1 className="text-5xl font-black tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl leading-[0.98] text-white [text-shadow:-7px_30px_25px_rgba(0,0,0,0.65)]">
-                  {headline}
-                </h1>
-                <p className="mt-5 max-w-xl rounded-2xl border border-black/20 bg-black/5 px-5 py-4 text-base font-bold leading-relaxed text-black/90 shadow-md backdrop-blur-[90px] backdrop-brightness-125 backdrop-saturate-150 sm:text-lg lg:text-xl">
-                  Every reading is signed on the sensor, checked against its neighbours, and backed by stake. Search a
-                  neighbourhood to see air you can verify yourself.
-                </p>
-              </div>
-              <div className="mt-6 animate-drop-in-delay-1">
-                <LocalitySearch onPick={pick} currentPlaceName={place.name} />
-              </div>
-            </div>
-
-            {/* Middle Section: Character is visible in the background image */}
-            <div className="hidden lg:block lg:flex-1 min-w-[80px] xl:min-w-[140px] pointer-events-none self-stretch" aria-hidden="true" />
-
-            {/* Right Section: Bigger Live Air Card with blurred white section */}
-            <div className="w-full lg:max-w-lg xl:max-w-xl flex lg:justify-end">
-              <div key={`card-${place.name}-${currentCat}`} className="w-full animate-drop-in-delay-2">
-                <AreaCard place={place} />
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <div className="mx-auto max-w-7xl px-4 py-8">
-        <section className="mt-8">
-          <Stats />
-        </section>
+      <section className="mt-8">
+        <Stats />
+      </section>
 
       <section className="mt-8">
         <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
           <div>
             <h2 className="text-lg font-semibold">Sensor map</h2>
-            <p className="text-xs text-muted">Each circle is a device, placed in its 6-character geohash cell (no GPS is published). Click one for details.</p>
+            <p className="text-xs text-muted">Each circle is a device, placed in its 6-character geohash cell (no GPS is published). Simulated neighbours have a dashed ring. Click one for details.</p>
           </div>
           <AqiLegend className="w-full max-w-md" />
         </div>
@@ -425,12 +372,11 @@ export function HomeDashboard() {
           <LiveFeed />
         </div>
         <div className="card p-4">
-          <h2 className="mb-3 font-semibold">Localities, worst to best</h2>
-          <Ranking onPick={pick} />
-          <p className="mt-3 text-[11px] text-muted">Median of active devices within {RADIUS_KM} km of each locality centre.</p>
+          <h2 className="mb-3 font-semibold">Areas, worst to best</h2>
+          <Ranking areas={areas} onPick={pick} />
+          <p className="mt-3 text-[11px] text-muted">Median of active devices within {RADIUS_KM} km of each area centre.</p>
         </div>
       </section>
-      </div>
     </main>
   );
 }

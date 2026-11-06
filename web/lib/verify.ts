@@ -31,11 +31,12 @@ export interface Verdict { ok: boolean; signer: Address | null; hash: Hex }
 const cache = new Map<string, Promise<Verdict>>();
 
 export function verifyReading(r: Reading): Promise<Verdict> {
-  const key = `${r.device}:${r.nonce}:${r.signature}`;
+  // Keyed by the signed message itself: an edited value must never hit a cached "verified".
+  const hash = messageHash(r);
+  const key = `${hash}:${r.signature}`;
   let v = cache.get(key);
   if (!v) {
     v = (async () => {
-      const hash = messageHash(r);
       try {
         const signer = (await recoverMessageAddress({ message: { raw: hash }, signature: r.signature })).toLowerCase() as Address;
         return { ok: signer === r.device.toLowerCase(), signer, hash };
