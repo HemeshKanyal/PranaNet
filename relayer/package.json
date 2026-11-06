@@ -1,0 +1,32 @@
+{
+  "name": "prananet-relayer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PranaNet relayer: device intake, signature check, Arkiv writes, Sepolia tx sender, WS /live",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "dev": "tsx watch src/server.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "verify-vector": "tsx scripts/verify-vector.ts",
+    "fake-reading": "tsx scripts/fake-reading.ts",
+    "register-dev": "tsx scripts/register-dev.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@arkiv-network/sdk": "1.0.1",
+    "viem": "2.57.13",
+    "ws": "8.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/ws": "8.18.1",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}
