@@ -30,7 +30,7 @@ Built at ETHGlobal Mumbai 2026 (Building from Scratch track). Full spec: [docs/S
 
 | What | Link |
 |---|---|
-| Website (story + live dashboard) | https://prananet-pi.vercel.app (story) · [/live](https://prananet-pi.vercel.app/live) |
+| Website (story + live dashboard) | https://prananet.hemeshkanyal.com (story) · [/live](https://prananet.hemeshkanyal.com/live) · [/roadmap](https://prananet.hemeshkanyal.com/roadmap) · also https://prananet-pi.vercel.app |
 | Relayer (stable URL) | https://prananet-relayer.onrender.com (`/health`, `/devices`, `wss://…/live`) |
 | Verifier | https://prananet-verifier.onrender.com/cells/te7u6n |
 | Paid data API (x402) | https://prananet-api.onrender.com/api/aqi?geohash=te7u6n · discovery `/.well-known/x402` |
@@ -45,6 +45,8 @@ Built at ETHGlobal Mumbai 2026 (Building from Scratch track). Full spec: [docs/S
 | Hedera | API revenue [0.0.11336714](https://hashscan.io/testnet/account/0.0.11336714) · agent [0.0.11338297](https://hashscan.io/testnet/account/0.0.11338297) · HCS purchase log [topic 0.0.11338299](https://hashscan.io/testnet/topic/0.0.11338299) |
 | Settled x402 payment (Hedera tx id) | [`0.0.9185802@1793964343.612274191`](https://hashscan.io/testnet/transaction/0.0.9185802@1793964343.612274191) |
 | Revenue → pool | [fundPool on Sepolia](https://sepolia.etherscan.io/tx/0xf07a43f1c284ebaa4253857e877270553aca1bdcbfc41003b1f0e20f4818ba26) |
+
+Roadmap to a real network: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 Milestone evidence: [M1 device signing](docs/evidence/device2-selftest.md) · [classic boards selftest](docs/evidence/classic-boards-selftest.md) · [M3 World ID + ENS](docs/evidence/m3-worldid-ens.md) · [M4 slash + claims](docs/evidence/m4-slash.md) · [M5 x402 on Hedera](docs/evidence/m5-x402-hedera.md). The first M1 run used the v1 contracts in `contracts/deployments/sepolia-v1.json` ([ReadingAccepted](https://sepolia.etherscan.io/tx/0xc8148daac8a630c55c8257220ec33b55f3b5172bc8295a80266a487db39b5c94), [forged reading reverted](https://sepolia.etherscan.io/tx/0x258afb1976c2169dedd227210b74024dc3cb7d1a21c3968141592cd432088c50)).
 
