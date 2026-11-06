@@ -1,8 +1,8 @@
 {
   "ok": {
     "ok": true,
-    "ens": "colaba-01.prananet.eth",
-    "tx": "0xc9fa3f76bf180ae2bf8a081868174167e01b4a3e4d1e2d57c7f0bef72087f893"
+    "ens": "colaba-02.prananet.eth",
+    "tx": "0x767e8c1b78e0af29dc36d3fb3e93bf3d9dbac519970e8d3800b3d8827c4ad58e"
   },
   "max_devices": {
     "ok": false,

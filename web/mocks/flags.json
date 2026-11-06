@@ -1,42 +1,42 @@
 [
   {
-    "device": "0x9d2f4b6a8c0e2d4f6a8b0c2e4d6f8a0b2c4e6d73",
-    "ens": "sim-andheri-04.prananet.eth",
+    "device": "0x333f909a0a07a1c7193616b7f7b6f058c05c1d06",
+    "ens": "sim-kurla-01.prananet.eth",
+    "epoch": 1762356480,
+    "reason": "neighbour_outlier",
+    "value_x10": 2357,
+    "median_x10": 519
+  },
+  {
+    "device": "0x333f909a0a07a1c7193616b7f7b6f058c05c1d06",
+    "ens": "sim-kurla-01.prananet.eth",
+    "epoch": 1762356540,
+    "reason": "neighbour_outlier",
+    "value_x10": 2409,
+    "median_x10": 520
+  },
+  {
+    "device": "0x333f909a0a07a1c7193616b7f7b6f058c05c1d06",
+    "ens": "sim-kurla-01.prananet.eth",
+    "epoch": 1762356600,
+    "reason": "neighbour_outlier",
+    "value_x10": 2496,
+    "median_x10": 513
+  },
+  {
+    "device": "0x995df437341796da3d669abbb19ed6550ff9252c",
+    "ens": "sim-bandra-01.prananet.eth",
     "epoch": 1762360140,
     "reason": "neighbour_outlier",
-    "value_x10": 2473,
-    "median_x10": 486
+    "value_x10": 2461,
+    "median_x10": 426
   },
   {
-    "device": "0x9d2f4b6a8c0e2d4f6a8b0c2e4d6f8a0b2c4e6d73",
-    "ens": "sim-andheri-04.prananet.eth",
-    "epoch": 1762360200,
-    "reason": "neighbour_outlier",
-    "value_x10": 2494,
-    "median_x10": 480
-  },
-  {
-    "device": "0x2a6c8e0b4d6f8a2c4e6b8d0f2a4c6e8b0d2f4a95",
-    "ens": "sim-bandra-01.prananet.eth",
-    "epoch": 1762360080,
-    "reason": "neighbour_outlier",
-    "value_x10": 2438,
-    "median_x10": 494
-  },
-  {
-    "device": "0x2a6c8e0b4d6f8a2c4e6b8d0f2a4c6e8b0d2f4a95",
-    "ens": "sim-bandra-01.prananet.eth",
-    "epoch": 1762360140,
-    "reason": "neighbour_outlier",
-    "value_x10": 2438,
-    "median_x10": 486
-  },
-  {
-    "device": "0x2a6c8e0b4d6f8a2c4e6b8d0f2a4c6e8b0d2f4a95",
+    "device": "0x995df437341796da3d669abbb19ed6550ff9252c",
     "ens": "sim-bandra-01.prananet.eth",
     "epoch": 1762360200,
     "reason": "neighbour_outlier",
-    "value_x10": 2414,
-    "median_x10": 480
+    "value_x10": 2413,
+    "median_x10": 419
   }
 ]
